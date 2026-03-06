@@ -66,6 +66,13 @@ Runs `exp_scripts/detection/detect_qrhead_lme.py` on each task's training split.
 
 **Output:** `results/detection/{task}_heads.json`
 
+#### Interpreting detection results
+
+- **QRScore direction:** **Higher is better.** QRScore is the mean (over instances) of the sum of retrieval scores over gold documents for that head. Heads are ranked by this score in descending order. Values are often small and negative (e.g. around -1e-4); the *least negative* (closest to zero or positive) heads are the best for retrieval on that task.
+- **Top-20 heads:** Each task’s `*_heads.json` lists all 1024 heads sorted best-first. The top 20 are the strongest QR heads for that task. The plots in `top20_heads_plot.png` show these per task.
+- **Overlap:** The task×task heatmap and “heads in multiple tasks” chart in `head_overlap_plot.png` show which tasks share retrieval heads. High overlap suggests similar retrieval mechanisms; little overlap suggests task-specific heads.
+- **Layer patterns:** Early layers (e.g. 0–2) and late layers (e.g. 28–31) often appear in top-20 lists; the exact mix is task-dependent and can suggest where the model does query–document matching.
+
 ### Stage 3: Ablation Evaluation (GPU required)
 
 ```bash

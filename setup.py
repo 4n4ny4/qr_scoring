@@ -14,6 +14,7 @@ def get_requires():
         "transformers>=4.44.0",
         "flash_attn",
         "pyyaml>=5.1",
+        "tqdm",
     ]
 
 def get_console_scripts():

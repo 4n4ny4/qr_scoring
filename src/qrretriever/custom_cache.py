@@ -9,7 +9,10 @@ class DynamicCacheWithQuery(DynamicCache):
     def __init__(self, query_indices=[]) -> None:
         super().__init__()
         self._query_indices = query_indices # indices for query vectors to save
+        self.key_cache = []
+        self.value_cache = []
         self.query_cache = []
+        self._seen_tokens = 0
     
     def update(
         self,
