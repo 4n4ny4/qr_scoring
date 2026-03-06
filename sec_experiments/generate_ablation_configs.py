@@ -4,6 +4,7 @@ Generate YAML config files for ablation experiments.
 For each task, reads the detection results and creates:
   - {task}_qr_head_top16.yaml: config using top-16 detected QR heads
   - {task}_random_head.yaml: config using 16 randomly selected heads
+  - {task}_knockout_top16.yaml: config using all heads except top-16 (1008 heads)
 """
 
 import argparse
@@ -60,6 +61,12 @@ def main():
         rand_path = os.path.join(args.config_dir, f"{task}_random_head.yaml")
         write_yaml(rand_path, random_head_set)
         print(f"  {task} random-{args.top_k}: {random_head_set}")
+
+        knockout_heads = [h for h in all_heads if h not in set(top_k_heads)]
+        knockout_head_set = ",".join(knockout_heads)
+        knockout_path = os.path.join(args.config_dir, f"{task}_knockout_top16.yaml")
+        write_yaml(knockout_path, knockout_head_set)
+        print(f"  {task} knockout (1008 heads): {knockout_path}")
 
 
 if __name__ == "__main__":

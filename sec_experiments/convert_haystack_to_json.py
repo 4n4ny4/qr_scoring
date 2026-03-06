@@ -206,11 +206,13 @@ def main():
             paragraphs = [{"idx": needle_section_id, "paragraph_text": gold_doc_text}] + distractors
 
             instance_id = f"{filename}_{task}_{row_idx}"
+            needle_value = row.get("needle_value", "").strip()
             valid_instances.append({
                 "idx": instance_id,
                 "question": question,
                 "paragraphs": paragraphs,
                 "gt_docs": [needle_section_id],
+                "answer": needle_value,
             })
 
             conversion_log.append({
@@ -219,6 +221,7 @@ def main():
                 "filename": filename,
                 "needle_section_id": needle_section_id,
                 "needle_sentence": needle_sentence,
+                "answer": needle_value,
                 "gold_doc_word_count": len(gold_doc_text.split()),
                 "num_distractors": len(distractors),
                 "distractor_section_ids": distractor_ids,

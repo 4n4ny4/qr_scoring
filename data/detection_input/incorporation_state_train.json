@@ -38,7 +38,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "716006_1993.txt_incorporation_state_641",
@@ -75,7 +76,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "200245_1993.txt_incorporation_state_1050",
@@ -136,7 +138,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "33798_1993.txt_incorporation_state_660",
@@ -181,7 +184,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "40533_1993.txt_incorporation_state_376",
@@ -214,7 +218,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "75042_1993.txt_incorporation_state_148",
@@ -247,7 +252,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "65358_1993.txt_incorporation_state_411",
@@ -284,7 +290,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "53540_1993.txt_incorporation_state_54",
@@ -309,7 +316,8 @@
     ],
     "gt_docs": [
       "section_12"
-    ]
+    ],
+    "answer": "California"
   },
   {
     "idx": "67686_1993.txt_incorporation_state_761",
@@ -346,7 +354,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "48305_1993.txt_incorporation_state_1096",
@@ -383,7 +392,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "66740_1993.txt_incorporation_state_1041",
@@ -420,7 +430,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "60026_1993.txt_incorporation_state_783",
@@ -457,7 +468,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "815917_1993.txt_incorporation_state_505",
@@ -510,7 +522,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Missouri"
   },
   {
     "idx": "103730_1993.txt_incorporation_state_10",
@@ -559,7 +572,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "100783_1993.txt_incorporation_state_687",
@@ -612,7 +626,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Virginia"
   },
   {
     "idx": "3153_1993.txt_incorporation_state_848",
@@ -665,7 +680,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "93469_1993.txt_incorporation_state_171",
@@ -718,7 +734,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "201461_1993.txt_incorporation_state_338",
@@ -783,7 +800,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "75252_1993.txt_incorporation_state_302",
@@ -824,7 +842,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Virginia"
   },
   {
     "idx": "310433_1993.txt_incorporation_state_1057",
@@ -869,7 +888,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "766829_1993.txt_incorporation_state_694",
@@ -922,7 +942,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "California"
   },
   {
     "idx": "66904_1993.txt_incorporation_state_527",
@@ -975,7 +996,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Alabama"
   },
   {
     "idx": "354869_1993.txt_incorporation_state_177",
@@ -1020,7 +1042,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Ohio"
   },
   {
     "idx": "708823_1993.txt_incorporation_state_733",
@@ -1073,7 +1096,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "71180_1993.txt_incorporation_state_1145",
@@ -1118,7 +1142,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Nevada"
   },
   {
     "idx": "4310_1993.txt_incorporation_state_1188",
@@ -1147,7 +1172,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "7431_1993.txt_incorporation_state_1155",
@@ -1196,7 +1222,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "840216_1993.txt_incorporation_state_992",
@@ -1233,7 +1260,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "814677_1993.txt_incorporation_state_1029",
@@ -1270,7 +1298,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "54502_1993.txt_incorporation_state_419",
@@ -1319,7 +1348,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Kansas"
   },
   {
     "idx": "101830_1993.txt_incorporation_state_383",
@@ -1360,7 +1390,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Kansas"
   },
   {
     "idx": "859119_1993.txt_incorporation_state_1235",
@@ -1389,7 +1420,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "1800_1993.txt_incorporation_state_1079",
@@ -1434,7 +1466,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "722573_1993.txt_incorporation_state_1209",
@@ -1483,7 +1516,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "72909_1993.txt_incorporation_state_791",
@@ -1516,7 +1550,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Wisconsin"
   },
   {
     "idx": "15393_1993.txt_incorporation_state_569",
@@ -1561,7 +1596,8 @@
     ],
     "gt_docs": [
       "section_4"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "799036_1993.txt_incorporation_state_193",
@@ -1606,7 +1642,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "18497_1993.txt_incorporation_state_154",
@@ -1655,7 +1692,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "49071_1993.txt_incorporation_state_750",
@@ -1696,7 +1734,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "74208_1993.txt_incorporation_state_497",
@@ -1741,7 +1780,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Virginia"
   },
   {
     "idx": "705752_1993.txt_incorporation_state_1296",
@@ -1794,7 +1834,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "California"
   },
   {
     "idx": "311871_1993.txt_incorporation_state_855",
@@ -1843,7 +1884,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "711604_1993.txt_incorporation_state_1101",
@@ -1872,7 +1914,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "7649_1993.txt_incorporation_state_1167",
@@ -1917,7 +1960,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "719264_1993.txt_incorporation_state_268",
@@ -1966,7 +2010,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Tennessee"
   },
   {
     "idx": "100240_1993.txt_incorporation_state_18",
@@ -2011,7 +2056,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Georgia"
   },
   {
     "idx": "66479_1993.txt_incorporation_state_77",
@@ -2068,7 +2114,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Massachusetts"
   },
   {
     "idx": "55785_1993.txt_incorporation_state_926",
@@ -2109,7 +2156,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "25600_1993.txt_incorporation_state_1174",
@@ -2146,7 +2194,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "40874_1993.txt_incorporation_state_583",
@@ -2179,7 +2228,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "79732_1993.txt_incorporation_state_939",
@@ -2216,7 +2266,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "District of Columbia"
   },
   {
     "idx": "52466_1993.txt_incorporation_state_768",
@@ -2269,7 +2320,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Massachusetts"
   },
   {
     "idx": "96638_1993.txt_incorporation_state_877",
@@ -2306,7 +2358,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "90185_1993.txt_incorporation_state_665",
@@ -2331,7 +2384,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "700674_1993.txt_incorporation_state_84",
@@ -2368,7 +2422,8 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "34501_1993.txt_incorporation_state_1150",
@@ -2413,7 +2468,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Texas"
   },
   {
     "idx": "215419_1993.txt_incorporation_state_397",
@@ -2458,7 +2514,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "105418_1993.txt_incorporation_state_1087",
@@ -2495,7 +2552,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "789292_1993.txt_incorporation_state_460",
@@ -2544,7 +2602,8 @@
     ],
     "gt_docs": [
       "section_8"
-    ]
+    ],
+    "answer": "Colorado"
   },
   {
     "idx": "799319_1993.txt_incorporation_state_775",
@@ -2593,7 +2652,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "36326_1993.txt_incorporation_state_834",
@@ -2638,7 +2698,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Georgia"
   },
   {
     "idx": "741612_1993.txt_incorporation_state_346",
@@ -2683,7 +2744,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Texas"
   },
   {
     "idx": "37748_1993.txt_incorporation_state_315",
@@ -2728,7 +2790,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "55387_1993.txt_incorporation_state_41",
@@ -2777,7 +2840,8 @@
     ],
     "gt_docs": [
       "section_8"
-    ]
+    ],
+    "answer": "Kentucky"
   },
   {
     "idx": "103392_1993.txt_incorporation_state_974",
@@ -2826,7 +2890,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "100923_1993.txt_incorporation_state_1033",
@@ -2871,7 +2936,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "797463_1993.txt_incorporation_state_360",
@@ -2900,7 +2966,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "16906_1993.txt_incorporation_state_702",
@@ -2933,7 +3000,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Commonwealth of Massachusetts"
   },
   {
     "idx": "702163_1993.txt_incorporation_state_295",
@@ -2986,7 +3054,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "72971_1993.txt_incorporation_state_967",
@@ -3023,7 +3092,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "49423_1993.txt_incorporation_state_618",
@@ -3072,7 +3142,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "10456_1993.txt_incorporation_state_483",
@@ -3105,7 +3176,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "81061_1993.txt_incorporation_state_595",
@@ -3146,7 +3218,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Florida"
   },
   {
     "idx": "276999_1993.txt_incorporation_state_908",
@@ -3199,7 +3272,8 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "765813_1993.txt_incorporation_state_1254",
@@ -3236,7 +3310,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "20947_1993.txt_incorporation_state_630",
@@ -3285,7 +3360,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Ohio"
   },
   {
     "idx": "29989_1993.txt_incorporation_state_289",
@@ -3322,7 +3398,8 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "36377_1993.txt_incorporation_state_673",
@@ -3355,7 +3432,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "64782_1993.txt_incorporation_state_1262",
@@ -3400,7 +3478,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "352510_1993.txt_incorporation_state_1321",
@@ -3445,7 +3524,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "40454_1993.txt_incorporation_state_405",
@@ -3486,7 +3566,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Missouri"
   },
   {
     "idx": "35527_1993.txt_incorporation_state_1021",
@@ -3511,7 +3592,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Ohio"
   },
   {
     "idx": "74783_1993.txt_incorporation_state_1071",
@@ -3552,7 +3634,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "36966_1993.txt_incorporation_state_185",
@@ -3589,7 +3672,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Tennessee"
   },
   {
     "idx": "725625_1993.txt_incorporation_state_69",
@@ -3634,7 +3718,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "310569_1993.txt_incorporation_state_1230",
@@ -3663,7 +3748,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "764037_1993.txt_incorporation_state_329",
@@ -3696,7 +3782,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "92050_1993.txt_incorporation_state_276",
@@ -3729,7 +3816,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "801124_1993.txt_incorporation_state_801",
@@ -3774,7 +3862,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Massachusetts"
   },
   {
     "idx": "315189_1993.txt_incorporation_state_536",
@@ -3807,7 +3896,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "9892_1993.txt_incorporation_state_520",
@@ -3852,7 +3942,8 @@
     ],
     "gt_docs": [
       "section_8"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "732714_1993.txt_incorporation_state_945",
@@ -3893,7 +3984,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "40878_1993.txt_incorporation_state_48",
@@ -3926,7 +4018,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Virginia"
   },
   {
     "idx": "860713_1993.txt_incorporation_state_525",
@@ -3959,7 +4052,8 @@
     ],
     "gt_docs": [
       "section_9"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "30554_1993.txt_incorporation_state_900",
@@ -3996,7 +4090,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "277821_1993.txt_incorporation_state_892",
@@ -4041,7 +4136,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "351825_1993.txt_incorporation_state_1258",
@@ -4094,7 +4190,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Georgia"
   },
   {
     "idx": "790603_1993.txt_incorporation_state_427",
@@ -4135,7 +4232,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "92487_1993.txt_incorporation_state_225",
@@ -4188,7 +4286,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "92088_1993.txt_incorporation_state_438",
@@ -4221,7 +4320,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Georgia"
   },
   {
     "idx": "814153_1993.txt_incorporation_state_622",
@@ -4270,7 +4370,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Colorado"
   },
   {
     "idx": "740868_1993.txt_incorporation_state_726",
@@ -4303,7 +4404,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "846972_1993.txt_incorporation_state_98",
@@ -4352,7 +4454,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "310431_1993.txt_incorporation_state_322",
@@ -4389,7 +4492,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "9659_1993.txt_incorporation_state_1107",
@@ -4438,7 +4542,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Virginia"
   },
   {
     "idx": "20164_1993.txt_incorporation_state_563",
@@ -4471,7 +4576,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Michigan"
   },
   {
     "idx": "36995_1993.txt_incorporation_state_1009",
@@ -4508,7 +4614,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "North Carolina"
   },
   {
     "idx": "832427_1993.txt_incorporation_state_445",
@@ -4549,7 +4656,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "351979_1993.txt_incorporation_state_1193",
@@ -4590,7 +4698,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "34285_1993.txt_incorporation_state_1180",
@@ -4635,7 +4744,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Texas"
   },
   {
     "idx": "711404_1993.txt_incorporation_state_142",
@@ -4664,7 +4774,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "50548_1993.txt_incorporation_state_980",
@@ -4693,7 +4804,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "64803_1993.txt_incorporation_state_1217",
@@ -4726,7 +4838,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "854094_1993.txt_incorporation_state_91",
@@ -4771,7 +4884,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "15840_1993.txt_incorporation_state_1138",
@@ -4796,7 +4910,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "46080_1993.txt_incorporation_state_719",
@@ -4829,7 +4944,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Rhode Island"
   },
   {
     "idx": "846902_1993.txt_incorporation_state_204",
@@ -4862,7 +4978,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "216228_1993.txt_incorporation_state_260",
@@ -4899,7 +5016,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "60041_1993.txt_incorporation_state_35",
@@ -4948,7 +5066,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "722079_1993.txt_incorporation_state_1201",
@@ -4981,6 +5100,7 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "Maryland"
   }
 ]

@@ -30,7 +30,8 @@
     ],
     "gt_docs": [
       "section_12"
-    ]
+    ],
+    "answer": "Stamford"
   },
   {
     "idx": "55785_1993.txt_headquarters_city_924",
@@ -71,7 +72,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Dallas"
   },
   {
     "idx": "50548_1993.txt_headquarters_city_978",
@@ -100,7 +102,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Chicago"
   },
   {
     "idx": "352510_1993.txt_headquarters_city_1319",
@@ -145,7 +148,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Mattituck"
   },
   {
     "idx": "708823_1993.txt_headquarters_city_731",
@@ -198,7 +202,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Malvern"
   },
   {
     "idx": "15393_1993.txt_headquarters_city_567",
@@ -243,7 +248,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Washington"
   },
   {
     "idx": "95301_1993.txt_headquarters_city_465",
@@ -276,7 +282,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "821026_1993.txt_headquarters_city_635",
@@ -329,7 +336,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Maumee"
   },
   {
     "idx": "49071_1993.txt_headquarters_city_748",
@@ -370,7 +378,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Louisville"
   },
   {
     "idx": "52466_1993.txt_headquarters_city_766",
@@ -423,7 +432,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Watertown"
   },
   {
     "idx": "846972_1993.txt_headquarters_city_96",
@@ -472,7 +482,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Pittsburgh"
   },
   {
     "idx": "66740_1993.txt_headquarters_city_1039",
@@ -509,7 +520,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "St. Paul"
   },
   {
     "idx": "310433_1993.txt_headquarters_city_1055",
@@ -554,7 +566,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Wilkes-Barre"
   },
   {
     "idx": "806086_1993.txt_headquarters_city_795",
@@ -599,7 +612,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Bothell"
   },
   {
     "idx": "64803_1993.txt_headquarters_city_1215",
@@ -632,7 +646,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Rye"
   },
   {
     "idx": "37748_1993.txt_headquarters_city_313",
@@ -677,7 +692,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Irvine"
   },
   {
     "idx": "740694_1993.txt_headquarters_city_1014",
@@ -718,7 +734,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Clearwater"
   },
   {
     "idx": "92088_1993.txt_headquarters_city_436",
@@ -751,7 +768,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Atlanta"
   },
   {
     "idx": "725625_1993.txt_headquarters_city_67",
@@ -796,7 +814,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Dallas"
   },
   {
     "idx": "700674_1993.txt_headquarters_city_82",
@@ -833,7 +852,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Darien"
   },
   {
     "idx": "9659_1993.txt_headquarters_city_1105",
@@ -882,7 +902,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Richmond"
   },
   {
     "idx": "351145_1993.txt_headquarters_city_1125",
@@ -927,7 +948,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Huntsville"
   },
   {
     "idx": "799319_1993.txt_headquarters_city_773",
@@ -976,7 +998,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Culver City"
   },
   {
     "idx": "33565_1993.txt_headquarters_city_160",
@@ -1033,7 +1056,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Fort Wayne"
   },
   {
     "idx": "75527_1993.txt_headquarters_city_1267",
@@ -1082,7 +1106,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Los Angeles"
   },
   {
     "idx": "277821_1993.txt_headquarters_city_890",
@@ -1127,7 +1152,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Irvine"
   },
   {
     "idx": "97210_1993.txt_headquarters_city_128",
@@ -1172,7 +1198,8 @@
     ],
     "gt_docs": [
       "section_7"
-    ]
+    ],
+    "answer": "Boston"
   },
   {
     "idx": "766829_1993.txt_headquarters_city_692",
@@ -1225,6 +1252,7 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "San Jose"
   }
 ]

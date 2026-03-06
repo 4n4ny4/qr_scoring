@@ -34,7 +34,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Delaware"
   },
   {
     "idx": "64605_1993.txt_headquarters_state_247",
@@ -83,7 +84,8 @@
     ],
     "gt_docs": [
       "section_12"
-    ]
+    ],
+    "answer": "California"
   },
   {
     "idx": "719264_1993.txt_headquarters_state_267",
@@ -132,7 +134,8 @@
     ],
     "gt_docs": [
       "section_8"
-    ]
+    ],
+    "answer": "Tennessee"
   },
   {
     "idx": "40878_1993.txt_headquarters_state_47",
@@ -165,7 +168,8 @@
     ],
     "gt_docs": [
       "section_12"
-    ]
+    ],
+    "answer": "Connecticut"
   },
   {
     "idx": "100783_1993.txt_headquarters_state_686",
@@ -218,7 +222,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "59478_1993.txt_headquarters_state_104",
@@ -271,7 +276,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "1800_1993.txt_headquarters_state_1078",
@@ -316,7 +322,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "277577_1993.txt_headquarters_state_740",
@@ -373,7 +380,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Texas"
   },
   {
     "idx": "33619_1993.txt_headquarters_state_390",
@@ -426,7 +434,8 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "Washington"
   },
   {
     "idx": "840216_1993.txt_headquarters_state_991",
@@ -463,7 +472,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "California"
   },
   {
     "idx": "36326_1993.txt_headquarters_state_833",
@@ -508,7 +518,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Georgia"
   },
   {
     "idx": "93675_1993.txt_headquarters_state_541",
@@ -545,7 +556,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "74783_1993.txt_headquarters_state_1070",
@@ -586,7 +598,8 @@
     ],
     "gt_docs": [
       "section_7"
-    ]
+    ],
+    "answer": "Nebraska"
   },
   {
     "idx": "2024_1993.txt_headquarters_state_652",
@@ -635,7 +648,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Illinois"
   },
   {
     "idx": "854094_1993.txt_headquarters_state_90",
@@ -680,7 +694,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "36966_1993.txt_headquarters_state_184",
@@ -717,7 +732,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Tennessee"
   },
   {
     "idx": "276999_1993.txt_headquarters_state_907",
@@ -770,7 +786,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "NJ"
   },
   {
     "idx": "103730_1993.txt_headquarters_state_9",
@@ -819,7 +836,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Pennsylvania"
   },
   {
     "idx": "47129_1993.txt_headquarters_state_819",
@@ -868,7 +886,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New Jersey"
   },
   {
     "idx": "725625_1993.txt_headquarters_state_68",
@@ -913,7 +932,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Texas"
   },
   {
     "idx": "828530_1993.txt_headquarters_state_608",
@@ -962,7 +982,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Florida"
   },
   {
     "idx": "740868_1993.txt_headquarters_state_725",
@@ -995,7 +1016,8 @@
     ],
     "gt_docs": [
       "section_1"
-    ]
+    ],
+    "answer": "Indiana"
   },
   {
     "idx": "95301_1993.txt_headquarters_state_466",
@@ -1028,7 +1050,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "103392_1993.txt_headquarters_state_973",
@@ -1077,7 +1100,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "New York"
   },
   {
     "idx": "740694_1993.txt_headquarters_state_1015",
@@ -1118,7 +1142,8 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Florida"
   },
   {
     "idx": "846902_1993.txt_headquarters_state_203",
@@ -1151,7 +1176,8 @@
     ],
     "gt_docs": [
       "section_14"
-    ]
+    ],
+    "answer": "Massachusetts"
   },
   {
     "idx": "66479_1993.txt_headquarters_state_76",
@@ -1208,6 +1234,7 @@
     ],
     "gt_docs": [
       "section_2"
-    ]
+    ],
+    "answer": "Massachusetts"
   }
 ]

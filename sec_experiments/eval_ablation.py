@@ -2,7 +2,7 @@
 Evaluate ablation experiments: compute Recall@1, Recall@3 with bootstrap CIs.
 
 Reads retrieval score files from results/ablation/ and test data from
-data/detection_input/, produces a summary table.
+data/detection_input/, produces a summary table and bar chart figures.
 """
 
 import argparse
@@ -81,6 +81,117 @@ def paired_bootstrap_test(scores_a, scores_b, n_bootstrap=BOOTSTRAP_N, seed=BOOT
             count += 1
 
     return count / n_bootstrap
+
+
+def plot_recall_charts(results, pooled, tasks, conditions, ablation_dir):
+    """Plot Recall@1 and Recall@3: per-task and across all tasks."""
+    try:
+        import matplotlib
+        matplotlib.use("Agg")
+        import matplotlib.pyplot as plt
+    except ImportError:
+        print("matplotlib not available; skipping plots.")
+        return
+
+    CONDITION_LABELS = {
+        "full_head": "Full (1024 heads)",
+        "qr_head_top16": "QR top-16",
+        "random_head": "Random 16",
+    }
+    COLORS = {"full_head": "#4dabf7", "qr_head_top16": "#51cf66", "random_head": "#ffa94d"}
+
+    if not results or not pooled:
+        return
+
+    n_tasks = len(tasks)
+    x = np.arange(n_tasks)
+    width = 0.25
+
+    for metric in ["recall@1", "recall@3"]:
+        # --- Per-task bar chart ---
+        fig, ax = plt.subplots(figsize=(14, 5))
+        for i, cond in enumerate(conditions):
+            vals = []
+            err_lo = []
+            err_hi = []
+            for task in tasks:
+                if task in results and cond in results[task] and metric in results[task][cond]:
+                    r = results[task][cond][metric]
+                    vals.append(r["value"])
+                    err_lo.append(r["value"] - r["ci_lo"])
+                    err_hi.append(r["ci_hi"] - r["value"])
+                else:
+                    vals.append(0)
+                    err_lo.append(0)
+                    err_hi.append(0)
+            offset = (i - 1) * width
+            bars = ax.bar(x + offset, vals, width, label=CONDITION_LABELS.get(cond, cond),
+                          color=COLORS.get(cond, "gray"), yerr=[err_lo, err_hi], capsize=2)
+        ax.set_ylabel(metric.replace("@", " @").capitalize())
+        ax.set_xlabel("Task")
+        ax.set_xticks(x)
+        ax.set_xticklabels([t.replace("_", "\n") for t in tasks], fontsize=8)
+        ax.legend(loc="upper right", fontsize=9)
+        ax.set_ylim(0, 1.05)
+        ax.set_title(f"{metric.replace('@', ' @').capitalize()} by Task")
+        fig.tight_layout()
+        out_path = os.path.join(ablation_dir, f"recall_per_task_{metric.replace('@', '')}.png")
+        fig.savefig(out_path, dpi=150, bbox_inches="tight")
+        plt.close(fig)
+        print(f"  Saved {out_path}")
+
+        # --- Across all tasks (pooled), one chart per metric ---
+        fig2, ax2 = plt.subplots(figsize=(6, 4))
+        cond_pos = np.arange(len(conditions))
+        width_single = 0.5
+        vals_pooled = []
+        err_lo_pooled = []
+        err_hi_pooled = []
+        for cond in conditions:
+            if metric in pooled.get(cond, {}):
+                r = pooled[cond][metric]
+                vals_pooled.append(r["value"])
+                err_lo_pooled.append(r["value"] - r["ci_lo"])
+                err_hi_pooled.append(r["ci_hi"] - r["value"])
+            else:
+                vals_pooled.append(0)
+                err_lo_pooled.append(0)
+                err_hi_pooled.append(0)
+        colors_list = [COLORS.get(c, "gray") for c in conditions]
+        ax2.bar(cond_pos, vals_pooled, width_single, color=colors_list,
+                yerr=[err_lo_pooled, err_hi_pooled], capsize=6)
+        ax2.set_ylabel("Recall")
+        ax2.set_xticks(cond_pos)
+        ax2.set_xticklabels([CONDITION_LABELS.get(c, c) for c in conditions], fontsize=9)
+        ax2.set_ylim(0, 1.05)
+        ax2.set_title(f"{metric.replace('@', ' @').capitalize()} Across All Tasks (Pooled)")
+        fig2.tight_layout()
+        out_pooled = os.path.join(ablation_dir, f"recall_pooled_{metric.replace('@', '')}.png")
+        fig2.savefig(out_pooled, dpi=150, bbox_inches="tight")
+        plt.close(fig2)
+        print(f"  Saved {out_pooled}")
+
+    # --- Pooled Recall@1 and Recall@3 side by side ---
+    fig3, axes = plt.subplots(1, 2, figsize=(10, 4))
+    for idx, metric in enumerate(["recall@1", "recall@3"]):
+        ax = axes[idx]
+        vals = [pooled[c][metric]["value"] for c in conditions if metric in pooled.get(c, {})]
+        err_lo = [pooled[c][metric]["value"] - pooled[c][metric]["ci_lo"] for c in conditions if metric in pooled.get(c, {})]
+        err_hi = [pooled[c][metric]["ci_hi"] - pooled[c][metric]["value"] for c in conditions if metric in pooled.get(c, {})]
+        conds_avail = [c for c in conditions if metric in pooled.get(c, {})]
+        colors_list = [COLORS.get(c, "gray") for c in conds_avail]
+        ax.bar(range(len(conds_avail)), vals, 0.5, color=colors_list, yerr=[err_lo, err_hi], capsize=5)
+        ax.set_ylabel("Recall")
+        ax.set_xticks(range(len(conds_avail)))
+        ax.set_xticklabels([CONDITION_LABELS.get(c, c) for c in conds_avail], fontsize=9)
+        ax.set_ylim(0, 1.05)
+        ax.set_title(metric.replace("@", " @").capitalize())
+    fig3.suptitle("Pooled Recall Across All Tasks", fontsize=11, y=1.02)
+    fig3.tight_layout()
+    out_combined = os.path.join(ablation_dir, "recall_pooled_both.png")
+    fig3.savefig(out_combined, dpi=150, bbox_inches="tight")
+    plt.close(fig3)
+    print(f"  Saved {out_combined}")
 
 
 def main():
@@ -206,6 +317,10 @@ def main():
     with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2, default=float)
     print(f"\nSummary saved to {summary_path}")
+
+    print(f"\n{'='*80}")
+    print("Generating recall charts...")
+    plot_recall_charts(results, pooled, args.tasks, CONDITIONS, args.ablation_dir)
 
 
 if __name__ == "__main__":
