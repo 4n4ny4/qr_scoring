@@ -151,6 +151,18 @@ venv.bak/
 .dmypy.json
 dmypy.json
 
+# Local SEC / detection artifacts (keep out of git; large)
+data/long_context_detection/combined_detection.json
+data/long_context_detection_optionA/combined_detection.json
+data/long_context_detection/*.json
+data/long_context_detection_optionA/*.json
+results/detection/*.json
+results/comparison_ablation/*.json
+results/comparison_ablation/*.png
+
+.dmypy.json
+dmypy.json
+
 # Pyre type checker
 .pyre/
 
