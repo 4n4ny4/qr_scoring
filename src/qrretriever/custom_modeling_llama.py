@@ -376,6 +376,8 @@ class LlamaAttention(nn.Module):
         self.v_proj = nn.Linear(self.hidden_size, self.num_key_value_heads * self.head_dim, bias=config.attention_bias)
         self.o_proj = nn.Linear(self.hidden_size, self.hidden_size, bias=config.attention_bias)
 
+        self._masked_head_indices = None
+
         # TODO (joao): remove in v4.45 (RoPE is computed in the model, not in the decoder layers)
         self.rotary_emb = LlamaRotaryEmbedding(config=self.config)
 
@@ -464,6 +466,10 @@ class LlamaAttention(nn.Module):
             )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
+        # shape: (bsz, q_len, num_heads, head_dim)
+
+        if self._masked_head_indices is not None:
+            attn_output[:, :, self._masked_head_indices, :] = 0
 
         attn_output = attn_output.reshape(bsz, q_len, -1)
 
@@ -604,6 +610,10 @@ class LlamaFlashAttention2(LlamaAttention):
             is_causal=self.is_causal,
         )
 
+        # attn_output shape: (bsz, q_len, num_heads, head_dim)
+        if self._masked_head_indices is not None:
+            attn_output[:, :, self._masked_head_indices, :] = 0
+
         attn_output = attn_output.reshape(bsz, q_len, -1).contiguous()
         attn_output = self.o_proj(attn_output)
 
@@ -704,6 +714,11 @@ class LlamaSdpaAttention(LlamaAttention):
         )
 
         attn_output = attn_output.transpose(1, 2).contiguous()
+        # shape: (bsz, q_len, num_heads, head_dim)
+
+        if self._masked_head_indices is not None:
+            attn_output[:, :, self._masked_head_indices, :] = 0
+
         attn_output = attn_output.view(bsz, q_len, -1)
 
         attn_output = self.o_proj(attn_output)
@@ -945,6 +960,26 @@ class LlamaModel(LlamaPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def set_head_mask(self, masked_heads):
+        """Set attention heads to zero out during forward pass.
+
+        Args:
+            masked_heads: list of (layer_idx, head_idx) tuples, or None to clear.
+        """
+        for layer in self.layers:
+            layer.self_attn._masked_head_indices = None
+
+        if not masked_heads:
+            return
+
+        from collections import defaultdict
+        per_layer = defaultdict(list)
+        for layer_idx, head_idx in masked_heads:
+            per_layer[layer_idx].append(head_idx)
+
+        for layer_idx, head_indices in per_layer.items():
+            self.layers[layer_idx].self_attn._masked_head_indices = head_indices
+
     def get_input_embeddings(self):
         return self.embed_tokens
 
@@ -1157,6 +1192,10 @@ class LlamaForCausalLM(GenerationMixin, LlamaPreTrainedModel):
         # Initialize weights and apply final processing
         self.post_init()
 
+    def set_head_mask(self, masked_heads):
+        """Proxy to LlamaModel.set_head_mask."""
+        self.model.set_head_mask(masked_heads)
+
     def get_input_embeddings(self):
         return self.model.embed_tokens
 
@@ -1239,6 +1278,9 @@ class LlamaForCausalLM(GenerationMixin, LlamaPreTrainedModel):
 
         hidden_states = outputs[0]
         if compute_logits:
+            num_logits_to_keep = getattr(self, "_num_logits_to_keep", None)
+            if num_logits_to_keep is not None and labels is None:
+                hidden_states = hidden_states[:, -num_logits_to_keep:, :]
             if self.config.pretraining_tp > 1:
                 lm_head_slices = self.lm_head.weight.split(self.vocab_size // self.config.pretraining_tp, dim=0)
                 logits = [F.linear(hidden_states, lm_head_slices[i]) for i in range(self.config.pretraining_tp)]

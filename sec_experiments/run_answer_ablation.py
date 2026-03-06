@@ -25,7 +25,7 @@ except ImportError:
 
 CONDITIONS = ["full_head", "knockout_top16"]
 MODEL_NAME_DEFAULT = "meta-llama/Llama-3.1-8B-Instruct"
-MAX_NEW_TOKENS = 10
+MAX_NEW_TOKENS = 20
 TEMPERATURE = 0.0
 BOOTSTRAP_N = 1000
 BOOTSTRAP_SEED = 42
@@ -33,21 +33,37 @@ CI_LEVEL = 0.95
 
 
 def normalize_answer(s):
-    """Lowercase, strip, collapse whitespace."""
+    """Lowercase, strip, collapse whitespace, remove commas from numbers."""
     if s is None or not isinstance(s, str):
         return ""
-    return " ".join(s.lower().strip().split())
+    s = s.lower().strip()
+    s = re.sub(r"(\d),(\d)", r"\1\2", s)  # "2,356" -> "2356"
+    s = re.sub(r"[,.;:!?\"']+$", "", s)   # trailing punctuation
+    return " ".join(s.split())
 
 
-def first_word(text):
-    """First word/token from model output for one-word answer."""
+def extract_short_answer(text):
+    """Extract a short answer from model output (up to first newline/sentence break)."""
     if not text or not isinstance(text, str):
         return ""
     text = text.strip()
-    # Remove common trailing punctuation from one-word answers
-    text = re.sub(r"[,.;:!?]$", "", text)
-    parts = text.split()
-    return parts[0].lower() if parts else ""
+    text = text.split("\n")[0].strip()
+    text = re.split(r"[.!?]\s", text)[0].strip()
+    text = re.sub(r"[.!?]+$", "", text)
+    return text
+
+
+def answers_match(pred, gold):
+    """Flexible matching: exact, containment, or normalized containment."""
+    if not pred or not gold:
+        return False
+    p = normalize_answer(pred)
+    g = normalize_answer(gold)
+    if p == g:
+        return True
+    if g in p or p in g:
+        return True
+    return False
 
 
 def get_top1_doc(scores_dict):
@@ -66,7 +82,7 @@ def get_paragraph_text(paragraphs, doc_id):
 
 
 def build_prompt(doc_text, question):
-    return f"Context:\n{doc_text}\n\nQuestion: {question}\n\nAnswer in one word:"
+    return f"Context:\n{doc_text}\n\nQuestion: {question}\n\nAnswer concisely:"
 
 
 def load_model_and_tokenizer(model_name_or_path, device=None):
@@ -85,8 +101,8 @@ def load_model_and_tokenizer(model_name_or_path, device=None):
     return model, tokenizer
 
 
-def generate_one_word(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS, temperature=TEMPERATURE):
-    """Generate and return first word of model output."""
+def generate_answer(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS, temperature=TEMPERATURE):
+    """Generate and return short answer from model output."""
     inputs = tokenizer(prompt, return_tensors="pt", truncation=True, max_length=4096)
     if hasattr(model, "device"):
         inputs = {k: v.to(model.device) for k, v in inputs.items()}
@@ -98,11 +114,10 @@ def generate_one_word(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS, t
             temperature=temperature if temperature > 0 else None,
             pad_token_id=tokenizer.eos_token_id,
         )
-    # Decode only the new tokens
     start = inputs["input_ids"].shape[1]
     new_tokens = out[0][start:]
     text = tokenizer.decode(new_tokens, skip_special_tokens=True)
-    return first_word(text)
+    return extract_short_answer(text)
 
 
 def run_answer_ablation(
@@ -193,10 +208,12 @@ def run_answer_ablation(
         for i, r in enumerate(rows):
             prompt_full = build_prompt(r["doc_text_full"], r["question"])
             prompt_kill = build_prompt(r["doc_text_knockout"], r["question"])
-            pred_full = normalize_answer(generate_one_word(model, tokenizer, prompt_full))
-            pred_kill = normalize_answer(generate_one_word(model, tokenizer, prompt_kill))
-            r["correct_full"] = 1 if pred_full == r["gold"] else 0
-            r["correct_knockout"] = 1 if pred_kill == r["gold"] else 0
+            pred_full = generate_answer(model, tokenizer, prompt_full)
+            pred_kill = generate_answer(model, tokenizer, prompt_kill)
+            r["pred_full"] = pred_full
+            r["pred_knockout"] = pred_kill
+            r["correct_full"] = 1 if answers_match(pred_full, r["gold"]) else 0
+            r["correct_knockout"] = 1 if answers_match(pred_kill, r["gold"]) else 0
             if (i + 1) % 20 == 0:
                 print(f"  Processed {i + 1}/{n_total}")
 

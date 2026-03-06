@@ -1,0 +1,383 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>QR Head Knockout Results</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Instrument+Serif:ital@0;1&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg: #0c0c0f;
+  --surface: #16161a;
+  --border: #2a2a30;
+  --text: #e8e6e3;
+  --text-dim: #8b8a87;
+  --accent-full: #5b8def;
+  --accent-qr: #3ecf8e;
+  --accent-random: #f5a623;
+  --accent-knockout: #e05c6c;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Mono', monospace;
+  min-height: 100vh;
+  padding: 2.5rem 3rem;
+}
+h1 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.6rem;
+  font-weight: 400;
+  letter-spacing: -0.02em;
+  margin-bottom: 0.3rem;
+}
+.subtitle {
+  color: var(--text-dim);
+  font-size: 0.78rem;
+  margin-bottom: 2.5rem;
+  line-height: 1.6;
+}
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  margin-bottom: 1.8rem;
+}
+.stat-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.2rem 1rem;
+  text-align: center;
+}
+.stat-card .label {
+  font-size: 0.62rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--text-dim);
+  margin-bottom: 0.5rem;
+}
+.stat-card .value {
+  font-family: 'Instrument Serif', serif;
+  font-size: 2.2rem;
+}
+.stat-card .sub {
+  font-size: 0.62rem;
+  color: var(--text-dim);
+  margin-top: 0.25rem;
+}
+.stat-card.full .value { color: var(--accent-full); }
+.stat-card.qr .value { color: var(--accent-qr); }
+.stat-card.random .value { color: var(--accent-random); }
+.stat-card.knockout .value { color: var(--accent-knockout); }
+
+.takeaway {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--accent-knockout);
+  border-radius: 0 12px 12px 0;
+  padding: 1.3rem 1.5rem;
+  margin-bottom: 2rem;
+  font-size: 0.78rem;
+  line-height: 1.7;
+}
+.takeaway strong { color: var(--accent-knockout); }
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+.card h2 {
+  font-family: 'Instrument Serif', serif;
+  font-size: 1.2rem;
+  font-weight: 400;
+  margin-bottom: 0.8rem;
+  color: var(--text);
+}
+.legend-inline {
+  display: flex;
+  gap: 1.2rem;
+  flex-wrap: wrap;
+  margin-bottom: 0.6rem;
+  font-size: 0.68rem;
+  color: var(--text-dim);
+}
+.legend-inline span { display: flex; align-items: center; gap: 4px; }
+.legend-inline span::before {
+  content: '';
+  display: inline-block;
+  width: 10px; height: 10px;
+  border-radius: 2px;
+}
+.l-full::before { background: var(--accent-full) !important; }
+.l-qr::before { background: var(--accent-qr) !important; }
+.l-random::before { background: var(--accent-random) !important; }
+.l-knockout::before { background: var(--accent-knockout) !important; }
+
+.full-width { grid-column: 1 / -1; }
+
+.table-wrap { overflow-x: auto; }
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.72rem;
+}
+th, td {
+  padding: 0.55rem 0.7rem;
+  text-align: right;
+  border-bottom: 1px solid var(--border);
+}
+th { color: var(--text-dim); font-weight: 500; text-transform: uppercase; letter-spacing: 0.06em; font-size: 0.62rem; }
+td:first-child, th:first-child { text-align: left; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.highlight { color: var(--accent-knockout); font-weight: 500; }
+</style>
+</head>
+<body>
+
+<h1>QR Head Knockout Ablation</h1>
+<p class="subtitle">
+  SEC 10-K filings &middot; Llama-3.1-8B-Instruct &middot; 32 layers &times; 32 heads = 1024 total &middot; 8 tasks &middot; 244 test instances<br>
+  Does removing the top-16 detected QR heads degrade retrieval or answer accuracy?
+</p>
+
+<div class="stats-row">
+  <div class="stat-card full">
+    <div class="label">Full Heads (1024)</div>
+    <div class="value">22.1%</div>
+    <div class="sub">Recall@3 pooled</div>
+  </div>
+  <div class="stat-card qr">
+    <div class="label">QR Top-16 Only</div>
+    <div class="value">18.9%</div>
+    <div class="sub">Recall@3 pooled</div>
+  </div>
+  <div class="stat-card random">
+    <div class="label">Random 16</div>
+    <div class="value">20.1%</div>
+    <div class="sub">Recall@3 pooled</div>
+  </div>
+  <div class="stat-card knockout">
+    <div class="label">Knockout (1008)</div>
+    <div class="value">21.7%</div>
+    <div class="sub">Recall@3 pooled</div>
+  </div>
+</div>
+
+<div class="takeaway">
+  <strong>Key finding:</strong> Removing the top-16 QR heads has <strong>zero measurable impact</strong>.
+  Retrieval: Recall@1 identical at 4.5%; Recall@3 drops only 0.4pp (22.1% &rarr; 21.7%, p=0.81).
+  Answer accuracy: both conditions produce 6.15% (diff=0.0, p=1.0).
+  The detected QR heads carry <strong>no unique retrieval signal</strong> on SEC 10-K tasks.
+</div>
+
+<div class="grid">
+
+  <!-- Recall@3 per task -->
+  <div class="card">
+    <h2>Recall@3 by Task</h2>
+    <div class="legend-inline">
+      <span class="l-full">Full (1024)</span>
+      <span class="l-qr">QR Top-16</span>
+      <span class="l-random">Random 16</span>
+      <span class="l-knockout">Knockout (1008)</span>
+    </div>
+    <canvas id="recall3Task"></canvas>
+  </div>
+
+  <!-- Answer accuracy per task -->
+  <div class="card">
+    <h2>Answer Accuracy by Task</h2>
+    <div class="legend-inline">
+      <span class="l-full">Full (1024)</span>
+      <span class="l-knockout">Knockout (1008)</span>
+    </div>
+    <canvas id="answerAcc"></canvas>
+  </div>
+
+  <!-- Pooled recall -->
+  <div class="card">
+    <h2>Pooled Recall: All Conditions</h2>
+    <canvas id="pooledRecall"></canvas>
+  </div>
+
+  <!-- Recall@1 per task -->
+  <div class="card">
+    <h2>Recall@1 by Task</h2>
+    <div class="legend-inline">
+      <span class="l-full">Full (1024)</span>
+      <span class="l-qr">QR Top-16</span>
+      <span class="l-random">Random 16</span>
+      <span class="l-knockout">Knockout (1008)</span>
+    </div>
+    <canvas id="recall1Task"></canvas>
+  </div>
+
+  <!-- Summary table -->
+  <div class="card full-width">
+    <h2>Per-Task Detail</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>Task</th>
+            <th>n</th>
+            <th>R@1 Full</th>
+            <th>R@1 QR-16</th>
+            <th>R@1 Rand</th>
+            <th>R@1 KO</th>
+            <th>R@3 Full</th>
+            <th>R@3 QR-16</th>
+            <th>R@3 Rand</th>
+            <th>R@3 KO</th>
+            <th>Acc Full</th>
+            <th>Acc KO</th>
+          </tr>
+        </thead>
+        <tbody id="detailTable"></tbody>
+        <tfoot id="detailFoot"></tfoot>
+      </table>
+    </div>
+  </div>
+</div>
+
+<script>
+Chart.defaults.color = '#8b8a87';
+Chart.defaults.borderColor = '#2a2a30';
+Chart.defaults.font.family = "'DM Mono', monospace";
+Chart.defaults.font.size = 10;
+
+const TASKS_SHORT = ['registrant\nname','hq\ncity','hq\nstate','incorp\nstate','incorp\nyear','employees\ncount','ceo\nlastname','holder\nrecord'];
+const TASKS_FULL = ['registrant_name','headquarters_city','headquarters_state','incorporation_state','incorporation_year','employees_count_total','ceo_lastname','holder_record_amount'];
+const N = [38,28,27,31,31,29,31,29];
+
+const R1 = {
+  full:    [0.000, 0.071, 0.037, 0.032, 0.000, 0.034, 0.000, 0.207],
+  qr:      [0.000, 0.036, 0.074, 0.032, 0.065, 0.069, 0.000, 0.207],
+  random:  [0.000, 0.036, 0.037, 0.032, 0.000, 0.000, 0.000, 0.172],
+  knockout:[0.000, 0.071, 0.037, 0.032, 0.000, 0.034, 0.000, 0.207]
+};
+const R3 = {
+  full:    [0.158, 0.179, 0.222, 0.032, 0.226, 0.207, 0.097, 0.690],
+  qr:      [0.105, 0.143, 0.296, 0.065, 0.129, 0.207, 0.129, 0.483],
+  random:  [0.105, 0.143, 0.222, 0.065, 0.161, 0.172, 0.129, 0.655],
+  knockout:[0.132, 0.214, 0.259, 0.032, 0.226, 0.207, 0.065, 0.655]
+};
+const ACC = {
+  full:    [0.000, 0.107, 0.037, 0.355, 0.000, 0.000, 0.000, 0.000],
+  knockout:[0.000, 0.107, 0.037, 0.355, 0.000, 0.000, 0.000, 0.000]
+};
+
+const C = {
+  full:    { bg: 'rgba(91,141,239,0.7)',  border: '#5b8def' },
+  qr:      { bg: 'rgba(62,207,142,0.7)',  border: '#3ecf8e' },
+  random:  { bg: 'rgba(245,166,35,0.7)',  border: '#f5a623' },
+  knockout:{ bg: 'rgba(224,92,108,0.7)',   border: '#e05c6c' }
+};
+
+function ds(label, data, key) {
+  return { label, data, backgroundColor: C[key].bg, borderColor: C[key].border, borderWidth: 1, borderRadius: 3 };
+}
+
+const barOpts = (max) => ({
+  responsive: true,
+  plugins: { legend: { display: false }, tooltip: { callbacks: { label: c => c.dataset.label+': '+(c.parsed.y*100).toFixed(1)+'%' } } },
+  scales: {
+    y: { beginAtZero: true, max, ticks: { callback: v => (v*100)+'%' }, grid: { color: '#1e1e24' } },
+    x: { grid: { display: false }, ticks: { font: { size: 9 } } }
+  }
+});
+
+new Chart(document.getElementById('recall3Task'), {
+  type: 'bar',
+  data: { labels: TASKS_SHORT, datasets: [
+    ds('Full (1024)', R3.full, 'full'),
+    ds('QR Top-16', R3.qr, 'qr'),
+    ds('Random 16', R3.random, 'random'),
+    ds('Knockout (1008)', R3.knockout, 'knockout')
+  ]},
+  options: barOpts(0.85)
+});
+
+new Chart(document.getElementById('recall1Task'), {
+  type: 'bar',
+  data: { labels: TASKS_SHORT, datasets: [
+    ds('Full (1024)', R1.full, 'full'),
+    ds('QR Top-16', R1.qr, 'qr'),
+    ds('Random 16', R1.random, 'random'),
+    ds('Knockout (1008)', R1.knockout, 'knockout')
+  ]},
+  options: barOpts(0.35)
+});
+
+new Chart(document.getElementById('answerAcc'), {
+  type: 'bar',
+  data: { labels: TASKS_SHORT, datasets: [
+    ds('Full (1024)', ACC.full, 'full'),
+    ds('Knockout (1008)', ACC.knockout, 'knockout')
+  ]},
+  options: barOpts(0.5)
+});
+
+new Chart(document.getElementById('pooledRecall'), {
+  type: 'bar',
+  data: {
+    labels: ['Full (1024)', 'QR Top-16', 'Random 16', 'Knockout (1008)'],
+    datasets: [
+      { label: 'Recall@1', data: [0.045, 0.057, 0.033, 0.045],
+        backgroundColor: [C.full.bg, C.qr.bg, C.random.bg, C.knockout.bg],
+        borderColor: [C.full.border, C.qr.border, C.random.border, C.knockout.border],
+        borderWidth: 1, borderRadius: 4 },
+      { label: 'Recall@3', data: [0.221, 0.189, 0.201, 0.217],
+        backgroundColor: ['rgba(91,141,239,0.9)','rgba(62,207,142,0.9)','rgba(245,166,35,0.9)','rgba(224,92,108,0.9)'],
+        borderColor: [C.full.border, C.qr.border, C.random.border, C.knockout.border],
+        borderWidth: 1, borderRadius: 4 }
+    ]
+  },
+  options: {
+    responsive: true,
+    plugins: {
+      legend: { display: true, labels: { usePointStyle: true, pointStyle: 'rect', padding: 14, font: { size: 10 } } },
+      tooltip: { callbacks: { label: c => c.dataset.label+': '+(c.parsed.y*100).toFixed(1)+'%' } }
+    },
+    scales: {
+      y: { beginAtZero: true, max: 0.3, ticks: { callback: v => (v*100)+'%' }, grid: { color: '#1e1e24' } },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// Build table
+const tbody = document.getElementById('detailTable');
+const pct = v => (v*100).toFixed(1)+'%';
+for (let i = 0; i < TASKS_FULL.length; i++) {
+  const same_r1 = R1.full[i] === R1.knockout[i];
+  const same_r3 = R3.full[i] === R3.knockout[i];
+  const same_acc = ACC.full[i] === ACC.knockout[i];
+  const cls = same_r1 && same_r3 && same_acc ? 'highlight' : '';
+  tbody.innerHTML += `<tr>
+    <td>${TASKS_FULL[i].replace(/_/g,' ')}</td><td>${N[i]}</td>
+    <td>${pct(R1.full[i])}</td><td>${pct(R1.qr[i])}</td><td>${pct(R1.random[i])}</td><td class="${cls}">${pct(R1.knockout[i])}</td>
+    <td>${pct(R3.full[i])}</td><td>${pct(R3.qr[i])}</td><td>${pct(R3.random[i])}</td><td class="${cls}">${pct(R3.knockout[i])}</td>
+    <td>${pct(ACC.full[i])}</td><td class="${cls}">${pct(ACC.knockout[i])}</td>
+  </tr>`;
+}
+document.getElementById('detailFoot').innerHTML = `<tr style="font-weight:500;border-top:2px solid #2a2a30">
+  <td>Pooled</td><td>244</td>
+  <td>4.5%</td><td>5.7%</td><td>3.3%</td><td class="highlight">4.5%</td>
+  <td>22.1%</td><td>18.9%</td><td>20.1%</td><td class="highlight">21.7%</td>
+  <td>6.2%</td><td class="highlight">6.2%</td>
+</tr>`;
+</script>
+</body>
+</html>

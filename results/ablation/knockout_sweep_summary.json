@@ -1,0 +1,106 @@
+{
+  "accuracy_full_head": 0.06148,
+  "n_instances": 244,
+  "sweep": [
+    {
+      "knockout_size": 100,
+      "heads_remaining": 924,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 200,
+      "heads_remaining": 824,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 300,
+      "heads_remaining": 724,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 400,
+      "heads_remaining": 624,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 500,
+      "heads_remaining": 524,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 600,
+      "heads_remaining": 424,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 700,
+      "heads_remaining": 324,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 800,
+      "heads_remaining": 224,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    },
+    {
+      "knockout_size": 900,
+      "heads_remaining": 124,
+      "accuracy_full": 0.06148,
+      "accuracy_knockout": 0.06148,
+      "diff": 0.0,
+      "ci_lo": 0.0,
+      "ci_hi": 0.0,
+      "p_value": 1.0,
+      "significant": "n.s."
+    }
+  ],
+  "first_significant_K": null
+}

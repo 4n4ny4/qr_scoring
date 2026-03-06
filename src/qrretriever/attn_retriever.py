@@ -49,7 +49,7 @@ class AttnBasedRetriever:
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_name_or_path)
         self.llm = BaseClass.from_pretrained(
             self.model_name_or_path,
-            torch_dtype=torch.float16, 
+            torch_dtype=torch.float16,
             attn_implementation="flash_attention_2",
             device_map='auto'
         )

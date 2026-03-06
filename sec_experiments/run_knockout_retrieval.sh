@@ -5,6 +5,7 @@
 
 set -e
 PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
 INPUT_DIR="$PROJECT_DIR/data/detection_input"
 ABLATION_DIR="$PROJECT_DIR/results/ablation"
 CONFIG_DIR="$ABLATION_DIR/configs"
