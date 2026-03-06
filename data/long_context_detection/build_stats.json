@@ -1,0 +1,58 @@
+{
+  "registrant_name": {
+    "valid_gold": 200,
+    "built": 200,
+    "skipped": 0,
+    "avg_context_words": 23062,
+    "avg_paragraphs": 58
+  },
+  "headquarters_city": {
+    "valid_gold": 142,
+    "built": 142,
+    "skipped": 0,
+    "avg_context_words": 23046,
+    "avg_paragraphs": 58
+  },
+  "headquarters_state": {
+    "valid_gold": 137,
+    "built": 137,
+    "skipped": 0,
+    "avg_context_words": 22825,
+    "avg_paragraphs": 57
+  },
+  "incorporation_state": {
+    "valid_gold": 156,
+    "built": 156,
+    "skipped": 0,
+    "avg_context_words": 23091,
+    "avg_paragraphs": 58
+  },
+  "incorporation_year": {
+    "valid_gold": 157,
+    "built": 157,
+    "skipped": 0,
+    "avg_context_words": 23210,
+    "avg_paragraphs": 58
+  },
+  "employees_count_total": {
+    "valid_gold": 146,
+    "built": 146,
+    "skipped": 0,
+    "avg_context_words": 23375,
+    "avg_paragraphs": 58
+  },
+  "ceo_lastname": {
+    "valid_gold": 170,
+    "built": 170,
+    "skipped": 0,
+    "avg_context_words": 22523,
+    "avg_paragraphs": 56
+  },
+  "holder_record_amount": {
+    "valid_gold": 147,
+    "built": 147,
+    "skipped": 0,
+    "avg_context_words": 23251,
+    "avg_paragraphs": 58
+  }
+}

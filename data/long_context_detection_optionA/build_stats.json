@@ -1,0 +1,66 @@
+{
+  "registrant_name": {
+    "raw": 213,
+    "valid": 200,
+    "built": 181,
+    "skipped": 19,
+    "avg_context_words": 9146,
+    "avg_paragraphs": 23
+  },
+  "headquarters_city": {
+    "raw": 144,
+    "valid": 142,
+    "built": 137,
+    "skipped": 5,
+    "avg_context_words": 8255,
+    "avg_paragraphs": 21
+  },
+  "headquarters_state": {
+    "raw": 139,
+    "valid": 137,
+    "built": 132,
+    "skipped": 5,
+    "avg_context_words": 8338,
+    "avg_paragraphs": 21
+  },
+  "incorporation_state": {
+    "raw": 158,
+    "valid": 157,
+    "built": 154,
+    "skipped": 3,
+    "avg_context_words": 9336,
+    "avg_paragraphs": 23
+  },
+  "incorporation_year": {
+    "raw": 159,
+    "valid": 157,
+    "built": 153,
+    "skipped": 4,
+    "avg_context_words": 9257,
+    "avg_paragraphs": 23
+  },
+  "employees_count_total": {
+    "raw": 147,
+    "valid": 146,
+    "built": 142,
+    "skipped": 4,
+    "avg_context_words": 9150,
+    "avg_paragraphs": 23
+  },
+  "ceo_lastname": {
+    "raw": 171,
+    "valid": 170,
+    "built": 155,
+    "skipped": 15,
+    "avg_context_words": 7983,
+    "avg_paragraphs": 20
+  },
+  "holder_record_amount": {
+    "raw": 147,
+    "valid": 147,
+    "built": 144,
+    "skipped": 3,
+    "avg_context_words": 6732,
+    "avg_paragraphs": 17
+  }
+}
