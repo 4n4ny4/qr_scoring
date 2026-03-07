@@ -1,66 +1,66 @@
 {
   "registrant_name": {
-    "raw": 213,
-    "valid": 200,
-    "built": 181,
-    "skipped": 19,
-    "avg_context_words": 9146,
-    "avg_paragraphs": 23
+    "raw": 171,
+    "valid": 32,
+    "built": 29,
+    "skipped": 3,
+    "avg_context_words": 8897,
+    "avg_paragraphs": 22
   },
   "headquarters_city": {
-    "raw": 144,
-    "valid": 142,
-    "built": 137,
-    "skipped": 5,
-    "avg_context_words": 8255,
-    "avg_paragraphs": 21
+    "raw": 116,
+    "valid": 32,
+    "built": 31,
+    "skipped": 1,
+    "avg_context_words": 8077,
+    "avg_paragraphs": 20
   },
   "headquarters_state": {
-    "raw": 139,
-    "valid": 137,
-    "built": 132,
-    "skipped": 5,
-    "avg_context_words": 8338,
-    "avg_paragraphs": 21
+    "raw": 112,
+    "valid": 32,
+    "built": 32,
+    "skipped": 0,
+    "avg_context_words": 8628,
+    "avg_paragraphs": 22
   },
   "incorporation_state": {
-    "raw": 158,
-    "valid": 157,
-    "built": 154,
-    "skipped": 3,
-    "avg_context_words": 9336,
+    "raw": 126,
+    "valid": 32,
+    "built": 32,
+    "skipped": 0,
+    "avg_context_words": 9181,
     "avg_paragraphs": 23
   },
   "incorporation_year": {
-    "raw": 159,
-    "valid": 157,
-    "built": 153,
-    "skipped": 4,
-    "avg_context_words": 9257,
-    "avg_paragraphs": 23
+    "raw": 129,
+    "valid": 32,
+    "built": 30,
+    "skipped": 2,
+    "avg_context_words": 9596,
+    "avg_paragraphs": 24
   },
   "employees_count_total": {
-    "raw": 147,
-    "valid": 146,
-    "built": 142,
-    "skipped": 4,
-    "avg_context_words": 9150,
+    "raw": 122,
+    "valid": 32,
+    "built": 32,
+    "skipped": 0,
+    "avg_context_words": 9081,
     "avg_paragraphs": 23
   },
   "ceo_lastname": {
-    "raw": 171,
-    "valid": 170,
-    "built": 155,
-    "skipped": 15,
-    "avg_context_words": 7983,
+    "raw": 136,
+    "valid": 32,
+    "built": 30,
+    "skipped": 2,
+    "avg_context_words": 8019,
     "avg_paragraphs": 20
   },
   "holder_record_amount": {
-    "raw": 147,
-    "valid": 147,
-    "built": 144,
-    "skipped": 3,
-    "avg_context_words": 6732,
+    "raw": 123,
+    "valid": 32,
+    "built": 31,
+    "skipped": 1,
+    "avg_context_words": 6610,
     "avg_paragraphs": 17
   }
 }

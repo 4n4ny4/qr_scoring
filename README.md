@@ -39,10 +39,10 @@ Source SEC metadata used to build:
   - Option A long-context detection inputs.
 - `data/long_context_detection_optionA/`  
 **Option A long-context detection data** (per-task and combined JSON) built by:
-  - `sec_experiments/build_long_context_detection_optionA.py`
+  - `scripts/data_prep/build_detection_data.py`
 - `data/niah_input/`  
 **NIAH-style SEC tasks** built by:
-  - `sec_experiments/build_niah_data.py`  
+  - `scripts/data_prep/build_niah_data.py`  
   Contains `{task}_train.json` and `{task}_test.json`.
 
 ---
@@ -50,15 +50,15 @@ Source SEC metadata used to build:
 ### 3. Scripts and configs that matter
 
 - **Detection (QRScore-SEC on Option A)**
-  - `sec_experiments/build_long_context_detection_optionA.py`  
+  - `scripts/data_prep/build_detection_data.py`  
   Builds `data/long_context_detection_optionA/{task}_detection.json` and `combined_detection.json` from `sections.csv` and `haystack_plan.csv`.
-  - `sec_experiments/run_long_context_detection.sh`  
-  Wraps `exp_scripts/detection/detect_qrhead_lme.py` to run QRScore detection on the long-context SEC data and produce:
+  - `scripts/detection/run_detection.sh`  
+  Wraps `scripts/detection/detect_qrhead.py` to run QRScore detection on the long-context SEC data and produce:
     - `results/detection/long_context_combined_heads.json` (your **QRScore-SEC** ranking).
 - **NIAH generation ablation (Part B)**
-  - `sec_experiments/build_niah_data.py`  
+  - `scripts/data_prep/build_niah_data.py`  
   Builds `data/niah_input/{task}_{train,test}.json` from `haystack_plan.csv`.
-  - `sec_experiments/run_comparison_ablation.py`  
+  - `scripts/evaluation/run_ablation.py`  
   Main script that:
     - Loads head rankings for:
       - `QRScore-SEC` from `results/detection/long_context_combined_heads.json`,
@@ -67,7 +67,7 @@ Source SEC metadata used to build:
       - `Random-seed{42,123,456}` from internal sampling.
     - For each method and each knockout size `K`, masks the top-`K` heads during generation on NIAH test instances.
     - Records answer accuracy.
-  - `sec_experiments/plot_comparison_ablation.py`  
+  - `scripts/evaluation/plot_ablation.py`  
   Reads `results/comparison_ablation/*_results.json` and produces:
     - `results/comparison_ablation/accuracy_vs_knockout.png`
     - (and potentially other summary plots).
@@ -79,51 +79,48 @@ Source SEC metadata used to build:
   - `src/qrretriever/configs/`  
     - `Llama-3.1-8B-Instruct_full_head.yaml` (full-head detection config),
     - `Llama-3.1-8B-Instruct_qr_head_LME.yaml` (paper LME heads),
-    - `Llama-3.1-8B-Instruct_qr_head_NQ.yaml` (paper NQ heads),
-    - `Llama-3.1-8B-Instruct_qr_head_SEC.yaml` (optional: SEC heads, if you saved them).
+    - `Llama-3.1-8B-Instruct_qr_head_NQ.yaml` (paper NQ heads).
 
 ---
 
 ### 4. Reproducing experiments
 
-#### 4.1 Build NIAH data (optional if already present)
+#### Step 1: Split the Data
+Before creating the detection and ablation datasets, you must split the source file into training and testing sets to prevent data leakage (evaluating on the same SEC filings used to detect heads).
 
 ```bash
-python sec_experiments/build_niah_data.py \
+python scripts/data_prep/split_dataset.py
+```
+This ensures the generated heads are pure and generalized.
+
+#### Step 2: Build Detection (Train) Data
+This reads `data/train_plan.csv` and writes JSONs under `data/long_context_detection_optionA/`. The script caps instances at 32 per task to perfectly balance a sample size of exactly 256 instances (the exact methodology used in the original QRHead paper).
+
+```bash
+python scripts/data_prep/build_detection_data.py \
+  --max_instances 32 \
+  --chunk_words 400
+```
+
+#### Step 3: Run QRScore Detection
+Runs `scripts/detection/detect_qrhead.py` to calculate QRScore for all 1024 attention heads.
+```bash
+bash scripts/detection/run_detection.sh
+```
+This uses `data/long_context_detection_optionA/combined_detection.json` and writes `results/detection/long_context_combined_heads.json`, which is your **QRScore-SEC** head ranking (layer–head + score).
+
+#### Step 4: Build Ablation (Test) Data
+This reads `data/test_plan.csv` and writes `data/niah_input/{task}_test.json` to be used for Needle-in-a-Haystack evaluation.
+```bash
+python scripts/data_prep/build_niah_data.py \
   --max_instances_per_task 200 \
   --chunk_words 400
 ```
 
-This reads `data/haystack_plan.csv` and writes `data/niah_input/{task}_{train,test}.json`.
-
-#### 4.2 Build Option A long-context detection data (optional if already present)
-
+#### Step 5: Run Generation Ablation
+Asks the LLaMA model to answer test questions while progressively knocking out the top heads from various rankings to see whose heads cause the biggest drop in accuracy.
 ```bash
-python sec_experiments/build_long_context_detection_optionA.py \
-  --max_instances 200 \
-  --chunk_words 400
-```
-
-This reads `data/sections.csv` and `data/haystack_plan.csv` and writes JSONs under `data/long_context_detection_optionA/`.
-
-#### 4.3 Run QRScore detection on Option A (QRScore-SEC)
-
-```bash
-bash sec_experiments/run_long_context_detection.sh
-```
-
-This uses `data/long_context_detection_optionA/combined_detection.json` and writes:
-
-- `results/detection/long_context_combined_heads.json`
-
-which is your **QRScore-SEC** head ranking (layer–head + score).
-
-#### 4.4 Run generation ablation (Part B)
-
-Use NIAH test data and multiple head rankings:
-
-```bash
-python sec_experiments/run_comparison_ablation.py \
+python scripts/evaluation/run_ablation.py \
   --niah_dir data/niah_input \
   --output_dir results/comparison_ablation \
   --max_instances_per_task 20 \
@@ -133,25 +130,13 @@ python sec_experiments/run_comparison_ablation.py \
             Random-seed42 Random-seed123 Random-seed456
 ```
 
-This will produce one `*_results.json` per method under `results/comparison_ablation/`, each containing:
-
-- The accuracy curve vs `K`,
-- Per-instance details, and
-- Per-task breakdown (if enabled).
-
-#### 4.5 Plot accuracy vs knockout size
-
+#### Step 6: Plot Accuracy Drops
 ```bash
-python sec_experiments/plot_comparison_ablation.py \
+python scripts/evaluation/plot_ablation.py \
   --results_dir results/comparison_ablation \
   --output_dir results/comparison_ablation
 ```
-
-This creates:
-
-- `results/comparison_ablation/accuracy_vs_knockout.png`
-
-showing answer accuracy vs `K` for all methods on the same plot. A **steeper drop** indicates that the corresponding head ranking finds more critical retrieval heads.
+This creates `results/comparison_ablation/accuracy_vs_knockout.png`. A **steeper drop** indicates that the corresponding head ranking finds more critical retrieval heads.
 
 ---
 
