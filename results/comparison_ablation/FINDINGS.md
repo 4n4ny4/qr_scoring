@@ -69,7 +69,7 @@ A positive value means ablation hurt performance. This is computed per-task and 
 
 In the cross-task transfer experiment, each source task $s$ has its top-$K$ heads knocked out and every target task is evaluated. The **on-target drop** is the drop when the source and target are the same task:
 
-$$\text{on\_target\_drop}(s) = \text{accuracy}_s(0) - \text{accuracy}_s(K) \quad \text{where ablated heads come from source } s$$
+$$\text{on-target-drop}(s) = \text{accuracy}_s(0) - \text{accuracy}_s(K) \quad \text{where ablated heads come from source } s$$
 
 It measures how much knocking out task $s$'s own detected heads hurts task $s$ itself.
 
@@ -77,13 +77,13 @@ It measures how much knocking out task $s$'s own detected heads hurts task $s$ i
 
 The mean drop across all *other* target tasks $t \neq s$ when source $s$'s heads are ablated:
 
-$$\text{off\_target\_mean\_drop}(s) = \frac{1}{|T|-1} \sum_{t \neq s} \bigl[\text{accuracy}_t(0) - \text{accuracy}_t(K)\bigr]$$
+$$\text{off-target-mean-drop}(s) = \frac{1}{|T|-1} \sum_{t \neq s} \bigl[\text{accuracy}_t(0) - \text{accuracy}_t(K)\bigr]$$
 
 where $T$ is the set of all 8 tasks and the ablated heads are source $s$'s heads. It measures collateral damage to unrelated tasks.
 
 ### Specificity Index
 
-$$\text{specificity\_index}(s) = \text{on\_target\_drop}(s) - \text{off\_target\_mean\_drop}(s)$$
+$$\text{specificity-index}(s) = \text{on-target-drop}(s) - \text{off-target-mean-drop}(s)$$
 
 - **Positive** → ablation hurts the source task more than other tasks (heads are task-specific).
 - **Negative** → ablation hurts other tasks more than the source task (heads are broadly shared, not specific to $s$).
@@ -91,7 +91,7 @@ $$\text{specificity\_index}(s) = \text{on\_target\_drop}(s) - \text{off\_target\
 
 ### Surgicality Ratio
 
-$$\text{surgicality\_ratio}(s) = \frac{\text{on\_target\_drop}(s)}{\max(\text{off\_target\_mean\_drop}(s),\; \epsilon)}$$
+$$\text{surgicality-ratio}(s) = \frac{\text{on-target-drop}(s)}{\max(\text{off-target-mean-drop}(s),\; \epsilon)}$$
 
 where $\epsilon = 10^{-9}$ prevents division by zero. A ratio $> 1$ means the ablation is more surgical (on-target damage exceeds collateral); a ratio $< 1$ means collateral damage dominates.
 
