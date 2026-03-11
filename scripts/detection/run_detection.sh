@@ -7,14 +7,17 @@
 #   bash scripts/detection/run_detection.sh --combined-only  # only run combined
 set -e
 
-PROJECT_DIR="$(cd "$(dirname "$0")/.." && pwd)"
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
 CONFIG="$PROJECT_DIR/src/qrretriever/configs/Llama-3.1-8B-Instruct_full_head.yaml"
-# Allow overriding INPUT_DIR from environment; default to original long_context_detection
-INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection}"
+# Allow overriding INPUT_DIR from environment; default to Option A dataset
+INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection_optionA}"
 OUTPUT_DIR="$PROJECT_DIR/results/detection"
+TOPK_EXPORT_DIR="$OUTPUT_DIR/topk"
+EXPORT_TOP_K=(8 16 32 48 64 96 128)
 
 mkdir -p "$OUTPUT_DIR"
+mkdir -p "$TOPK_EXPORT_DIR"
 
 TASKS=(
     "registrant_name"
@@ -56,7 +59,10 @@ if [ "$COMBINED_ONLY" = false ]; then
         python "$PROJECT_DIR/scripts/detection/detect_qrhead.py" \
             --input_file "$INPUT_FILE" \
             --output_file "$OUTPUT_FILE" \
-            --config_or_config_path "$CONFIG"
+            --config_or_config_path "$CONFIG" \
+            --task_name "long_context_${TASK}" \
+            --export_dir "$TOPK_EXPORT_DIR" \
+            --export_top_k "${EXPORT_TOP_K[@]}"
 
         echo "Done: $TASK"
         echo ""
@@ -80,12 +86,15 @@ if [ -f "$COMBINED_INPUT" ]; then
         python "$PROJECT_DIR/scripts/detection/detect_qrhead.py" \
             --input_file "$COMBINED_INPUT" \
             --output_file "$COMBINED_OUTPUT" \
-            --config_or_config_path "$CONFIG"
+            --config_or_config_path "$CONFIG" \
+            --task_name "long_context_combined" \
+            --export_dir "$TOPK_EXPORT_DIR" \
+            --export_top_k "${EXPORT_TOP_K[@]}"
 
         echo "Done: combined"
     fi
 else
-    echo "WARNING: $COMBINED_INPUT not found. Run build_long_context_detection_data.py first."
+    echo "WARNING: $COMBINED_INPUT not found. Run scripts/data_prep/build_detection_data.py first."
 fi
 
 echo ""

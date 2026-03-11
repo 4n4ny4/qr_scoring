@@ -134,10 +134,13 @@ def main():
     random.seed(RANDOM_SEED)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
+    project_dir = os.path.dirname(os.path.dirname(script_dir))
     data_dir = os.path.join(project_dir, "data")
     output_dir = os.path.join(data_dir, "niah_input")
     os.makedirs(output_dir, exist_ok=True)
+    print(f"Resolved project_dir={project_dir}")
+    print(f"Resolved data_dir={data_dir}")
+    print(f"Resolved output_dir={output_dir}")
 
     print("Loading test_plan.csv ...")
     task_rows = defaultdict(list)

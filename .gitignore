@@ -157,6 +157,7 @@ data/long_context_detection_optionA/combined_detection.json
 data/long_context_detection/*.json
 data/long_context_detection_optionA/*.json
 results/detection/*.json
+results/detection/topk/sec_detection/
 results/comparison_ablation/*.json
 results/comparison_ablation/*.png
 

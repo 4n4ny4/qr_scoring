@@ -10,8 +10,10 @@ def main():
     random.seed(RANDOM_SEED)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
+    project_dir = os.path.dirname(os.path.dirname(script_dir))
     data_dir = os.path.join(project_dir, "data")
+    print(f"Resolved project_dir={project_dir}")
+    print(f"Resolved data_dir={data_dir}")
     
     input_csv = os.path.join(data_dir, "haystack_plan.csv")
     train_csv = os.path.join(data_dir, "train_plan.csv")

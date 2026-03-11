@@ -29,8 +29,8 @@ except ImportError:
 
 METHOD_COLORS = {
     "QRScore-SEC": "#2196F3",
-    "QRScore-Paper-LME": "#4CAF50",
-    "QRScore-Paper-NQ": "#8BC34A",
+    "QRScore-8B-LME-TRAIN": "#4CAF50",
+    "QRScore-8B-NQ-TRAIN": "#8BC34A",
     "Random-avg": "#9E9E9E",
     "Random-seed42": "#BDBDBD",
     "Random-seed123": "#BDBDBD",
@@ -39,15 +39,15 @@ METHOD_COLORS = {
 
 METHOD_STYLES = {
     "QRScore-SEC": {"marker": "o", "linestyle": "-", "linewidth": 2.5},
-    "QRScore-Paper-LME": {"marker": "s", "linestyle": "-", "linewidth": 2.5},
-    "QRScore-Paper-NQ": {"marker": "D", "linestyle": "--", "linewidth": 2},
+    "QRScore-8B-LME-TRAIN": {"marker": "s", "linestyle": "-", "linewidth": 2.5},
+    "QRScore-8B-NQ-TRAIN": {"marker": "D", "linestyle": "--", "linewidth": 2},
     "Random-avg": {"marker": "x", "linestyle": ":", "linewidth": 2},
 }
 
 DISPLAY_METHODS_DEFAULT = [
     "QRScore-SEC",
-    "QRScore-Paper-LME",
-    "QRScore-Paper-NQ",
+    "QRScore-8B-LME-TRAIN",
+    "QRScore-8B-NQ-TRAIN",
     "Random-avg",
 ]
 
@@ -91,7 +91,7 @@ def build_display_curves(method_curves, average_random=True):
     display_curves = {}
 
     # First, keep the main methods if present.
-    for m in ["QRScore-SEC", "QRScore-Paper-LME", "QRScore-Paper-NQ"]:
+    for m in ["QRScore-SEC", "QRScore-8B-LME-TRAIN", "QRScore-8B-NQ-TRAIN"]:
         if m in method_curves:
             display_curves[m] = method_curves[m]
 

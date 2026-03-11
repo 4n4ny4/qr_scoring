@@ -146,10 +146,13 @@ def main():
     random.seed(args.seed)
 
     script_dir = os.path.dirname(os.path.abspath(__file__))
-    project_dir = os.path.dirname(script_dir)
+    project_dir = os.path.dirname(os.path.dirname(script_dir))
     data_dir = os.path.join(project_dir, "data")
     output_dir = os.path.join(data_dir, "long_context_detection_optionA")
     os.makedirs(output_dir, exist_ok=True)
+    print(f"Resolved project_dir={project_dir}")
+    print(f"Resolved data_dir={data_dir}")
+    print(f"Resolved output_dir={output_dir}")
 
     # Load sections.csv into a dict: filename -> row dict
     sections_path = os.path.join(data_dir, "sections.csv")

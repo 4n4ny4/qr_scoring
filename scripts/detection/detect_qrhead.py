@@ -2,8 +2,11 @@ import argparse
 from tqdm import tqdm
 from itertools import product
 import json
+import os
 import numpy as np
 from qrretriever.attn_retriever import FullHeadRetriever
+
+DEFAULT_EXPORT_TOP_K = [8, 16, 32, 48, 64, 96, 128]
 
 
 def lme_eval(retrieval_results, data_instances):
@@ -101,6 +104,31 @@ def score_heads(doc_scores_per_head, data_instances):
     return head_scores_list # a list of tuples (head, score)
 
 
+def export_top_k_files(head_scores_list, export_dir, export_prefix, top_ks, source_file, output_file):
+    os.makedirs(export_dir, exist_ok=True)
+    manifest = {
+        "source_file": source_file,
+        "output_file": output_file,
+        "export_prefix": export_prefix,
+        "top_k_values": top_ks,
+        "exports": {},
+    }
+
+    for k in top_ks:
+        out_path = os.path.join(export_dir, f"{export_prefix}_top{k}.json")
+        payload = head_scores_list[: min(k, len(head_scores_list))]
+        with open(out_path, "w", encoding="utf-8") as f:
+            json.dump(payload, f, indent=2)
+        manifest["exports"][str(k)] = out_path
+
+    manifest_path = os.path.join(export_dir, f"{export_prefix}_heads_manifest.json")
+    with open(manifest_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2)
+
+    print(f"Top-K exports saved under: {export_dir}")
+    print(f"Manifest: {manifest_path}")
+
+
 
 
 
@@ -113,6 +141,15 @@ if __name__=="__main__":
 
     parser.add_argument("--config_or_config_path", type=str, default=None, help="Path to the configuration file or a configuration string. If not provided, defaults will be used.")
     parser.add_argument("--model_name_or_path", type=str, default=None, help="Path to the model directory or model name.")
+    parser.add_argument("--task_name", type=str, default=None, help="Optional task label used in export file naming.")
+    parser.add_argument("--export_dir", type=str, default=None, help="Optional directory for top-K export files.")
+    parser.add_argument(
+        "--export_top_k",
+        nargs="+",
+        type=int,
+        default=DEFAULT_EXPORT_TOP_K,
+        help="Top-K sizes to export into separate files.",
+    )
 
     args = parser.parse_args()
 
@@ -129,5 +166,17 @@ if __name__=="__main__":
     doc_scores_per_head = get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_space=args.truncate_by_space) # qid -> {doc_id -> score tensor with shape (n_layers, n_heads)}
     head_scores_list = score_heads(doc_scores_per_head, data_instances)
 
-    with open(args.output_file, "w") as f:
+    with open(args.output_file, "w", encoding="utf-8") as f:
         json.dump(head_scores_list, f, indent=4)
+
+    export_dir = args.export_dir or os.path.dirname(os.path.abspath(args.output_file))
+    export_prefix = args.task_name or os.path.splitext(os.path.basename(args.output_file))[0]
+    top_ks = sorted(set(k for k in args.export_top_k if k > 0))
+    export_top_k_files(
+        head_scores_list=head_scores_list,
+        export_dir=export_dir,
+        export_prefix=export_prefix,
+        top_ks=top_ks,
+        source_file=args.input_file,
+        output_file=args.output_file,
+    )
