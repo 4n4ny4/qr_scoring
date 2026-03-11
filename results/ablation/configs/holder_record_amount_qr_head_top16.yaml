@@ -1,3 +1,0 @@
-attn_head_set: "2-15,2-26,0-2,0-4,2-22,0-16,2-11,2-25,1-17,0-27,2-21,0-11,28-12,27-27,0-24,21-31"
-model_base_class: "Llama-3.1-8B-Instruct"
-model_name_or_path: "meta-llama/Llama-3.1-8B-Instruct"

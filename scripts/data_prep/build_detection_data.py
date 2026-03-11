@@ -38,7 +38,7 @@ TASK_QUESTIONS = {
 
 RANDOM_SEED = 42
 CHUNK_WORDS = 400
-MAX_INSTANCES_PER_TASK = 32  # 32 * 8 tasks = 256 samples total
+MAX_INSTANCES_PER_TASK = None
 
 _SENT_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
 
@@ -132,7 +132,7 @@ def main():
         "--max_instances",
         type=int,
         default=MAX_INSTANCES_PER_TASK,
-        help="Max instances per task (default: 32 for exactly 256 total)",
+        help="Optional max instances per task. If omitted, use all valid train samples.",
     )
     parser.add_argument(
         "--chunk_words",
@@ -189,7 +189,8 @@ def main():
             valid_rows.append((row_idx, row))
 
         random.shuffle(valid_rows)
-        valid_rows = valid_rows[: args.max_instances]
+        if args.max_instances is not None:
+            valid_rows = valid_rows[: args.max_instances]
 
         instances = []
         skip_count = 0

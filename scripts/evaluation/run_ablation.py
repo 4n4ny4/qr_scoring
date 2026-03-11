@@ -15,6 +15,7 @@ import os
 import random
 import re
 import sys
+import time
 from collections import defaultdict
 
 import numpy as np
@@ -23,11 +24,6 @@ import transformers
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
-SRC_DIR = os.path.join(PROJECT_DIR, "src")
-if SRC_DIR not in sys.path:
-    sys.path.insert(0, SRC_DIR)
-
-from qrretriever.custom_modeling_llama import LlamaForCausalLM
 
 TASKS = [
     "registrant_name", "headquarters_city", "headquarters_state",
@@ -39,6 +35,50 @@ MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
 MAX_NEW_TOKENS = 30
 DEFAULT_KNOCKOUT_SIZES = [0, 8, 16, 32, 48, 64, 96, 128]
 DEFAULT_EXPORT_TOP_K = [8, 16, 32, 48, 64, 96, 128]
+
+
+# ---------------------------------------------------------------------------
+# Lightweight head-masking on top of the stock transformers LlamaForCausalLM.
+# We register a pre-forward hook on each attention layer's o_proj that zeros
+# out the head slices listed in _masked_head_indices before the projection.
+# This replaces the old custom_modeling_llama copy which diverged from the
+# installed transformers version and produced corrupt outputs.
+# ---------------------------------------------------------------------------
+
+def _make_o_proj_hook(attn_module, head_dim):
+    """Return a hook that zeros masked heads in the input to o_proj."""
+    def hook(_module, args):
+        x = args[0]                          # (bsz, seq_len, num_heads * head_dim)
+        indices = attn_module._masked_head_indices
+        if indices is None:
+            return args
+        bsz, seq_len, _ = x.shape
+        x = x.view(bsz, seq_len, -1, head_dim)  # (bsz, seq_len, num_heads, head_dim)
+        x[:, :, indices, :] = 0
+        return (x.view(bsz, seq_len, -1),) + args[1:]
+    return hook
+
+
+def install_head_masking(model):
+    """Patch a stock LlamaForCausalLM with set_head_mask / per-layer hooks."""
+    head_dim = model.config.hidden_size // model.config.num_attention_heads
+    for layer in model.model.layers:
+        attn = layer.self_attn
+        attn._masked_head_indices = None
+        attn.o_proj.register_forward_pre_hook(_make_o_proj_hook(attn, head_dim))
+
+    def set_head_mask(masked_heads):
+        for layer in model.model.layers:
+            layer.self_attn._masked_head_indices = None
+        if not masked_heads:
+            return
+        per_layer = defaultdict(list)
+        for layer_idx, head_idx in masked_heads:
+            per_layer[layer_idx].append(head_idx)
+        for layer_idx, head_indices in per_layer.items():
+            model.model.layers[layer_idx].self_attn._masked_head_indices = head_indices
+
+    model.set_head_mask = set_head_mask
 
 
 def normalize_answer(s):
@@ -100,8 +140,9 @@ def generate_answer(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS,
         )
     start = inputs["input_ids"].shape[1]
     new_tokens = out[0][start:]
-    text = tokenizer.decode(new_tokens, skip_special_tokens=True)
-    return extract_short_answer(text)
+    raw_text = tokenizer.decode(new_tokens, skip_special_tokens=True)
+    token_ids = new_tokens.tolist()
+    return extract_short_answer(raw_text), raw_text, token_ids
 
 
 def load_ranked_heads_json(path):
@@ -255,8 +296,19 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
 
 
 def run_single_sweep(model, tokenizer, test_instances, head_ranking,
-                     knockout_sizes, max_context_tokens=8192):
+                     knockout_sizes, max_context_tokens=8192,
+                     progress_every=20, sweep_label=""):
     results = {}
+    total_steps = len(knockout_sizes) * len(test_instances)
+    completed_steps = 0
+    sweep_start = time.time()
+
+    if sweep_label:
+        print(f"    Sweep: {sweep_label}")
+    print(
+        f"    Progress plan: {len(knockout_sizes)} K values x "
+        f"{len(test_instances)} instances = {total_steps} steps"
+    )
 
     for K in knockout_sizes:
         if K == 0:
@@ -270,10 +322,11 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
         per_task = defaultdict(lambda: {"correct": 0, "total": 0})
         details = []
 
-        for inst in test_instances:
+        for idx, inst in enumerate(test_instances, start=1):
             prompt = build_prompt(inst["context"], inst["question"])
-            pred = generate_answer(model, tokenizer, prompt,
-                                   max_context_tokens=max_context_tokens)
+            pred, raw_text, token_ids = generate_answer(
+                model, tokenizer, prompt,
+                max_context_tokens=max_context_tokens)
             gold = inst["needle_value"]
             match = answers_match(pred, gold)
             correct += int(match)
@@ -285,8 +338,28 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
                 "task": inst["task"],
                 "gold": gold,
                 "pred": pred,
+                "raw_text": raw_text,
+                "token_ids": token_ids,
                 "correct": int(match),
             })
+
+            completed_steps += 1
+            should_log = (
+                completed_steps == 1
+                or completed_steps % max(1, progress_every) == 0
+                or completed_steps == total_steps
+            )
+            if should_log:
+                elapsed = time.time() - sweep_start
+                rate = completed_steps / elapsed if elapsed > 0 else 0.0
+                remaining = max(total_steps - completed_steps, 0)
+                eta_sec = remaining / rate if rate > 0 else 0.0
+                print(
+                    f"      progress {completed_steps}/{total_steps} "
+                    f"({(100.0 * completed_steps / total_steps):5.1f}%) | "
+                    f"K={K} inst={idx}/{len(test_instances)} | "
+                    f"elapsed={elapsed/60.0:.1f}m eta={eta_sec/60.0:.1f}m"
+                )
 
         accuracy = correct / total if total else 0
         print(f"    K={K:3d}: accuracy={accuracy:.4f} ({correct}/{total})")
@@ -311,7 +384,7 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
 
 
 def run_cross_task_transfer(model, tokenizer, per_task_instances, transfer_rankings,
-                            knockout_sizes, max_context_tokens):
+                            knockout_sizes, max_context_tokens, progress_every):
     matrix = {
         "knockout_sizes": knockout_sizes,
         "sources": sorted(transfer_rankings.keys()),
@@ -331,6 +404,8 @@ def run_cross_task_transfer(model, tokenizer, per_task_instances, transfer_ranki
                 ranking,
                 knockout_sizes,
                 max_context_tokens=max_context_tokens,
+                progress_every=progress_every,
+                sweep_label=f"source={source_task} -> target={target_task}",
             )
             baseline = sweep[0]["accuracy"] if 0 in sweep else None
             by_k = {}
@@ -405,6 +480,17 @@ def main():
     parser.add_argument("--include_random_baselines", action="store_true")
     parser.add_argument("--transfer_summary_k", type=int, default=16)
     parser.add_argument("--export_top_k", nargs="+", type=int, default=DEFAULT_EXPORT_TOP_K)
+    parser.add_argument(
+        "--progress_every",
+        type=int,
+        default=20,
+        help="Print progress every N generated answers (default: 20)",
+    )
+    parser.add_argument(
+        "--log_tokens",
+        action="store_true",
+        help="Write per-method JSONL token logs (idx, K, token_ids, raw_text) for analysis.",
+    )
     args = parser.parse_args()
 
     os.makedirs(args.output_dir, exist_ok=True)
@@ -433,15 +519,15 @@ def main():
     # Load model.
     print(f"\nLoading model: {args.model_name}")
     tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name)
-    model = LlamaForCausalLM.from_pretrained(
+    model = transformers.LlamaForCausalLM.from_pretrained(
         args.model_name,
         torch_dtype=torch.float16,
         attn_implementation="flash_attention_2",
         device_map="auto",
     )
     model.config.pad_token_id = model.config.eos_token_id
-    model._num_logits_to_keep = 1
     model.eval()
+    install_head_masking(model)
 
     num_layers = model.config.num_hidden_layers
     num_heads = model.config.num_attention_heads
@@ -459,12 +545,18 @@ def main():
         sys.exit(1)
 
     print(f"\nMethods to evaluate: {list(all_methods.keys())}")
+    total_method_steps = len(all_methods) * len(args.knockout_sizes) * len(test_instances)
+    print(
+        f"Planned pooled workload: {len(all_methods)} methods x "
+        f"{len(args.knockout_sizes)} K values x {len(test_instances)} instances = "
+        f"{total_method_steps} steps"
+    )
 
     # Run pooled sweeps.
     all_results = {}
-    for method_name, head_ranking in all_methods.items():
+    for method_idx, (method_name, head_ranking) in enumerate(all_methods.items(), start=1):
         print(f"\n{'=' * 60}")
-        print(f"Method: {method_name}")
+        print(f"Method {method_idx}/{len(all_methods)}: {method_name}")
         print(f"{'=' * 60}")
 
         method_results = run_single_sweep(
@@ -474,8 +566,38 @@ def main():
             head_ranking,
             args.knockout_sizes,
             max_context_tokens=args.max_context_tokens,
+            progress_every=args.progress_every,
+            sweep_label=f"method={method_name}",
         )
         all_results[method_name] = method_results
+
+        # Write per-method token log (JSONL) if requested.
+        if args.log_tokens:
+            token_log_path = os.path.join(
+                args.output_dir, f"{method_name.replace(' ', '_')}_token_log.jsonl")
+            with open(token_log_path, "w", encoding="utf-8") as tl:
+                for k in args.knockout_sizes:
+                    for d in method_results[k]["details"]:
+                        tl.write(json.dumps({
+                            "method": method_name,
+                            "K": k,
+                            "idx": d["idx"],
+                            "task": d["task"],
+                            "gold": d["gold"],
+                            "pred": d["pred"],
+                            "raw_text": d["raw_text"],
+                            "token_ids": d["token_ids"],
+                            "correct": d["correct"],
+                        }) + "\n")
+            print(f"  Token log: {token_log_path}")
+
+        # Strip raw_text / token_ids from the summary JSON to keep it compact.
+        summary_details = {}
+        for k in args.knockout_sizes:
+            summary_details[str(k)] = [
+                {key: val for key, val in d.items() if key not in ("raw_text", "token_ids")}
+                for d in method_results[k]["details"]
+            ]
 
         method_path = os.path.join(args.output_dir, f"{method_name.replace(' ', '_')}_results.json")
         with open(method_path, "w", encoding="utf-8") as f:
@@ -494,10 +616,7 @@ def main():
                         }
                         for task in args.tasks
                     },
-                    "details": {
-                        str(k): method_results[k]["details"]
-                        for k in args.knockout_sizes
-                    },
+                    "details": summary_details,
                 },
                 f,
                 indent=2,
@@ -541,6 +660,7 @@ def main():
             transfer_rankings,
             args.knockout_sizes,
             args.max_context_tokens,
+            args.progress_every,
         )
 
         transfer_path = os.path.join(args.output_dir, "cross_task_transfer_matrix.json")

@@ -2,17 +2,25 @@
 Plot accuracy vs knockout size for each retrieval method from
 `results/comparison_ablation/*_results.json`.
 
+Outputs:
+  - accuracy_vs_knockout.png        (overall curves)
+  - per_task_accuracy_curves.png    (8 subplots, one per task)
+  - per_task_heatmaps.png           (tasks × K heatmap per method)
+  - accuracy_table.csv              (method × task × K)
+  - drop_from_baseline_table.csv    (drop from K=0 for each cell)
+
 Usage:
-  python sec_experiments/plot_comparison_ablation.py
-  python sec_experiments/plot_comparison_ablation.py \
-    --results_dir results/comparison_ablation \
+  python scripts/evaluation/plot_ablation.py
+  python scripts/evaluation/plot_ablation.py \\
+    --results_dir results/comparison_ablation \\
     --output_dir results/comparison_ablation
 """
 
 import argparse
+import csv
 import json
 import os
-from collections import defaultdict
+from pathlib import Path
 
 try:
     import matplotlib
@@ -20,6 +28,7 @@ try:
     matplotlib.use("Agg")
     import matplotlib.pyplot as plt
     import matplotlib.ticker as mtick
+    import numpy as np
 
     HAS_MPL = True
 except ImportError:
@@ -171,6 +180,161 @@ def plot_accuracy_curves(display_curves, output_path):
     print(f"Saved accuracy plot to {output_path}")
 
 
+# ── full-data loader (for per-task plots / tables) ───────────────────────
+
+def load_full_method_results(results_dir: str) -> dict:
+    """Load all *_results.json files, returning full dicts keyed by method."""
+    methods = {}
+    for p in sorted(Path(results_dir).glob("*_results.json")):
+        with open(p, encoding="utf-8") as f:
+            data = json.load(f)
+        methods[data["method"]] = data
+    return methods
+
+
+def _sorted_ks(accuracy_curve: dict) -> list:
+    return sorted(int(k) for k in accuracy_curve)
+
+
+# ── per-task subplot grid ─────────────────────────────────────────────────
+
+def plot_per_task_curves(methods: dict, output_dir: str):
+    if not HAS_MPL:
+        return
+    first = next(iter(methods.values()))
+    tasks = list(first.get("per_task_curves", {}).keys())
+    if not tasks:
+        print("No per_task_curves found in results; skipping per-task plot.")
+        return
+
+    n = len(tasks)
+    cols = 4
+    rows = (n + cols - 1) // cols
+
+    fig, axes = plt.subplots(rows, cols, figsize=(4.5 * cols, 4 * rows),
+                             squeeze=False)
+    for i, task in enumerate(tasks):
+        ax = axes[i // cols][i % cols]
+        for method_name, data in methods.items():
+            task_curve = data["per_task_curves"].get(task, {})
+            ks = _sorted_ks(task_curve)
+            accs = [task_curve[str(k)] for k in ks]
+            color = METHOD_COLORS.get(method_name, None)
+            style = METHOD_STYLES.get(method_name,
+                                      {"marker": ".", "linestyle": "-", "linewidth": 1.5})
+            ax.plot(ks, accs, color=color, label=method_name, markersize=6, **style)
+        ax.set_title(task.replace("_", " ").title(), fontsize=11)
+        ax.set_ylim(-0.05, 1.05)
+        ax.set_xlabel("K")
+        ax.set_ylabel("Accuracy")
+        ax.grid(True, alpha=0.3)
+    for j in range(n, rows * cols):
+        axes[j // cols][j % cols].set_visible(False)
+
+    handles, labels = axes[0][0].get_legend_handles_labels()
+    fig.legend(handles, labels, loc="upper center", ncol=min(len(methods), 4),
+               fontsize=9, bbox_to_anchor=(0.5, 1.02))
+    fig.tight_layout(rect=[0, 0, 1, 0.96])
+    path = os.path.join(output_dir, "per_task_accuracy_curves.png")
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved per-task curves to {path}")
+
+
+# ── per-task heatmaps (one panel per method) ──────────────────────────────
+
+def plot_heatmaps(methods: dict, output_dir: str):
+    if not HAS_MPL:
+        return
+    first = next(iter(methods.values()))
+    if not first.get("per_task_curves"):
+        print("No per_task_curves found; skipping heatmaps.")
+        return
+
+    n_methods = len(methods)
+    fig, axes = plt.subplots(1, n_methods,
+                             figsize=(6 * n_methods, 5), squeeze=False)
+    im = None
+    for col, (method_name, data) in enumerate(methods.items()):
+        tasks = list(data["per_task_curves"].keys())
+        ks = _sorted_ks(data["accuracy_curve"])
+        matrix = np.array([
+            [data["per_task_curves"][t][str(k)] for k in ks]
+            for t in tasks
+        ])
+        ax = axes[0][col]
+        im = ax.imshow(matrix, aspect="auto", vmin=0, vmax=1, cmap="RdYlGn")
+        ax.set_xticks(range(len(ks)))
+        ax.set_xticklabels([str(k) for k in ks])
+        ax.set_yticks(range(len(tasks)))
+        ax.set_yticklabels([t.replace("_", " ") for t in tasks], fontsize=9)
+        ax.set_xlabel("K")
+        ax.set_title(method_name, fontsize=11)
+        for r in range(len(tasks)):
+            for c in range(len(ks)):
+                val = matrix[r, c]
+                color = "white" if val < 0.4 else "black"
+                ax.text(c, r, f"{val:.0%}", ha="center", va="center",
+                        fontsize=8, color=color)
+    if im is not None:
+        fig.colorbar(im, ax=axes[0].tolist(), shrink=0.8, label="Accuracy")
+    fig.suptitle("Per-Task Accuracy Heatmaps", fontsize=14, y=1.02)
+    fig.subplots_adjust(wspace=0.4)
+    path = os.path.join(output_dir, "per_task_heatmaps.png")
+    fig.savefig(path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved heatmaps to {path}")
+
+
+# ── summary CSV tables ────────────────────────────────────────────────────
+
+def write_summary_csv(methods: dict, output_dir: str):
+    """Write accuracy_table.csv and drop_from_baseline_table.csv."""
+    first = next(iter(methods.values()))
+    ks = _sorted_ks(first["accuracy_curve"])
+    method_names = list(methods.keys())
+    tasks = list(first.get("per_task_curves", {}).keys())
+
+    # accuracy table
+    acc_path = os.path.join(output_dir, "accuracy_table.csv")
+    with open(acc_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["Method", "Task"] + [f"K={k}" for k in ks])
+        for m in method_names:
+            data = methods[m]
+            row = [m, "OVERALL"]
+            row += [f"{data['accuracy_curve'][str(k)]:.4f}" for k in ks]
+            w.writerow(row)
+            for t in tasks:
+                row = [m, t]
+                row += [f"{data['per_task_curves'][t][str(k)]:.4f}" for k in ks]
+                w.writerow(row)
+    print(f"Saved accuracy table to {acc_path}")
+
+    # drop-from-baseline table
+    drop_path = os.path.join(output_dir, "drop_from_baseline_table.csv")
+    with open(drop_path, "w", newline="", encoding="utf-8") as f:
+        w = csv.writer(f)
+        w.writerow(["Method", "Task", "Baseline(K=0)"] +
+                   [f"Drop@K={k}" for k in ks if k != 0])
+        for m in method_names:
+            data = methods[m]
+            baseline = data["accuracy_curve"]["0"]
+            row = [m, "OVERALL", f"{baseline:.4f}"]
+            row += [f"{baseline - data['accuracy_curve'][str(k)]:.4f}"
+                    for k in ks if k != 0]
+            w.writerow(row)
+            for t in tasks:
+                tb = data["per_task_curves"][t]["0"]
+                row = [m, t, f"{tb:.4f}"]
+                row += [f"{tb - data['per_task_curves'][t][str(k)]:.4f}"
+                        for k in ks if k != 0]
+                w.writerow(row)
+    print(f"Saved drop table to {drop_path}")
+
+
+# ── main ──────────────────────────────────────────────────────────────────
+
 def main():
     parser = argparse.ArgumentParser(
         description="Plot accuracy vs knockout size for comparison ablation methods."
@@ -208,6 +372,15 @@ def main():
 
     output_path = os.path.join(output_dir, "accuracy_vs_knockout.png")
     plot_accuracy_curves(display_curves, output_path)
+
+    # per-task plots, heatmaps, and CSV tables
+    full_methods = load_full_method_results(results_dir)
+    if full_methods:
+        plot_per_task_curves(full_methods, output_dir)
+        plot_heatmaps(full_methods, output_dir)
+        write_summary_csv(full_methods, output_dir)
+
+    print(f"\nDone. All outputs saved to: {output_dir}")
 
 
 if __name__ == "__main__":
