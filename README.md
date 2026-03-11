@@ -1,133 +1,201 @@
-# QR Scoring (Llama-3.1-8B only)
+# QRScore: Attention Head Detection & Ablation for Long-Context Retrieval
 
-This repository is a cleaned, 8B-only version of the QRScore/QRHead SEC workflow.
+## What This Project Does
 
-It supports three main things:
-1. Build train/test SEC long-context datasets (with leakage-safe split).
-2. Detect high-impact attention heads on train data.
-3. Run generation-time ablations on test data, including cross-task transfer and specificity analysis.
+This framework identifies which **attention heads** in Llama-3.1-8B-Instruct are responsible for retrieving information from long documents, then tests that claim by **knocking those heads out** and measuring the accuracy drop.
 
-## What Was Cleaned
+The core idea: if a set of heads truly drives retrieval, zeroing them out at inference time should destroy the model's ability to answer questions about the document. By comparing head rankings from different data sources, we measure whether head importance is domain-specific or universal.
 
-- Kept only `Llama-3.1-8B-Instruct` model configs and runtime paths.
-- Removed non-8B model configs/code paths (70B/3.2/Qwen).
-- Removed generated `results/detection/topk/sec_detection/` artifacts (regenerable).
-- Kept external 8B ranking inputs in `Llama-3.1-8B-Instruct/`:
-  - `lme_TRAIN.json`
-  - `nq_TRAIN.json`
-- Ablation script (`run_ablation.py`) now loads the **stock** `transformers.LlamaForCausalLM`
-  and applies head masking via lightweight `forward_pre_hook`s on each layer's `o_proj`.
-  The custom model copy (`custom_modeling_llama.py`) is only used by the detection pipeline.
+**Model:** `meta-llama/Llama-3.1-8B-Instruct` (1024 attention heads: 32 layers × 32 heads/layer)
 
-## Repo Layout (Important Paths)
+### The Three Experiments
 
-- Data prep:
-  - `scripts/data_prep/split_dataset.py`
-  - `scripts/data_prep/build_detection_data.py`
-  - `scripts/data_prep/build_niah_data.py`
-- Detection:
-  - `scripts/detection/detect_qrhead.py`
-  - `scripts/detection/run_detection.sh`
-- Evaluation:
-  - `scripts/evaluation/run_ablation.py`
-  - `scripts/evaluation/plot_ablation.py`
-  - `scripts/evaluation/verify_leakage.py`
-- Model/runtime:
-  - `src/qrretriever/attn_retriever.py`
-  - `src/qrretriever/custom_modeling_llama.py` (detection pipeline only; ablation uses stock model)
+1. **Pooled ablation comparison** — Knock out top-K heads (from 3 different ranking sources) and measure accuracy on SEC extraction tasks. Shows domain-matched detection outperforms out-of-domain rankings.
+2. **Cross-task transfer** — Knock out heads detected for task A and evaluate on tasks B–H. Reveals whether heads are task-specific or broadly shared.
+3. **Head similarity** — Jaccard overlap between per-task head rankings. Identifies functional head clusters for semantically related tasks.
 
-## Train/Test Task Parity (Confirmed)
+### The Eight SEC Tasks
 
-There are two relevant levels:
+Each test instance presents a long SEC 10-K filing and asks the model to extract one fact:
 
-1. Raw split plans (`data/train_plan.csv`, `data/test_plan.csv`):
-- Both contain 9 task labels, including `employees_count_full_time`.
+| Task | Example Answer |
+|------|---------------|
+| `registrant_name` | "Vishay Intertechnology, Inc." |
+| `headquarters_city` | "Malvern" |
+| `headquarters_state` | "Pennsylvania" |
+| `incorporation_state` | "Delaware" |
+| `incorporation_year` | "1962" |
+| `employees_count_total` | "25,600" |
+| `ceo_lastname` | "Zandman" |
+| `holder_record_amount` | "7,543" |
 
-2. Actual experiment datasets used by detection/ablation (`data/niah_input/*_{train,test}.json`):
-- Both train and test contain the same 8 tasks:
-  - `registrant_name`
-  - `headquarters_city`
-  - `headquarters_state`
-  - `incorporation_state`
-  - `incorporation_year`
-  - `employees_count_total`
-  - `ceo_lastname`
-  - `holder_record_amount`
+192 test instances total (24 per task), all from held-out SEC filings not seen during detection.
 
-Verified in workspace:
-- Train task files: 8
-- Test task files: 8
-- Task sets match exactly
+---
 
-Note: per-task instance counts are not equal by default between train/test; for fair cross-task comparisons, use `--max_instances_per_task` in evaluation.
+## The Three Head Ranking Sources
+
+The experiments compare head rankings produced from three different data domains. All three use the same QRScore detection algorithm (attention-based scoring of gold vs. distractor passages) but on different training data:
+
+### 1. QRScore-SEC (in-domain)
+
+**Source data:** SEC 10-K filings from the training split of this project's dataset.
+
+**How it's built:** `scripts/detection/detect_qrhead.py` processes the training instances in `data/long_context_detection_optionA/`. For each instance, the model reads a long document (~5K–30K tokens) containing a gold passage (with the answer) and distractor passages (from the same filing). The script calls `score_docs_per_head_for_detection()` which computes a per-head retrieval score: how much each individual head's attention to the query tokens helps rank the gold passage above distractors. Heads are ranked by their aggregated QRScore across all training instances.
+
+**Files:**
+- Per-task: `results/detection/long_context_{task}_heads.json` (8 files)
+- Combined (pooled across all tasks): `results/detection/long_context_combined_heads.json`
+
+**Why it matters:** This is the in-domain ranking. If QRScore works, these heads should be the most damaging to knock out on SEC test data.
+
+### 2. QRScore-8B-LME-TRAIN (cross-domain, legal/manual)
+
+**Source data:** LM-Eval (LME) benchmark passages — a mix of general-purpose reading comprehension and language modeling evaluation tasks. These are **not** SEC filings; they include diverse text genres.
+
+**How it's built:** The same QRScore detection algorithm was run on LME benchmark data using Llama-3.1-8B-Instruct. The resulting head ranking was saved externally and is provided as a pre-computed file.
+
+**File:** `Llama-3.1-8B-Instruct/lme_TRAIN.json`
+
+**Why it matters:** Tests whether heads important for general-purpose retrieval also matter for SEC document extraction. If they do, it suggests a universal retrieval mechanism; if not, it suggests domain-specific head circuits.
+
+### 3. QRScore-8B-NQ-TRAIN (cross-domain, open QA)
+
+**Source data:** Natural Questions (NQ) — Google's open-domain question-answering dataset. Passages are Wikipedia articles; questions are real user queries from Google Search. Very different from SEC filings in both style and content.
+
+**How it's built:** Same QRScore detection algorithm, run on NQ training data using Llama-3.1-8B-Instruct. Pre-computed externally.
+
+**File:** `Llama-3.1-8B-Instruct/nq_TRAIN.json`
+
+**Why it matters:** NQ is the most distant domain from SEC filings. If NQ-detected heads barely affect SEC performance, it's strong evidence that QRScore detects task-relevant heads rather than generic attention patterns.
+
+---
+
+## Repository Structure
+
+```
+qr_scoring/
+├── data/
+│   ├── haystack_plan.csv                  # All SEC instances (pre-split)
+│   ├── train_plan.csv                     # Training split (80% by filing)
+│   ├── test_plan.csv                      # Test split (20% by filing)
+│   ├── needles.csv                        # Extracted facts per SEC filing
+│   ├── sections.csv                       # Section-level text from filings
+│   ├── long_context_detection_optionA/    # Training detection instances (generated)
+│   └── niah_input/                        # Test NIAH instances (generated)
+├── Llama-3.1-8B-Instruct/
+│   ├── lme_TRAIN.json                     # External LME head ranking
+│   └── nq_TRAIN.json                      # External NQ head ranking
+├── results/
+│   ├── detection/                         # Head detection outputs
+│   │   ├── long_context_*_heads.json      # Per-task and combined rankings
+│   │   └── topk/8b_external/             # Top-K slices for LME/NQ
+│   └── comparison_ablation/               # Ablation experiment results
+│       ├── *_results.json                 # Per-method accuracy curves
+│       ├── cross_task_*.json              # Transfer matrix + specificity
+│       ├── *.png                          # All plots
+│       ├── *.csv                          # Summary tables
+│       └── FINDINGS.md                    # Key experimental findings
+├── scripts/
+│   ├── data_prep/
+│   │   ├── split_dataset.py               # 80/20 train/test split
+│   │   ├── build_detection_data.py        # Build training detection instances
+│   │   └── build_niah_data.py             # Build test NIAH instances
+│   ├── detection/
+│   │   ├── detect_qrhead.py               # Score all 1024 heads
+│   │   └── run_detection.sh               # Wrapper for per-task + combined
+│   └── evaluation/
+│       ├── run_ablation.py                # Main ablation + transfer + specificity
+│       ├── plot_ablation.py               # Accuracy curves/heatmaps/tables
+│       ├── plot_transfer.py               # Transfer heatmaps/similarity/specificity
+│       └── verify_leakage.py              # Confirm no train/test leakage
+├── src/qrretriever/                       # Core package
+│   ├── attn_retriever.py                  # AttnBasedRetriever, QRRetriever
+│   ├── custom_modeling_llama.py           # Custom LlamaForCausalLM (detection only)
+│   ├── custom_cache.py                    # DynamicCacheWithQuery
+│   ├── config.py                          # YAML config loader
+│   ├── predefined_heads.py               # Hardcoded head sets
+│   └── configs/                           # YAML configs per dataset
+├── examples/
+│   └── qrretriever_example.py             # Basic retriever usage
+└── setup.py                               # Package metadata (Apache 2.0)
+```
+
+---
 
 ## Setup
+
+**Requirements:** Python ≥ 3.9, CUDA GPU, HuggingFace access to `meta-llama/Llama-3.1-8B-Instruct`
 
 ```bash
 pip install -e .
 ```
 
-If `ripgrep` is missing on your machine:
+Dependencies: `torch`, `transformers>=4.44.0`, `flash_attn`, `pyyaml>=5.1`, `tqdm`
 
-```bash
-sudo apt install ripgrep
-```
+For plotting: `pip install matplotlib pandas`
 
-## End-to-End Experiments
+---
 
-### 1. Split Data
+## Running the Full Pipeline
+
+### Step 1: Split Data
+
+Splits `data/haystack_plan.csv` into 80% train / 20% test by unique SEC filing filename (document-level split prevents leakage).
 
 ```bash
 python scripts/data_prep/split_dataset.py
 ```
 
-### 2. Build Detection (Train) Data
+**Output:** `data/train_plan.csv`, `data/test_plan.csv`
+
+### Step 2: Build Detection (Training) Data
+
+Constructs long-context detection instances from the training split. For each instance, combines the gold section (containing the answer) with distractor sections from the same filing, chunked into ~400-word paragraphs.
 
 ```bash
 python scripts/data_prep/build_detection_data.py --chunk_words 400
 ```
 
-Output:
-- `data/long_context_detection_optionA/*_detection.json`
-- `data/long_context_detection_optionA/combined_detection.json`
+**Output:**
+- `data/long_context_detection_optionA/{task}_detection.json` (one per task)
+- `data/long_context_detection_optionA/combined_detection.json` (all tasks pooled)
 
-Optional:
-- Use `--max_instances 32` only if you specifically want a paper-style balanced cap (32 per task).
-- For this repo's default workflow, use all available train samples (no cap argument).
+### Step 3: Build NIAH Evaluation (Test) Data
 
-### 3. Build NIAH Evaluation (Test) Data
+Constructs needle-in-a-haystack test instances from the test split. Each instance is a full SEC filing with the answer sentence embedded in context.
 
 ```bash
 python scripts/data_prep/build_niah_data.py --chunk_words 400
 ```
 
-Outputs:
-- `data/niah_input/<task>_test.json`
+**Output:** `data/niah_input/{task}_test.json`
 
-### 4. Verify Leakage (after train/test datasets exist)
+### Step 4: Verify No Leakage
+
+Confirms zero overlap between SEC filings used in train detection and test evaluation.
 
 ```bash
 python scripts/evaluation/verify_leakage.py
 ```
 
-Expected: no overlap between train/detection source filings and test/NIAH source filings.
+### Step 5: Run Head Detection (Training)
 
-### 5. Run Head Detection (Train)
+Scores all 1024 heads on the training data. For each head, computes how well it ranks gold passages above distractors. Produces a ranked list of heads by QRScore.
 
 ```bash
 bash scripts/detection/run_detection.sh
 ```
 
-Key output:
+This runs detection on all 8 per-task files and the combined file. Use `--combined-only` to skip per-task detection.
+
+**Output:**
 - `results/detection/long_context_combined_heads.json`
-- `results/detection/long_context_<task>_heads.json` (if generated by the wrapper)
+- `results/detection/long_context_{task}_heads.json` (8 files)
 
-### 6. Pooled Ablation Comparison
+### Step 6: Pooled Ablation Comparison
 
-Compares:
-- `QRScore-SEC`
-- `QRScore-8B-LME-TRAIN`
-- `QRScore-8B-NQ-TRAIN`
+Compares all three ranking sources by knocking out their top-K heads and measuring accuracy on the test set:
 
 ```bash
 python scripts/evaluation/run_ablation.py \
@@ -141,11 +209,11 @@ python scripts/evaluation/run_ablation.py \
   --methods QRScore-SEC QRScore-8B-LME-TRAIN QRScore-8B-NQ-TRAIN
 ```
 
-### 7. Cross-Task Transfer Ablation (Key for your questions)
+**Output:** `{method}_results.json`, `comparison_summary.json`
 
-This is the experiment for:
-- "How do tasks 2-8 do with task 1 ablation?"
-- "Is ablation only affecting its own task?"
+### Step 7: Cross-Task Transfer Ablation
+
+Runs an 8×8 source-task × target-task ablation matrix using per-task SEC head rankings:
 
 ```bash
 python scripts/evaluation/run_ablation.py \
@@ -160,83 +228,130 @@ python scripts/evaluation/run_ablation.py \
   --transfer_summary_k 16
 ```
 
-Generated files:
-- `results/comparison_ablation/cross_task_transfer_matrix.json`
-- `results/comparison_ablation/cross_task_specificity_metrics.json`
-- `results/comparison_ablation/cross_task_head_similarity_topk.json`
+**Output:**
+- `cross_task_transfer_matrix.json` — accuracy drop for each (source, target, K) triple
+- `cross_task_specificity_metrics.json` — on-target drop, off-target mean drop, specificity index
+- `cross_task_head_similarity_topk.json` — Jaccard overlap between per-task head sets at each K
 
-### 8. Plot Curves
+### Step 8: Generate Plots and Tables
 
 ```bash
 python scripts/evaluation/plot_ablation.py \
   --results_dir results/comparison_ablation \
   --output_dir results/comparison_ablation
+
+python scripts/evaluation/plot_transfer.py \
+  --results_dir results/comparison_ablation \
+  --output_dir results/comparison_ablation
 ```
 
-## How To Answer Your Target Questions
+**Output:** See `results/comparison_ablation/FINDINGS.md` for a full list of generated plots, tables, and findings.
 
-### Q1) How does task 1 ablation affect tasks 2-8?
+### Smoke Test (Quick Validation)
 
-Use `cross_task_transfer_matrix.json`:
-- Source = task 1 ranking (`Transfer-task1`).
-- Targets = tasks 2-8.
-- Compare `drop_from_k0` at the same `K` (usually `K=16`).
+Run a minimal version to verify the pipeline works before committing to a full run:
 
-Interpretation:
-- Large drop on many other tasks: low specificity (broad interference).
-- Large drop mostly on source task: high specificity (more surgical).
+```bash
+python scripts/evaluation/run_ablation.py \
+  --max_instances_per_task 4 \
+  --knockout_sizes 0 8 16 \
+  --max_context_tokens 4096 \
+  --log_tokens
+```
 
-### Q2) Is ablation only affecting task performance?
+---
 
-From the same matrix:
-- Compare diagonal effect (source->same task) vs off-diagonal (source->other tasks).
-- If diagonal is much larger, effect is task-focused.
+## How the Ablation Works
 
-### Q3) Quantify surgicality and overlap tie
+The ablation script loads the **stock** `transformers.LlamaForCausalLM` (no custom model needed) and installs lightweight `forward_pre_hook` functions on each layer's `o_proj` projection. When a head mask is active, the hook zeroes out the output dimensions corresponding to the masked heads before the projection is applied. This is equivalent to removing those heads' contribution to the residual stream.
 
-Use:
-- `cross_task_specificity_metrics.json`
-  - `specificity_index = on_target_drop - off_target_mean_drop`
-  - `surgicality_ratio = on_target_drop / off_target_mean_drop`
-- `cross_task_head_similarity_topk.json`
-  - Jaccard overlap across task head sets at each top-K.
+For each K in `--knockout_sizes`:
+1. Mask the top-K heads from the ranking
+2. Run generation on all test instances
+3. Extract a short answer from the model's output (first sentence)
+4. Compare against the gold answer (normalised substring match)
+5. Compute accuracy overall and per-task
 
-Suggested analysis:
-1. Correlate off-target drops with Jaccard overlap.
-2. Check whether higher overlap predicts stronger transfer damage.
-3. Report task-level specificity ranking by `specificity_index` and `surgicality_ratio`.
+The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by the **detection** pipeline (Step 5), which needs per-head attention score access.
+
+---
+
+## Key CLI Arguments for `run_ablation.py`
+
+| Argument | Default | Description |
+|----------|---------|-------------|
+| `--niah_dir` | `data/niah_input` | Directory with test JSON files |
+| `--output_dir` | `results/comparison_ablation` | Where to write results |
+| `--model_name` | `meta-llama/Llama-3.1-8B-Instruct` | HuggingFace model |
+| `--knockout_sizes` | `0 8 16 32 48 64 96 128` | Number of heads to knock out |
+| `--max_instances_per_task` | all | Cap instances per task (use 24 for balanced comparison) |
+| `--max_context_tokens` | `8192` | Max prompt tokens (left-truncation if exceeded) |
+| `--methods` | all detected | Which ranking methods to evaluate |
+| `--enable_cross_task_transfer` | off | Run the 8×8 transfer matrix |
+| `--transfer_summary_k` | `16` | K value for specificity metric computation |
+| `--include_random_baselines` | off | Include random head rankings as control |
+| `--log_tokens` | off | Write per-instance JSONL token logs |
+| `--progress_every` | `20` | Print progress every N instances |
+
+---
+
+## Interpreting the Results
+
+### Output Files
+
+| File | Contents |
+|------|----------|
+| `{method}_results.json` | Full accuracy curves, per-task breakdowns, per-instance details |
+| `comparison_summary.json` | Baseline accuracy, K=16 accuracy, and drop for each method |
+| `cross_task_transfer_matrix.json` | 8×8×8 matrix: (source task, target task, K) → accuracy + drop |
+| `cross_task_specificity_metrics.json` | Per-source: on-target drop, off-target mean, specificity index, surgicality ratio |
+| `cross_task_head_similarity_topk.json` | Jaccard similarity matrices at each top-K |
+| `accuracy_vs_knockout.png` | Overall accuracy curves (3 methods compared) |
+| `per_task_accuracy_curves.png` | 8 subplots showing per-task degradation |
+| `per_task_heatmaps.png` | Tasks × K heatmaps annotated with accuracy % |
+| `transfer_drop_heatmap_K{k}.png` | Source × Target drop heatmaps (one per K) |
+| `head_similarity_heatmaps.png` | Jaccard similarity panels at each top-K |
+| `specificity_bars.png` | On-target vs off-target drop bar chart |
+| `accuracy_table.csv` | Method × Task × K accuracy matrix |
+| `drop_from_baseline_table.csv` | Drop from K=0 baseline for each cell |
+| `specificity_table.csv` | Per-task specificity index and surgicality ratio |
+| `FINDINGS.md` | Detailed experimental findings with metric definitions |
+
+### Key Metrics
+
+- **Drop@K** = accuracy(K=0) − accuracy(K). How much accuracy falls when K heads are removed.
+- **Specificity Index** = on-target drop − off-target mean drop. Positive means the ablation is task-specific; negative means it causes more collateral damage to other tasks.
+- **Surgicality Ratio** = on-target drop / off-target mean drop. >1 means surgical; <1 means broad.
+- **Jaccard Similarity** = |intersection| / |union| of two tasks' top-K head sets. 1 = identical heads, 0 = no overlap.
+
+See `results/comparison_ablation/FINDINGS.md` for full metric definitions and experimental conclusions.
+
+---
 
 ## Practical Notes
 
-- Full runs are GPU-heavy; start with `--max_instances_per_task 10` for smoke tests.
-- Keep `K=0` in `--knockout_sizes` so all drop metrics are anchored.
-- Use `--max_context_tokens 8192` for final metrics (NIAH contexts are typically >4096 tokens).
-- `--progress_every` controls progress logging frequency (default `20`).
-- `--log_tokens` writes per-method JSONL token logs (one line per instance per K) with
-  `raw_text` and `token_ids` for post-hoc analysis. Files are saved next to the result
-  JSONs (e.g. `QRScore-SEC_token_log.jsonl`).
-- External 8B rankings are loaded from:
-  - `Llama-3.1-8B-Instruct/lme_TRAIN.json`
-  - `Llama-3.1-8B-Instruct/nq_TRAIN.json`
+- Full runs are GPU-heavy. Start with `--max_instances_per_task 4` and `--knockout_sizes 0 8 16` for smoke tests.
+- Always include `K=0` in `--knockout_sizes` so all drop metrics have a baseline anchor.
+- Use `--max_context_tokens 8192` for final metrics (NIAH contexts are typically >4K tokens).
+- `--log_tokens` writes per-method JSONL token logs with `raw_text` and `token_ids` for post-hoc analysis (e.g. `QRScore-SEC_token_log.jsonl`).
 
 ## Troubleshooting
 
 If you see:
-
-```text
+```
 FileNotFoundError: ... data/long_context_detection_optionA/combined_detection.json
 ```
-
-run:
-
+Run Steps 1–3 first:
 ```bash
 python scripts/data_prep/split_dataset.py
 python scripts/data_prep/build_detection_data.py --chunk_words 400
 python scripts/data_prep/build_niah_data.py --chunk_words 400
-python scripts/evaluation/verify_leakage.py
 ```
 
-Reason: `verify_leakage.py` reads train-side detection instances from `combined_detection.json`, so detection data must be built first.
+If detection files are missing (`long_context_*_heads.json`), run Step 5:
+```bash
+bash scripts/detection/run_detection.sh
+```
 
 ## Quick Smoke Test
 
