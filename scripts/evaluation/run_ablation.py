@@ -644,6 +644,12 @@ def main():
         }
 
     summary_path = os.path.join(args.output_dir, "comparison_summary.json")
+    # Merge with existing summary to avoid overwriting results from prior runs.
+    if os.path.exists(summary_path):
+        with open(summary_path, "r", encoding="utf-8") as f:
+            existing = json.load(f)
+        existing.setdefault("methods", {}).update(summary["methods"])
+        summary["methods"] = existing["methods"]
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSummary saved to {summary_path}")
