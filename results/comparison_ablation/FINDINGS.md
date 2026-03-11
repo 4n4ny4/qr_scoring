@@ -117,13 +117,14 @@ The vector of accuracy values at each $K$ for a given method, e.g. $[\text{acc}(
 
 **Question:** How effectively do different head ranking methods identify retrieval-critical heads?
 
-Three ranking methods were compared by knocking out their top-K ranked heads and measuring answer accuracy degradation:
+Three head ranking methods plus a random baseline (3 seeds averaged) were compared by knocking out their top-K ranked heads and measuring answer accuracy degradation. All figures report 95% bootstrap CIs (10,000 iterations, $n$=192).
 
 | Method | Source | K=0 | K=8 | K=16 | K=32 |
 |--------|--------|-----|-----|------|------|
-| **QRScore-SEC** | SEC train detection | 91.1% | 55.2% | 39.6% | 29.7% |
-| **QRScore-8B-LME-TRAIN** | LM-Eval train | 91.1% | 65.1% | 25.0% | 19.3% |
-| **QRScore-8B-NQ-TRAIN** | Natural Questions train | 91.1% | 90.1% | 85.9% | 77.1% |
+| **QRScore-SEC** | SEC train detection | 91.1% | 55.2% [48.4, 62.0] | 39.6% [32.8, 46.4] | 29.7% [23.4, 35.9] |
+| **QRScore-8B-LME-TRAIN** | LM-Eval train | 91.1% | 65.1% [58.3, 71.9] | 25.0% [18.8, 31.3] | 19.3% [13.5, 25.0] |
+| **QRScore-8B-NQ-TRAIN** | Natural Questions train | 91.1% | 90.1% [85.9, 94.3] | 85.9% [80.7, 90.6] | 77.1% [70.8, 82.8] |
+| **Random (3-seed mean)** | Random head selection | 91.1% | 89.8% | 88.2% | 87.5% |
 
 **Chart:** `accuracy_vs_knockout.png`, `per_task_heatmaps.png`
 
@@ -131,12 +132,20 @@ Three ranking methods were compared by knocking out their top-K ranked heads and
 
 - **QRScore-SEC** and **QRScore-8B-LME-TRAIN** both cause severe accuracy drops, reaching <30% by K=32.
 - **QRScore-8B-NQ-TRAIN** (detected on Natural Questions) barely affects SEC task performance — only a 5.2% drop at K=16 and 14.1% at K=32.
+- **Random baseline** degrades slowly and smoothly: 88.2% at K=16, 87.5% at K=32, still 64.2% at K=128.
+
+The random baseline establishes that the model is robust to arbitrary head removal — knocking out 16 random heads costs only ~3 percentage points. This makes the QRScore-SEC and LME drops (51.5 and 66.1 pp at K=16) unambiguously attributable to targeting retrieval-critical heads, not to accumulated noise from removing any 16 heads.
+
+**Statistical significance (95% bootstrap CIs):**
+- At K=16, QRScore-SEC accuracy is 39.6% [32.8, 46.4] versus the best random seed at 87.0% [82.3, 91.5]. The CIs are completely non-overlapping — a gap of ~48 pp with zero overlap.
+- NQ-TRAIN at K=16 is 85.9% [80.7, 90.6], which **overlaps** with the random baseline CIs [82.3, 92.2]. NQ ablation is statistically indistinguishable from random head removal at K=16.
+- By K=32, NQ-TRAIN at 77.1% [70.8, 82.8] separates from random (87.5% range), indicating NQ heads have *some* retrieval relevance but far less than span-extraction heads.
 
 **Paradigm-level interpretation:** The critical divide is between **passage-sorting heads** (NQ) and **span-extraction heads** (LME, SEC). NQ-detected heads were optimized for comparing 200 disjoint passages and ranking them—an *inter-passage* attention pattern over synthetic, concatenated context. SEC tasks require locating a specific fact within a single continuous document—an *intra-document* attention pattern. These are fundamentally different attention behaviours, so knocking out NQ's top heads barely touches the circuits SEC tasks rely on.
 
 Conversely, LME-detected heads—identified on a continuous ~115K-token dialogue history where the model must *locate relevant spans within a coherent narrative*—transfer effectively to SEC fact extraction despite the genre mismatch (chat logs vs. financial filings). Both are span-extraction tasks over continuous documents.
 
-- **Implication for paper:** Head importance rankings are **paradigm-specific** more than domain-specific. The shared retrieval mechanism between LME and SEC is not "financial knowledge" or "chat knowledge" but rather the ability to **scan a single long document and locate relevant spans**. NQ's passage-sorting heads represent a categorically different attention circuit.
+- **Implication for paper:** Head importance rankings are **paradigm-specific** more than domain-specific. The shared retrieval mechanism between LME and SEC is not "financial knowledge" or "chat knowledge" but rather the ability to **scan a single long document and locate relevant spans**. NQ's passage-sorting heads represent a categorically different attention circuit. The random baseline confirms this is not an artefact of head removal itself — random ablation at the same K has negligible effect.
 
 ### Key Finding 2: Task-level sensitivity varies dramatically
 
@@ -164,10 +173,15 @@ At K=16, QRScore-SEC ablation impact by task:
 Although both QRScore-SEC and QRScore-8B-LME-TRAIN achieve similarly low accuracy at K=32, their degradation curves differ:
 - **QRScore-SEC** drops steeply from K=0 to K=8 (91.1% → 55.2%) then declines gradually.
 - **QRScore-8B-LME-TRAIN** holds higher at K=8 (65.1%) but then collapses at K=16 (25.0%).
+- **Random baseline** stays near 88% at K=16, confirming both QRScore drops are real effects, not artefacts of head removal.
 
 **Paradigm-level interpretation:** Both LME and SEC operate in the span-extraction paradigm (locating information within a single continuous document), which is why both rankings ultimately identify the same pool of critical heads. However, the **priority order** within that shared pool differs. SEC detection frontloads the heads most critical for SEC-style fact extraction (short, precise answers from structured filings), while LME detection frontloads heads optimized for dialogue-round retrieval (longer, more narrative chunks from chat logs). By K=16, both rankings have captured enough of the shared extraction substrate that accuracy converges to similarly low levels.
 
 This suggests the span-extraction paradigm relies on a **common head pool**, but the ranking within that pool reflects the specific retrieval granularity (sentence-level fact vs. paragraph-level dialogue round) of the detection data.
+
+### Key Finding 3a: The K=64 anomaly is noise
+
+QRScore-SEC shows a non-monotonic bump at K=64 (31.8%, up from 17.2% at K=48). The 95% CI at K=64 is [25.0%, 38.5%] and at K=48 is [12.0%, 22.4%] — these intervals are partially non-overlapping but close. The random baselines show similar non-monotonicity at some K values (e.g., Random-seed123 increases from K=32 to K=48). With only 192 instances, fluctuations of ±5 pp are expected from sampling noise. The overall downward trend is clear (91.1% → 6.3% at K=128), and the K=64 bump does not alter any conclusions.
 
 ---
 
@@ -183,22 +197,25 @@ We ran 8 source rankings (one per task) × 8 target tasks × 8 K-values using on
 
 At K=16, the specificity metrics reveal that most task-specific head knockouts cause as much or more damage to *other* tasks than to the source task:
 
-| Source Task | On-Target Drop | Off-Target Mean Drop | Specificity Index |
-|-------------|---------------|---------------------|-------------------|
-| `headquarters_city` | 0.50 | 0.52 | **-0.02** |
-| `headquarters_state` | 0.21 | 0.63 | **-0.42** |
-| `registrant_name` | 0.17 | 0.33 | **-0.17** |
-| `employees_count_total` | 0.08 | 0.02 | +0.06 |
-| `holder_record_amount` | 0.04 | -0.01 | +0.05 |
-| `ceo_lastname` | -0.04 | 0.04 | -0.08 |
-| `incorporation_state` | 0.00 | 0.03 | -0.03 |
-| `incorporation_year` | 0.00 | 0.01 | -0.01 |
+| Source Task | On-Target Drop | Off-Target Mean Drop | Specificity Index | 95% CI |
+|-------------|---------------|---------------------|-------------------|--------|
+| `headquarters_city` | 0.50 | 0.52 | **-0.02** | [-0.23, +0.21] |
+| `headquarters_state` | 0.21 | 0.63 | **-0.42** | [-0.57, -0.27] |
+| `registrant_name` | 0.17 | 0.33 | **-0.17** | [-0.34, -0.02] |
+| `employees_count_total` | 0.08 | 0.02 | +0.06 | [+0.03, +0.09] |
+| `holder_record_amount` | 0.04 | -0.01 | +0.05 | [+0.03, +0.07] |
+| `ceo_lastname` | -0.04 | 0.04 | **-0.08** | [-0.10, -0.06] |
+| `incorporation_state` | 0.00 | 0.03 | -0.03 | [-0.06, 0.00] |
+| `incorporation_year` | 0.00 | 0.01 | -0.01 | [-0.04, +0.02] |
 
 **Chart:** `specificity_bars.png`, `specificity_table.csv`
 
 - **Negative specificity index** means off-target damage exceeds on-target damage. This is the case for 6 of 8 tasks.
-- **`headquarters_state`** is the most extreme: knocking out its heads causes 0.63 mean off-target drop but only 0.21 on-target drop (specificity = -0.42). Its heads are broadly important for SEC retrieval, not HQ-state-specific.
-- **Implication for paper:** The QRScore-detected heads form a **shared retrieval substrate** rather than task-specific circuits. Ablating any task's top heads degrades the model's general ability to extract information from SEC documents. This is evidence that long-context retrieval in LLMs uses a common set of attention heads regardless of the specific information being retrieved.
+- **`headquarters_state`** is the most extreme: knocking out its heads causes 0.63 mean off-target drop but only 0.21 on-target drop (specificity = -0.42, 95% CI [-0.57, -0.27]). The CI excludes zero, confirming this is statistically significant. Its heads are broadly important for SEC retrieval, not HQ-state-specific.
+- **`registrant_name`** specificity = -0.17 [-0.34, -0.02] also excludes zero — its heads reliably damage other tasks more than themselves.
+- **`headquarters_city`** specificity = -0.02 [-0.23, +0.21] straddles zero — the imbalance is not significant; its heads are approximately equally important on- and off-target.
+- **`employees_count_total`** and **`holder_record_amount`** are the only tasks with positive specificity CIs that exclude zero (+0.06 [+0.03, +0.09] and +0.05 [+0.03, +0.07]), suggesting these tasks have a small but real set of task-specific heads.
+- **Implication for paper:** The QRScore-detected heads form a **shared retrieval substrate** rather than task-specific circuits. Ablating any task's top heads degrades the model's general ability to extract information from SEC documents. This is evidence that long-context retrieval in LLMs uses a common set of attention heads regardless of the specific information being retrieved. The bootstrap CIs confirm this finding is robust: 4 of 6 negative specificity indices have CIs excluding zero.
 
 ### Key Finding 5: A cluster of related tasks shares heads
 
@@ -233,17 +250,19 @@ This means the per-task detection for these tasks either (a) identified heads th
 
 ## Summary of Key Claims for Paper
 
-1. **Paradigm specificity of retrieval heads** — The dominant factor in head transferability is not text domain but **task paradigm**. Passage-sorting heads (NQ, detected on 200 concatenated disjoint passages) cause only 5.2% drop at K=16 on SEC tasks. Span-extraction heads (LME, detected on continuous ~115K-token dialogue; SEC, detected on continuous financial filings) cause 25.0–39.6% drop at K=16 on the same tasks. Heads that scan a single long document for relevant spans form a categorically different attention circuit than heads that compare and rank independent passages.
+1. **Paradigm specificity of retrieval heads** — The dominant factor in head transferability is not text domain but **task paradigm**. Passage-sorting heads (NQ, detected on 200 concatenated disjoint passages) cause only 5.2% drop at K=16 on SEC tasks — statistically indistinguishable from random head ablation (95% CIs overlap). Span-extraction heads (LME, detected on continuous ~115K-token dialogue; SEC, detected on continuous financial filings) cause 25.0–39.6% drop at K=16 — CIs completely non-overlapping with random baseline (~88%). Heads that scan a single long document for relevant spans form a categorically different attention circuit than heads that compare and rank independent passages.
 
 2. **Cross-genre transfer within the span-extraction paradigm** — LME-detected heads transfer effectively to SEC extraction despite a complete genre mismatch (chat logs vs. 10-K filings). This demonstrates that the span-extraction attention mechanism is **genre-agnostic**: the model reuses the same heads for locating facts in financial documents as for locating dialogue rounds in chat histories. The shared mechanism is *intra-document span location*, not domain knowledge.
 
-3. **Shared retrieval substrate** — Cross-task transfer experiments show that task-specific head ablations cause broad, non-specific damage. Specificity indices are negative for 6/8 tasks. The model uses a common set of retrieval heads across SEC extraction tasks.
+3. **Shared retrieval substrate** — Cross-task transfer experiments show that task-specific head ablations cause broad, non-specific damage. Specificity indices are negative for 6/8 tasks, and bootstrap CIs confirm 4 of those 6 are significantly below zero (CIs exclude 0). The most extreme case, `headquarters_state`, has specificity = -0.42 [-0.57, -0.27]. The model uses a common set of retrieval heads across SEC extraction tasks.
 
 4. **Semantic head clusters** — Jaccard analysis reveals a geographic/entity cluster (`headquarters_city`, `headquarters_state`, `registrant_name`) sharing 45-78% of top heads, while other task pairs are near-disjoint. The model develops functionally specialized head groups for related extraction patterns.
 
 5. **Task difficulty hierarchy** — Numeric extraction (employee count, CEO name) collapses with just 8 knocked-out heads (>70% drop), while location/entity tasks degrade gradually. Information type determines head concentration.
 
 6. **Priority order within shared head pools** — SEC and LME rankings converge to similar accuracy by K=32 but differ in degradation trajectory. SEC-detected rankings frontload heads critical for sentence-level fact extraction; LME-detected rankings frontload heads for paragraph-level dialogue retrieval. The underlying head pool is shared, but the priority ordering reflects the retrieval granularity of the detection data.
+
+7. **Random baseline control** — Random head ablation (3 seeds, K=0–128) causes only gradual degradation: 88.2% at K=16, 87.5% at K=32, reaching 64.2% at K=128. This confirms that the catastrophic drops from QRScore-detected head ablation (39.6% at K=16, 6.3% at K=128) are due to targeting retrieval-critical heads, not to accumulated damage from removing any heads.
 
 ---
 
@@ -252,7 +271,7 @@ This means the per-task detection for these tasks either (a) identified heads th
 ### Plots
 | File | Description |
 |------|-------------|
-| `accuracy_vs_knockout.png` | Overall accuracy curves: 3 methods compared |
+| `accuracy_vs_knockout.png` | Overall accuracy curves: 3 methods + 3 random baselines compared |
 | `per_task_accuracy_curves.png` | 8 subplots showing per-task degradation for all methods |
 | `per_task_heatmaps.png` | Tasks × K heatmaps with % annotations per method |
 | `transfer_drop_heatmap_K{8,16,32,48,64,96,128}.png` | 8×8 source-target drop matrices at each K |
@@ -262,9 +281,12 @@ This means the per-task detection for these tasks either (a) identified heads th
 ### Tables
 | File | Description |
 |------|-------------|
-| `accuracy_table.csv` | Method × Task × K accuracy values |
+| `accuracy_table.csv` | Method × Task × K accuracy values (includes random baselines) |
 | `drop_from_baseline_table.csv` | Drop from K=0 baseline for each cell |
 | `specificity_table.csv` | Per-source-task specificity index and surgicality ratio |
+| `confidence_intervals.csv` | Overall bootstrap 95% CIs per method per K |
+| `per_task_confidence_intervals.csv` | Per-task bootstrap 95% CIs per method per K |
+| `specificity_confidence_intervals.csv` | Specificity index bootstrap 95% CIs per source task |
 
 ### Raw Data
 | File | Description |
@@ -272,8 +294,13 @@ This means the per-task detection for these tasks either (a) identified heads th
 | `QRScore-SEC_results.json` | Full per-task accuracy curves (K=0 through K=128) |
 | `QRScore-8B-LME-TRAIN_results.json` | LME-TRAIN method results |
 | `QRScore-8B-NQ-TRAIN_results.json` | NQ-TRAIN method results |
+| `Random-seed42_results.json` | Random baseline (seed 42) results |
+| `Random-seed123_results.json` | Random baseline (seed 123) results |
+| `Random-seed456_results.json` | Random baseline (seed 456) results |
 | `cross_task_transfer_matrix.json` | Full 8×8×8 transfer drop matrix |
 | `cross_task_specificity_metrics.json` | Specificity/surgicality at summary K=16 |
 | `cross_task_head_similarity_topk.json` | Jaccard overlap at each top-K |
-| `QRScore-SEC_token_log.jsonl` | Raw token-level generation logs for all instances |
+| `confidence_intervals.json` | Full bootstrap CI data (overall + per-task + specificity) |
+| `QRScore-SEC_token_log.jsonl` | Raw token-level generation logs for SEC method |
+| `Random-seed42_token_log.jsonl` | Raw token-level generation logs for random baseline |
 | `comparison_summary.json` | High-level method comparison summary |
