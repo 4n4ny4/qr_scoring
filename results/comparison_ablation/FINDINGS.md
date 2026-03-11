@@ -4,7 +4,7 @@
 
 We evaluated **QRScore attention head detection** on Llama-3.1-8B-Instruct using a leakage-safe SEC 10-K filing dataset (8 extraction tasks, 24 test instances per task = 192 total). The experiments compare three head ranking sources, measure per-task ablation sensitivity, and quantify cross-task transfer and specificity of the detected heads.
 
-**Model:** `meta-llama/Llama-3.1-8B-Instruct` (stock HuggingFace weights, flash_attention_2)  
+**Model:** `meta-llama/Llama-3.1-8B-Instruct` (stock HuggingFace weights, `flash_attention_2`)  
 **Head masking:** Forward pre-hooks on `o_proj` layers zeroing out ablated head slices  
 **Baseline accuracy (K=0):** 91.1% across all 8 tasks
 
@@ -104,19 +104,19 @@ At K=16, QRScore-SEC ablation impact by task:
 
 | Task | K=0 | K=8 | K=16 | Drop@K=16 |
 |------|-----|-----|------|-----------|
-| employees_count_total | 95.8% | 16.7% | 4.2% | **91.7%** |
-| ceo_lastname | 91.7% | 20.8% | 0.0% | **91.7%** |
-| holder_record_amount | 79.2% | 33.3% | 20.8% | 58.3% |
-| headquarters_city | 95.8% | 62.5% | 37.5% | 58.3% |
-| incorporation_year | 83.3% | 62.5% | 41.7% | 41.7% |
-| incorporation_state | 100% | 79.2% | 66.7% | 33.3% |
-| registrant_name | 100% | 91.7% | 75.0% | 25.0% |
-| headquarters_state | 83.3% | 75.0% | 70.8% | 12.5% |
+| `employees_count_total` | 95.8% | 16.7% | 4.2% | **91.7%** |
+| `ceo_lastname` | 91.7% | 20.8% | 0.0% | **91.7%** |
+| `holder_record_amount` | 79.2% | 33.3% | 20.8% | 58.3% |
+| `headquarters_city` | 95.8% | 62.5% | 37.5% | 58.3% |
+| `incorporation_year` | 83.3% | 62.5% | 41.7% | 41.7% |
+| `incorporation_state` | 100% | 79.2% | 66.7% | 33.3% |
+| `registrant_name` | 100% | 91.7% | 75.0% | 25.0% |
+| `headquarters_state` | 83.3% | 75.0% | 70.8% | 12.5% |
 
 **Chart:** `per_task_accuracy_curves.png`
 
-- **Numeric/name extraction tasks** (employees_count_total, ceo_lastname) are devastated by just 8 head knockouts — these tasks rely on a small, concentrated set of heads.
-- **Location/entity tasks** (headquarters_state, registrant_name) degrade more gradually — their retrieval is distributed across more heads.
+- **Numeric/name extraction tasks** (`employees_count_total`, `ceo_lastname`) are devastated by just 8 head knockouts — these tasks rely on a small, concentrated set of heads.
+- **Location/entity tasks** (`headquarters_state`, `registrant_name`) degrade more gradually — their retrieval is distributed across more heads.
 - **Implication for paper:** Different information types within the same document domain have markedly different head concentration profiles. This suggests a **hierarchy of retrieval difficulty** where numeric facts depend on fewer, more specialized heads.
 
 ### Key Finding 3: LME-TRAIN shows a different ablation profile than SEC
@@ -143,19 +143,19 @@ At K=16, the specificity metrics reveal that most task-specific head knockouts c
 
 | Source Task | On-Target Drop | Off-Target Mean Drop | Specificity Index |
 |-------------|---------------|---------------------|-------------------|
-| headquarters_city | 0.50 | 0.52 | **-0.02** |
-| headquarters_state | 0.21 | 0.63 | **-0.42** |
-| registrant_name | 0.17 | 0.33 | **-0.17** |
-| employees_count_total | 0.08 | 0.02 | +0.06 |
-| holder_record_amount | 0.04 | -0.01 | +0.05 |
-| ceo_lastname | -0.04 | 0.04 | -0.08 |
-| incorporation_state | 0.00 | 0.03 | -0.03 |
-| incorporation_year | 0.00 | 0.01 | -0.01 |
+| `headquarters_city` | 0.50 | 0.52 | **-0.02** |
+| `headquarters_state` | 0.21 | 0.63 | **-0.42** |
+| `registrant_name` | 0.17 | 0.33 | **-0.17** |
+| `employees_count_total` | 0.08 | 0.02 | +0.06 |
+| `holder_record_amount` | 0.04 | -0.01 | +0.05 |
+| `ceo_lastname` | -0.04 | 0.04 | -0.08 |
+| `incorporation_state` | 0.00 | 0.03 | -0.03 |
+| `incorporation_year` | 0.00 | 0.01 | -0.01 |
 
 **Chart:** `specificity_bars.png`, `specificity_table.csv`
 
 - **Negative specificity index** means off-target damage exceeds on-target damage. This is the case for 6 of 8 tasks.
-- **headquarters_state** is the most extreme: knocking out its heads causes 0.63 mean off-target drop but only 0.21 on-target drop (specificity = -0.42). Its heads are broadly important for SEC retrieval, not HQ-state-specific.
+- **`headquarters_state`** is the most extreme: knocking out its heads causes 0.63 mean off-target drop but only 0.21 on-target drop (specificity = -0.42). Its heads are broadly important for SEC retrieval, not HQ-state-specific.
 - **Implication for paper:** The QRScore-detected heads form a **shared retrieval substrate** rather than task-specific circuits. Ablating any task's top heads degrades the model's general ability to extract information from SEC documents. This is evidence that long-context retrieval in LLMs uses a common set of attention heads regardless of the specific information being retrieved.
 
 ### Key Finding 5: A cluster of related tasks shares heads
@@ -164,18 +164,18 @@ The Jaccard head similarity analysis reveals a clear cluster:
 
 At top-16 heads:
 
-| | hq_city | hq_state | registrant_name |
-|---|---------|----------|-----------------|
-| **hq_city** | 1.00 | **0.78** | 0.33 |
-| **hq_state** | 0.78 | 1.00 | **0.45** |
-| **registrant_name** | 0.33 | 0.45 | 1.00 |
+| | hq\_city | hq\_state | registrant\_name |
+|---|---------|----------|------------------|
+| **hq\_city** | 1.00 | **0.78** | 0.33 |
+| **hq\_state** | 0.78 | 1.00 | **0.45** |
+| **registrant\_name** | 0.33 | 0.45 | 1.00 |
 
 **Chart:** `head_similarity_heatmaps.png`
 
-- **headquarters_city and headquarters_state** share 78% of their top-16 heads — nearly identical head sets.
-- **registrant_name** overlaps at 33-45% with both HQ tasks, forming a geographic/entity cluster.
+- **`headquarters_city` and `headquarters_state`** share 78% of their top-16 heads — nearly identical head sets.
+- **`registrant_name`** overlaps at 33-45% with both HQ tasks, forming a geographic/entity cluster.
 - All other task pairs have near-zero overlap (<7%).
-- This cluster persists and strengthens at larger K (top-128: hq_city–hq_state = 0.75, hq_state–registrant = 0.64).
+- This cluster persists and strengthens at larger K (top-128: hq\_city–hq\_state = 0.75, hq\_state–registrant = 0.64).
 - **Implication for paper:** There are **functional head groups** in the model. Location-related extraction (city, state, company name from SEC headers) is handled by a shared set of heads, while other fact types (CEO name, employee count, year) use distinct (but still broadly impactful) heads. This suggests the model develops specialized head clusters for **semantically related extraction patterns**.
 
 ### Key Finding 6: Some task-specific detections fail to isolate their own task
@@ -185,7 +185,7 @@ At K=16, several task-specific ablations show **zero on-target drop**:
 - `incorporation_year` heads: 0% on-target drop, 0.6% off-target drop
 - `ceo_lastname` heads: -4.2% on-target drop (accuracy *improved*), 3.6% off-target drop
 
-This means the per-task detection for these tasks either (a) identified heads that aren't actually critical for that specific task at K=16, or (b) the task is robust to losing its "top" heads because redundant pathways exist. The negative on-target drop for ceo_lastname suggests mild regularization effects from head removal.
+This means the per-task detection for these tasks either (a) identified heads that aren't actually critical for that specific task at K=16, or (b) the task is robust to losing its "top" heads because redundant pathways exist. The negative on-target drop for `ceo_lastname` suggests mild regularization effects from head removal.
 
 ---
 
@@ -195,7 +195,7 @@ This means the per-task detection for these tasks either (a) identified heads th
 
 2. **Shared retrieval substrate** — Cross-task transfer experiments show that task-specific head ablations cause broad, non-specific damage. Specificity indices are negative for 6/8 tasks. The model uses a common set of retrieval heads across SEC extraction tasks.
 
-3. **Semantic head clusters** — Jaccard analysis reveals a geographic/entity cluster (headquarters_city, headquarters_state, registrant_name) sharing 45-78% of top heads, while other task pairs are near-disjoint. The model develops functionally specialized head groups for related extraction patterns.
+3. **Semantic head clusters** — Jaccard analysis reveals a geographic/entity cluster (`headquarters_city`, `headquarters_state`, `registrant_name`) sharing 45-78% of top heads, while other task pairs are near-disjoint. The model develops functionally specialized head groups for related extraction patterns.
 
 4. **Task difficulty hierarchy** — Numeric extraction (employee count, CEO name) collapses with just 8 knocked-out heads (>70% drop), while location/entity tasks degrade gradually. Information type determines head concentration.
 

@@ -18,18 +18,21 @@ The core idea: if a set of heads truly drives retrieval, zeroing them out at inf
 
 Each test instance presents a long SEC 10-K filing and asks the model to extract one fact:
 
-| Task | Example Answer |
-|------|---------------|
-| `registrant_name` | "Vishay Intertechnology, Inc." |
-| `headquarters_city` | "Malvern" |
-| `headquarters_state` | "Pennsylvania" |
-| `incorporation_state` | "Delaware" |
-| `incorporation_year` | "1962" |
-| `employees_count_total` | "25,600" |
-| `ceo_lastname` | "Zandman" |
-| `holder_record_amount` | "7,543" |
+| Task | Example Answer | Train (Detection) | Train (NIAH) | Test (NIAH) |
+|------|---------------|-------------------|-------------|-------------|
+| `registrant_name` | "Vishay Intertechnology, Inc." | 149 | 163 | 41 |
+| `headquarters_city` | "Malvern" | 110 | 113 | 28 |
+| `headquarters_state` | "Pennsylvania" | 106 | 109 | 27 |
+| `incorporation_state` | "Delaware" | 123 | 124 | 32 |
+| `incorporation_year` | "1962" | 124 | 125 | 30 |
+| `employees_count_total` | "25,600" | 118 | 116 | 24 |
+| `ceo_lastname` | "Zandman" | 123 | 136 | 35 |
+| `holder_record_amount` | "7,543" | 121 | 117 | 24 |
+| **Total** | | **974** | **1003** | **241** |
 
-192 test instances total (24 per task), all from held-out SEC filings not seen during detection.
+- **Train (Detection)** — instances in `data/long_context_detection_optionA/`, used in Step 5 to score all 1024 heads. Some raw instances are dropped during build (e.g. needle not found in chunked context).
+- **Train (NIAH)** — instances in `data/niah_input/*_train.json`, the full NIAH-format training set.
+- **Test (NIAH)** — instances in `data/niah_input/*_test.json`, used for all ablation experiments. The evaluation caps at 24 per task (`--max_instances_per_task 24`) for balanced comparison, giving 192 evaluated instances.
 
 ---
 
