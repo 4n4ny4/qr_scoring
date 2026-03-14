@@ -16,6 +16,44 @@ OUTPUT_DIR="$PROJECT_DIR/results/detection"
 TOPK_EXPORT_DIR="$OUTPUT_DIR/topk"
 EXPORT_TOP_K=(8 16 32 48 64 96 128)
 
+check_python_dependencies() {
+    # Use the same interpreter as the run command so checks match runtime behavior.
+    python - <<'PY'
+import importlib
+import sys
+
+required = ["tqdm", "numpy", "torch", "transformers", "yaml"]
+missing = [name for name in required if importlib.util.find_spec(name) is None]
+
+if missing:
+    print("ERROR: Missing Python dependencies: " + ", ".join(missing), file=sys.stderr)
+    print("Install project dependencies with:", file=sys.stderr)
+    print("  python -m pip install -e .", file=sys.stderr)
+    print("Or install only missing packages with:", file=sys.stderr)
+    print("  python -m pip install " + " ".join(missing), file=sys.stderr)
+    sys.exit(1)
+
+try:
+    import PIL.Image
+except ModuleNotFoundError:
+    print("ERROR: Missing Python dependency: Pillow", file=sys.stderr)
+    print("Install project dependencies with:", file=sys.stderr)
+    print("  python -m pip install -e .", file=sys.stderr)
+    print("Or install only missing package with:", file=sys.stderr)
+    print("  python -m pip install Pillow>=9.1.0", file=sys.stderr)
+    sys.exit(1)
+
+if not hasattr(PIL.Image, "Resampling"):
+    print("ERROR: Pillow is too old. `PIL.Image.Resampling` is required.", file=sys.stderr)
+    print("Detected Pillow without Resampling support.", file=sys.stderr)
+    print("Upgrade with:", file=sys.stderr)
+    print("  python -m pip install --upgrade 'Pillow>=9.1.0'", file=sys.stderr)
+    sys.exit(1)
+PY
+}
+
+check_python_dependencies
+
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$TOPK_EXPORT_DIR"
 

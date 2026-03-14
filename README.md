@@ -133,7 +133,7 @@ qr_scoring/
 pip install -e .
 ```
 
-Dependencies: `torch`, `transformers>=4.44.0`, `flash_attn`, `pyyaml>=5.1`, `tqdm`
+Dependencies: `torch`, `transformers>=4.44.0,<5.0.0`, `flash_attn`, `pyyaml>=5.1`, `tqdm`, `Pillow>=9.1.0`
 
 For plotting: `pip install matplotlib pandas`
 

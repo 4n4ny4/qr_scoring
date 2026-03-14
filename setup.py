@@ -11,10 +11,11 @@ from setuptools import find_packages, setup
 def get_requires():
     return [
         "torch",
-        "transformers>=4.44.0",
+        "transformers>=4.44.0,<5.0.0",
         "flash_attn",
         "pyyaml>=5.1",
         "tqdm",
+        "Pillow>=9.1.0",
     ]
 
 def get_console_scripts():

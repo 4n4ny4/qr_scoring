@@ -1,5 +1,11 @@
 import argparse
-from tqdm import tqdm
+try:
+    from tqdm import tqdm
+except ModuleNotFoundError as exc:
+    raise ModuleNotFoundError(
+        "Missing dependency 'tqdm'. Install project dependencies with `python -m pip install -e .` "
+        "(or quick fix: `python -m pip install tqdm`)."
+    ) from exc
 from itertools import product
 import json
 import os
