@@ -6,21 +6,34 @@ Outputs:
   - head_similarity_heatmaps.png     (Jaccard overlap panels at each top-K)
   - specificity_bars.png             (on-target vs off-target drop + specificity index)
   - specificity_table.csv            (same data in tabular form)
+    - curve_{source}__to__{target}.png (raw-accuracy curve per source→target pair)
+    - pair_curve_summary.csv           (quick stats for all source→target curves)
 
 Usage:
   python scripts/evaluation/plot_transfer.py \
     --results_dir results/comparison_ablation
+
+    python scripts/evaluation/plot_transfer.py \
+        --results_dir results/comparison_ablation \
+        --generate_pair_curves \
+        --pair_curves_output_dir cross_ablation_curves
 """
 
 import argparse
 import csv
 import json
 import os
+import re
 
 import matplotlib
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt
 import numpy as np
+
+
+def _safe_name(text):
+    """Convert labels into filesystem-safe file-name segments."""
+    return re.sub(r"[^a-zA-Z0-9_\-]+", "_", text).strip("_")
 
 
 # ── 1. Transfer drop heatmap (one per K) ──────────────────────────────────
@@ -156,6 +169,75 @@ def plot_specificity(spec_data, output_dir):
     print(f"Saved: {csv_path}")
 
 
+def plot_pair_accuracy_curves(transfer_data, output_dir):
+    """Create one raw-accuracy curve per source→target pair."""
+    os.makedirs(output_dir, exist_ok=True)
+
+    ks = transfer_data["knockout_sizes"]
+    sources = transfer_data["sources"]
+    targets = transfer_data["targets"]
+    results = transfer_data["results"]
+
+    summary_rows = []
+    count = 0
+
+    for source in sources:
+        for target in targets:
+            by_k = results[source][target]["by_k"]
+            y_acc = [by_k[str(k)]["accuracy"] for k in ks]
+
+            fig, ax = plt.subplots(figsize=(7.5, 4.8))
+            ax.plot(ks, y_acc, marker="o", linewidth=2, color="#1f77b4")
+            ax.set_xlabel("Knockout size (K)", fontsize=10)
+            ax.set_ylabel("Raw accuracy", fontsize=10)
+            ax.set_title(
+                f"Cross Ablation Curve: {source} -> {target}",
+                fontsize=11,
+            )
+            ax.set_ylim(0.0, 1.0)
+            ax.set_xlim(min(ks), max(ks))
+            ax.grid(alpha=0.3)
+            ax.set_xticks(ks)
+
+            safe_source = _safe_name(source)
+            safe_target = _safe_name(target)
+            out_file = f"curve_{safe_source}__to__{safe_target}.png"
+            out_path = os.path.join(output_dir, out_file)
+
+            fig.tight_layout()
+            fig.savefig(out_path, dpi=150, bbox_inches="tight")
+            plt.close(fig)
+
+            k0_acc = y_acc[0]
+            last_acc = y_acc[-1]
+            max_drop = max(k0_acc - val for val in y_acc)
+            summary_rows.append([
+                source,
+                target,
+                f"{k0_acc:.4f}",
+                f"{last_acc:.4f}",
+                f"{max_drop:.4f}",
+                out_file,
+            ])
+            count += 1
+
+    summary_path = os.path.join(output_dir, "pair_curve_summary.csv")
+    with open(summary_path, "w", newline="", encoding="utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([
+            "source_task",
+            "target_task",
+            "accuracy_k0",
+            "accuracy_k_last",
+            "max_drop_from_k0",
+            "plot_file",
+        ])
+        writer.writerows(summary_rows)
+
+    print(f"Saved {count} pair curves to: {output_dir}")
+    print(f"Saved: {summary_path}")
+
+
 # ── main ──────────────────────────────────────────────────────────────────
 
 def main():
@@ -164,6 +246,19 @@ def main():
                         help="Directory with cross_task_*.json files.")
     parser.add_argument("--output_dir", default=None,
                         help="Where to save plots (default: same as results_dir).")
+    parser.add_argument(
+        "--generate_pair_curves",
+        action="store_true",
+        help="Generate one raw-accuracy curve per source->target pair.",
+    )
+    parser.add_argument(
+        "--pair_curves_output_dir",
+        default=None,
+        help=(
+            "Output directory for pair curves. "
+            "Default: output_dir/cross_ablation_curves"
+        ),
+    )
     args = parser.parse_args()
     output_dir = args.output_dir or args.results_dir
     os.makedirs(output_dir, exist_ok=True)
@@ -175,7 +270,13 @@ def main():
     count = 0
     if os.path.exists(transfer_path):
         with open(transfer_path, encoding="utf-8") as f:
-            plot_transfer_heatmaps(json.load(f), output_dir)
+            transfer_data = json.load(f)
+            plot_transfer_heatmaps(transfer_data, output_dir)
+            if args.generate_pair_curves:
+                pair_curves_dir = args.pair_curves_output_dir or os.path.join(
+                    output_dir, "cross_ablation_curves"
+                )
+                plot_pair_accuracy_curves(transfer_data, pair_curves_dir)
         count += 1
     if os.path.exists(sim_path):
         with open(sim_path, encoding="utf-8") as f:
