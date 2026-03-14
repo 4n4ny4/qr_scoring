@@ -95,6 +95,13 @@ def collect_method_curves(results_dir):
     return method_curves
 
 
+def filter_method_curves(method_curves, include_methods=None):
+    """Filter method curve map to selected methods, preserving insertion order."""
+    if not include_methods:
+        return method_curves
+    return {m: curve for m, curve in method_curves.items() if m in include_methods}
+
+
 def build_display_curves(method_curves, average_random=True):
     """Build curves to display, optionally averaging Random-seed* methods."""
     display_curves = {}
@@ -190,6 +197,13 @@ def load_full_method_results(results_dir: str) -> dict:
             data = json.load(f)
         methods[data["method"]] = data
     return methods
+
+
+def filter_full_methods(methods: dict, include_methods=None) -> dict:
+    """Filter full method result payloads to selected methods."""
+    if not include_methods:
+        return methods
+    return {m: d for m, d in methods.items() if m in include_methods}
 
 
 def _sorted_ks(accuracy_curve: dict) -> list:
@@ -354,6 +368,15 @@ def main():
         action="store_true",
         help="Do not average Random-seed* curves; plot each seed separately.",
     )
+    parser.add_argument(
+        "--method_filter",
+        nargs="+",
+        default=None,
+        help=(
+            "Optional method names to include (e.g., QRScore-SEC). "
+            "If provided, only those methods are plotted and tabulated."
+        ),
+    )
     args = parser.parse_args()
 
     results_dir = args.results_dir
@@ -362,21 +385,42 @@ def main():
     os.makedirs(output_dir, exist_ok=True)
 
     method_curves = collect_method_curves(results_dir)
+    method_curves = filter_method_curves(method_curves, include_methods=args.method_filter)
     if not method_curves:
-        print(f"No *_results.json files found in {results_dir}")
+        if args.method_filter:
+            print(
+                "No matching methods found for --method_filter in "
+                f"{results_dir}: {args.method_filter}"
+            )
+        else:
+            print(f"No *_results.json files found in {results_dir}")
         return
 
     display_curves = build_display_curves(
         method_curves, average_random=not args.no_average_random
     )
 
-    output_path = os.path.join(output_dir, "accuracy_vs_knockout.png")
+    pooled_plot_name = "accuracy_vs_knockout.png"
+    if args.method_filter == ["QRScore-SEC"]:
+        pooled_plot_name = "qrscore_sec_pooled_accuracy_curve.png"
+    output_path = os.path.join(output_dir, pooled_plot_name)
     plot_accuracy_curves(display_curves, output_path)
 
     # per-task plots, heatmaps, and CSV tables
     full_methods = load_full_method_results(results_dir)
+    full_methods = filter_full_methods(full_methods, include_methods=args.method_filter)
     if full_methods:
-        plot_per_task_curves(full_methods, output_dir)
+        if args.method_filter == ["QRScore-SEC"]:
+            # Save QRScore-SEC-only plot under an explicit name.
+            plot_per_task_curves(full_methods, output_dir)
+            src = os.path.join(output_dir, "per_task_accuracy_curves.png")
+            dst = os.path.join(output_dir, "qrscore_sec_per_task_accuracy_curves.png")
+            if os.path.exists(src):
+                os.replace(src, dst)
+                print(f"Saved per-task curves to {dst}")
+        else:
+            plot_per_task_curves(full_methods, output_dir)
+
         plot_heatmaps(full_methods, output_dir)
         write_summary_csv(full_methods, output_dir)
 
