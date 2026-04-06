@@ -14,6 +14,12 @@ INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection_optionA}"
 OUTPUT_DIR="${OUTPUT_DIR:-$PROJECT_DIR/results/detection_qwen}"
 TOPK_EXPORT_DIR="$OUTPUT_DIR/topk"
 EXPORT_TOP_K=(8 16 32 48 64 96 128)
+# Qwen detection with output_attentions can be memory-heavy on long contexts.
+# Truncate each paragraph to reduce sequence length (set 0 for no truncation).
+TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-20}"
+
+# Helps reduce CUDA allocator fragmentation in long-running detection jobs.
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
 
 mkdir -p "$OUTPUT_DIR"
 mkdir -p "$TOPK_EXPORT_DIR"
@@ -61,7 +67,8 @@ if [ "$COMBINED_ONLY" = false ]; then
             --config_or_config_path "$CONFIG" \
             --task_name "long_context_${TASK}" \
             --export_dir "$TOPK_EXPORT_DIR" \
-            --export_top_k "${EXPORT_TOP_K[@]}"
+            --export_top_k "${EXPORT_TOP_K[@]}" \
+            --truncate_by_space "$TRUNCATE_BY_SPACE"
 
         echo "Done: $TASK"
         echo ""
@@ -87,7 +94,8 @@ if [ -f "$COMBINED_INPUT" ]; then
             --config_or_config_path "$CONFIG" \
             --task_name "long_context_combined" \
             --export_dir "$TOPK_EXPORT_DIR" \
-            --export_top_k "${EXPORT_TOP_K[@]}"
+            --export_top_k "${EXPORT_TOP_K[@]}" \
+            --truncate_by_space "$TRUNCATE_BY_SPACE"
 
         echo "Done: combined"
     fi
@@ -97,3 +105,4 @@ fi
 
 echo ""
 echo "All Qwen detection complete. Results in $OUTPUT_DIR"
+echo "Used TRUNCATE_BY_SPACE=$TRUNCATE_BY_SPACE"
