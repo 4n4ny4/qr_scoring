@@ -269,7 +269,7 @@ def generate_random_heads(num_layers, num_heads_per_layer, total_heads, seed=42)
 
 
 def load_method_rankings(args, num_layers, num_heads_per_layer):
-    results_dir = os.path.join(PROJECT_DIR, "results", "detection")
+    results_dir = args.detection_results_dir
     methods = {}
 
     # 1) SEC combined ranking
@@ -517,6 +517,11 @@ def main():
     parser = argparse.ArgumentParser(description="Comparison ablation across head-ranking methods")
     parser.add_argument("--niah_dir", default=os.path.join(PROJECT_DIR, "data", "niah_input"))
     parser.add_argument("--output_dir", default=os.path.join(PROJECT_DIR, "results", "comparison_ablation"))
+    parser.add_argument(
+        "--detection_results_dir",
+        default=os.path.join(PROJECT_DIR, "results", "detection"),
+        help="Directory containing long_context_*_heads.json rankings to ablate",
+    )
     parser.add_argument("--model_name", default=MODEL_NAME)
     parser.add_argument(
         "--external_rankings_dir",
@@ -561,6 +566,7 @@ def main():
     print(f"Resolved project_dir={PROJECT_DIR}")
     print(f"Resolved niah_dir={args.niah_dir}")
     print(f"Resolved output_dir={args.output_dir}")
+    print(f"Resolved detection_results_dir={args.detection_results_dir}")
     print(f"Resolved external_rankings_dir={args.external_rankings_dir}")
 
     # Load test instances by task and pooled.

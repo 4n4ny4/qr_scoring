@@ -37,13 +37,21 @@ class AttnBasedRetriever:
         for k, v in config.items():
             setattr(self, k, v)
 
-        # This repository is intentionally constrained to one model.
-        if self.model_base_class.lower() != 'llama-3.1-8b-instruct':
-            raise ValueError(
-                f"Unsupported model class: {self.model_base_class}. "
-                "Only 'Llama-3.1-8B-Instruct' is supported in this repo."
-            )
-        BaseClass = LlamaForCausalLM
+        model_base_class_lower = self.model_base_class.lower()
+        model_name_lower = self.model_name_or_path.lower()
+        self.use_native_attentions = (
+            "qwen" in model_base_class_lower or "qwen" in model_name_lower
+        )
+        if self.use_native_attentions:
+            BaseClass = transformers.AutoModelForCausalLM
+        else:
+            # Keep the custom Llama class for backwards-compatible Llama detection.
+            if self.model_base_class.lower() != 'llama-3.1-8b-instruct':
+                raise ValueError(
+                    f"Unsupported model class: {self.model_base_class}. "
+                    "Supported: 'Llama-3.1-8B-Instruct' and Qwen variants."
+                )
+            BaseClass = LlamaForCausalLM
         
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_name_or_path)
         try:
@@ -123,32 +131,35 @@ class AttnBasedRetriever:
         return start_idx, end_idx
     
     def get_prompt(self, query: str, docs: List[Dict]):
-        if self.model_base_class.lower() != 'llama-3.1-8b-instruct':
-            raise NotImplementedError(
-                f"Prompt format is only defined for Llama-3.1-8B-Instruct; got {self.model_base_class}."
-            )
-
-        self.prompt_prefix = '<|start_header_id|>user<|end_header_id|>'
-        self.prompt_suffix = '<|eot_id|><|start_header_id|>assistant<|end_header_id|>'
         self.prompt_separator = ' \n\n'
-
         self.retrieval_instruction = ' Here are some paragraphs:'
         self.retrieval_instruction_late = 'Please find information that are relevant to the following query in the paragraphs above.'
-        
-        llm_prompt = self.prompt_prefix + self.retrieval_instruction
-        for i, doc in enumerate(docs):
 
+        prompt_body = self.retrieval_instruction
+        for i, doc in enumerate(docs):
             paragraph_text = doc['paragraph_text']
             if doc.get('title', None) is not None:
                 paragraph_text = doc['title'] + '\n' + paragraph_text
+            prompt_body += self.prompt_separator + f'[{i+1}] {paragraph_text}'
 
-            doc = f'[{i+1}] {paragraph_text}'
-            llm_prompt += self.prompt_separator + doc
+        prompt_body += self.prompt_separator + self.retrieval_instruction_late + self.prompt_separator + 'Query:'
+        prompt_body += f' {query}'
 
-        llm_prompt += self.prompt_separator + self.retrieval_instruction_late + self.prompt_separator + 'Query:'
-        query_prompt = f' {query}' + self.prompt_suffix
-        llm_prompt += query_prompt
-        return llm_prompt
+        # Llama uses hand-authored chat template tokens in this repo.
+        if self.model_base_class.lower() == 'llama-3.1-8b-instruct':
+            prompt_prefix = '<|start_header_id|>user<|end_header_id|>'
+            prompt_suffix = '<|eot_id|><|start_header_id|>assistant<|end_header_id|>'
+            return prompt_prefix + prompt_body + prompt_suffix
+
+        # Qwen and other chat models: rely on tokenizer chat template.
+        if hasattr(self.tokenizer, 'apply_chat_template') and self.tokenizer.chat_template:
+            return self.tokenizer.apply_chat_template(
+                [{"role": "user", "content": prompt_body}],
+                tokenize=False,
+                add_generation_prompt=True,
+            )
+
+        return prompt_body
     
     def compose_scoring_prompt(self, query: str, docs: List[Dict]) -> Tuple:
         # encode query and docs into a prompt
@@ -185,7 +196,7 @@ class AttnBasedRetriever:
         ################################################ 
         # TODO: should query_content includes 1) instruction, 2) suffix: '<|eot_id|>', '<|start_header_id|>', 'assistant', '<|end_header_id|>'?
         # If we just use the query only, we don't have to do set self.xxx as class attributes in get_prompt() ??
-        query_content = self.retrieval_instruction_late + self.prompt_separator + 'Query:' + f' {query}' + self.prompt_suffix
+        query_content = self.retrieval_instruction_late + self.prompt_separator + 'Query:' + f' {query}'
         query_start_idx, query_end_idx = self.get_content_span(llm_prompt, char_offset_to_token_idx, query_content)
         ################################################
 
@@ -333,6 +344,32 @@ class AttnBasedRetriever:
 
     def score_per_token_attention_to_query(self, prompt, query_span, kv_cache=None, start_idx=0):
         # return num_layers * num_heads * num_tokens, up to query_span
+        if self.use_native_attentions:
+            tokenized_input = self.tokenizer(prompt, return_tensors='pt').to(self.device)
+            input_ids = tokenized_input.input_ids
+            with torch.no_grad():
+                output = self.llm(
+                    input_ids=input_ids,
+                    use_cache=False,
+                    output_attentions=True,
+                    return_dict=True,
+                )
+
+            seq_len = input_ids.size(1)
+            q_start = max(0, min(query_span[0], seq_len - 1))
+            q_end = max(0, min(query_span[1], seq_len - 1))
+            query_indices = list(range(q_start, q_end + 1))
+
+            per_token_scores = []
+            for layer_attn in output.attentions[self.start_layer:self.end_layer+1]:
+                # layer_attn: (bsz, n_heads, seq_len, seq_len)
+                attn = layer_attn.squeeze(0)
+                layer_scores = attn[:, query_indices, :].mean(dim=1)
+                per_token_scores.append(layer_scores)
+
+            per_token_scores = torch.stack(per_token_scores, dim=0)
+            return per_token_scores, None
+
         tokenized_input = self.tokenizer(prompt, return_tensors='pt').to(self.device)
         input_ids = tokenized_input.input_ids[:, start_idx:]
         query_indices = list(range(query_span[0]-start_idx, query_span[1]-start_idx+1))
@@ -427,12 +464,16 @@ class FullHeadRetriever(AttnBasedRetriever):
                 # infer config from model_base_class
                 if model_base_class.lower() == 'llama-3.1-8b-instruct':
                     config = load_config(CONFIG_DIR / 'Llama-3.1-8B-Instruct_full_head.yaml')
+                elif model_base_class.lower() == 'qwen2.5-7b-instruct':
+                    config = load_config(CONFIG_DIR / 'Qwen2.5-7B-Instruct_full_head.yaml')
                 else:
                     raise NotImplementedError(f"Config inference for model_base_class {model_base_class} is not implemented.")
             elif model_name_or_path is not None:
                 # infer config from model_name_or_path
                 if 'llama-3.1-8b-instruct' in model_name_or_path.lower():
                     config = load_config(CONFIG_DIR / 'Llama-3.1-8B-Instruct_full_head.yaml')
+                elif 'qwen2.5-7b-instruct' in model_name_or_path.lower():
+                    config = load_config(CONFIG_DIR / 'Qwen2.5-7B-Instruct_full_head.yaml')
                 else:
                     raise NotImplementedError(f"Config inference for model_name_or_path {model_name_or_path} is not implemented.")
             else:
