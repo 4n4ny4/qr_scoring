@@ -8,17 +8,11 @@ and prints a summary table.
 
 import json
 import os
+import argparse
 
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
-RANKING_PATHS = {
-    "SEC": os.path.join(PROJECT_DIR, "results", "detection", "long_context_combined_heads.json"),
-    "LME": os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json"),
-    "NQ":  os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json"),
-}
-
 K_VALUES = [8, 16, 32, 48, 64, 96, 128]
-NUM_TOTAL_HEADS = 1024  # 32 layers × 32 heads
 
 
 def load_heads(path):
@@ -46,9 +40,33 @@ def expected_random_jaccard(k, n):
 
 
 def main():
+    parser = argparse.ArgumentParser(description="Cross-method head overlap (Jaccard)")
+    parser.add_argument(
+        "--external_rankings_dir",
+        default=os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct"),
+        help="Directory containing lme_TRAIN.json and nq_TRAIN.json",
+    )
+    parser.add_argument(
+        "--num_total_heads",
+        type=int,
+        default=1024,
+        help="Total number of attention heads in the target model",
+    )
+    parser.add_argument(
+        "--results_dir",
+        default=os.path.join(PROJECT_DIR, "results", "comparison_ablation"),
+    )
+    args = parser.parse_args()
+
+    ranking_paths = {
+        "SEC": os.path.join(PROJECT_DIR, "results", "detection", "long_context_combined_heads.json"),
+        "LME": os.path.join(args.external_rankings_dir, "lme_TRAIN.json"),
+        "NQ": os.path.join(args.external_rankings_dir, "nq_TRAIN.json"),
+    }
+
     # Load all rankings
     rankings = {}
-    for name, path in RANKING_PATHS.items():
+    for name, path in ranking_paths.items():
         rankings[name] = load_heads(path)
         print(f"Loaded {name}: {len(rankings[name])} heads from {path}")
 
@@ -58,7 +76,7 @@ def main():
 
     # Compute expected random Jaccard
     for k in K_VALUES:
-        results["random_expected"][str(k)] = round(expected_random_jaccard(k, NUM_TOTAL_HEADS), 4)
+        results["random_expected"][str(k)] = round(expected_random_jaccard(k, args.num_total_heads), 4)
 
     # Compute Jaccard for each pair at each K
     for a, b in pairs:
@@ -105,7 +123,7 @@ def main():
         print()
 
     # Save results
-    out_dir = os.path.join(PROJECT_DIR, "results", "comparison_ablation")
+    out_dir = args.results_dir
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "cross_method_head_overlap.json")
     with open(out_path, "w", encoding="utf-8") as f:

@@ -52,9 +52,17 @@ from transformers.utils import (
 )
 from transformers.models.llama.configuration_llama import LlamaConfig
 
+FLASH_ATTN_AVAILABLE = False
 if is_flash_attn_2_available():
-    from flash_attn import flash_attn_func, flash_attn_varlen_func
-    from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
+    try:
+        from flash_attn import flash_attn_func, flash_attn_varlen_func
+        from flash_attn.bert_padding import index_first_axis, pad_input, unpad_input  # noqa
+        FLASH_ATTN_AVAILABLE = True
+    except Exception as e:
+        logger = logging.get_logger(__name__)
+        logger.warning(
+            "flash-attn import failed, falling back to non-flash attention paths: %s", e
+        )
 
 logger = logging.get_logger(__name__)
 

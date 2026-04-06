@@ -1,10 +1,10 @@
 """
-Comparison ablation for SEC NIAH tasks using only Llama-3.1-8B-derived head rankings.
+Comparison ablation for SEC NIAH tasks using precomputed head rankings.
 
 Methods supported:
 - QRScore-SEC (combined SEC detection)
-- QRScore-8B-LME-TRAIN (external 8B ranking from Llama-3.1-8B-Instruct/lme_TRAIN.json)
-- QRScore-8B-NQ-TRAIN (external 8B ranking from Llama-3.1-8B-Instruct/nq_TRAIN.json)
+- QRScore-8B-LME-TRAIN (external ranking from <external_rankings_dir>/lme_TRAIN.json)
+- QRScore-8B-NQ-TRAIN (external ranking from <external_rankings_dir>/nq_TRAIN.json)
 - Transfer-<task> (optional cross-task transfer from per-task SEC rankings)
 - Random-seed{42,123,456} (optional)
 """
@@ -31,18 +31,18 @@ TASKS = [
     "ceo_lastname", "holder_record_amount",
 ]
 
-MODEL_NAME = "meta-llama/Llama-3.1-8B-Instruct"
+MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
+DEFAULT_EXTERNAL_RANKINGS_DIR = "Llama-3.1-8B-Instruct"
 MAX_NEW_TOKENS = 30
 DEFAULT_KNOCKOUT_SIZES = [0, 8, 16, 32, 48, 64, 96, 128]
 DEFAULT_EXPORT_TOP_K = [8, 16, 32, 48, 64, 96, 128]
 
 
 # ---------------------------------------------------------------------------
-# Lightweight head-masking on top of the stock transformers LlamaForCausalLM.
+# Lightweight head-masking on top of a stock HF CausalLM model.
 # We register a pre-forward hook on each attention layer's o_proj that zeros
 # out the head slices listed in _masked_head_indices before the projection.
-# This replaces the old custom_modeling_llama copy which diverged from the
-# installed transformers version and produced corrupt outputs.
+# Works for decoder architectures exposing model.layers[*].self_attn.o_proj.
 # ---------------------------------------------------------------------------
 
 def _make_o_proj_hook(attn_module, head_dim):
@@ -60,9 +60,17 @@ def _make_o_proj_hook(attn_module, head_dim):
 
 
 def install_head_masking(model):
-    """Patch a stock LlamaForCausalLM with set_head_mask / per-layer hooks."""
+    """Patch a stock CausalLM with set_head_mask / per-layer hooks."""
+    if not hasattr(model, "model") or not hasattr(model.model, "layers"):
+        raise ValueError(
+            "Unsupported model architecture for head masking: expected model.layers"
+        )
     head_dim = model.config.hidden_size // model.config.num_attention_heads
     for layer in model.model.layers:
+        if not hasattr(layer, "self_attn") or not hasattr(layer.self_attn, "o_proj"):
+            raise ValueError(
+                "Unsupported attention module for head masking: expected self_attn.o_proj"
+            )
         attn = layer.self_attn
         attn._masked_head_indices = None
         attn.o_proj.register_forward_pre_hook(_make_o_proj_hook(attn, head_dim))
@@ -114,15 +122,27 @@ def answers_match(pred, gold):
     return False
 
 
-def build_prompt(context, question):
-    return (
-        f"<|start_header_id|>user<|end_header_id|>\n\n"
-        f"Read the following document and answer the question.\n\n"
-        f"Document:\n{context}\n\n"
-        f"Question: {question}\n\n"
-        f"Answer concisely with just the answer value."
-        f"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
-    )
+def build_prompt(tokenizer, context, question):
+    messages = [
+        {
+            "role": "user",
+            "content": (
+                "Read the following document and answer the question.\n\n"
+                f"Document:\n{context}\n\n"
+                f"Question: {question}\n\n"
+                "Answer concisely with just the answer value."
+            ),
+        }
+    ]
+
+    if hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
+        return tokenizer.apply_chat_template(
+            messages,
+            tokenize=False,
+            add_generation_prompt=True,
+        )
+
+    return messages[0]["content"]
 
 
 def generate_answer(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS,
@@ -132,11 +152,17 @@ def generate_answer(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS,
                        max_length=max_context_tokens)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
     with torch.no_grad():
+        eos_token_id = tokenizer.eos_token_id
+        if isinstance(eos_token_id, list):
+            eos_token_id = eos_token_id[0] if eos_token_id else None
+        pad_token_id = tokenizer.pad_token_id
+        if pad_token_id is None:
+            pad_token_id = eos_token_id
         out = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=False,
-            pad_token_id=tokenizer.eos_token_id,
+            pad_token_id=pad_token_id,
         )
     start = inputs["input_ids"].shape[1]
     new_tokens = out[0][start:]
@@ -154,6 +180,23 @@ def load_ranked_heads_json(path):
         layer, head = map(int, head_str.split("-"))
         heads.append((layer, head))
     return heads
+
+
+def sanitize_ranking(heads, num_layers, num_heads_per_layer, label):
+    """Drop any head indices that are invalid for the current model shape."""
+    valid = []
+    dropped = 0
+    for layer, head in heads:
+        if 0 <= layer < num_layers and 0 <= head < num_heads_per_layer:
+            valid.append((layer, head))
+        else:
+            dropped += 1
+    if dropped:
+        print(
+            f"  {label}: dropped {dropped} out-of-range heads "
+            f"for model shape {num_layers}x{num_heads_per_layer}"
+        )
+    return valid
 
 
 def ensure_full_ranking(heads, num_layers, num_heads_per_layer, seed):
@@ -232,17 +275,20 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
     # 1) SEC combined ranking
     sec_path = os.path.join(results_dir, "long_context_combined_heads.json")
     if os.path.exists(sec_path):
-        methods["QRScore-SEC"] = load_ranked_heads_json(sec_path)
+        sec_heads = load_ranked_heads_json(sec_path)
+        sec_heads = sanitize_ranking(sec_heads, num_layers, num_heads_per_layer, "QRScore-SEC")
+        methods["QRScore-SEC"] = sec_heads
         print(f"  QRScore-SEC: loaded from {sec_path} ({len(methods['QRScore-SEC'])} heads)")
     else:
         print("  QRScore-SEC: not found (run detection first)")
 
-    # 2) External 8B LME/NQ train rankings
-    lme_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json")
-    nq_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json")
+    # 2) External LME/NQ train rankings
+    lme_train_path = os.path.join(args.external_rankings_dir, "lme_TRAIN.json")
+    nq_train_path = os.path.join(args.external_rankings_dir, "nq_TRAIN.json")
 
     if os.path.exists(lme_train_path):
         lme_heads = load_ranked_heads_json(lme_train_path)
+        lme_heads = sanitize_ranking(lme_heads, num_layers, num_heads_per_layer, "QRScore-8B-LME-TRAIN")
         methods["QRScore-8B-LME-TRAIN"] = ensure_full_ranking(
             lme_heads, num_layers, num_heads_per_layer, seed=42
         )
@@ -250,13 +296,14 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
 
     if os.path.exists(nq_train_path):
         nq_heads = load_ranked_heads_json(nq_train_path)
+        nq_heads = sanitize_ranking(nq_heads, num_layers, num_heads_per_layer, "QRScore-8B-NQ-TRAIN")
         methods["QRScore-8B-NQ-TRAIN"] = ensure_full_ranking(
             nq_heads, num_layers, num_heads_per_layer, seed=43
         )
         print(f"  QRScore-8B-NQ-TRAIN: loaded from {nq_train_path}")
 
-    # Export deterministic top-K slices for external 8B rankings.
-    external_export_dir = os.path.join(results_dir, "topk", "8b_external")
+    # Export deterministic top-K slices for external rankings.
+    external_export_dir = os.path.join(results_dir, "topk", "external")
     export_top_k_from_ranking(lme_train_path, "lme_train", args.export_top_k, external_export_dir)
     export_top_k_from_ranking(nq_train_path, "nq_train", args.export_top_k, external_export_dir)
 
@@ -275,6 +322,12 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
                     + ", ".join(candidate_paths)
                 )
             task_heads = load_ranked_heads_json(task_path)
+            task_heads = sanitize_ranking(
+                task_heads,
+                num_layers,
+                num_heads_per_layer,
+                f"Transfer-{task}",
+            )
             transfer_rankings[task] = ensure_full_ranking(
                 task_heads, num_layers, num_heads_per_layer, seed=100 + args.tasks.index(task)
             )
@@ -323,7 +376,7 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
         details = []
 
         for idx, inst in enumerate(test_instances, start=1):
-            prompt = build_prompt(inst["context"], inst["question"])
+            prompt = build_prompt(tokenizer, inst["context"], inst["question"])
             pred, raw_text, token_ids = generate_answer(
                 model, tokenizer, prompt,
                 max_context_tokens=max_context_tokens)
@@ -461,10 +514,21 @@ def compute_specificity_metrics(transfer_matrix, summary_k):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="8B-only comparison ablation across detection methods")
+    parser = argparse.ArgumentParser(description="Comparison ablation across head-ranking methods")
     parser.add_argument("--niah_dir", default=os.path.join(PROJECT_DIR, "data", "niah_input"))
     parser.add_argument("--output_dir", default=os.path.join(PROJECT_DIR, "results", "comparison_ablation"))
     parser.add_argument("--model_name", default=MODEL_NAME)
+    parser.add_argument(
+        "--external_rankings_dir",
+        default=os.path.join(PROJECT_DIR, DEFAULT_EXTERNAL_RANKINGS_DIR),
+        help="Directory containing external ranking files: lme_TRAIN.json and nq_TRAIN.json",
+    )
+    parser.add_argument(
+        "--attn_implementation",
+        default="sdpa",
+        choices=["flash_attention_2", "sdpa", "eager"],
+        help="Attention backend passed to AutoModelForCausalLM.from_pretrained",
+    )
     parser.add_argument("--knockout_sizes", nargs="+", type=int, default=DEFAULT_KNOCKOUT_SIZES)
     parser.add_argument("--max_instances_per_task", type=int, default=None)
     parser.add_argument(
@@ -497,6 +561,7 @@ def main():
     print(f"Resolved project_dir={PROJECT_DIR}")
     print(f"Resolved niah_dir={args.niah_dir}")
     print(f"Resolved output_dir={args.output_dir}")
+    print(f"Resolved external_rankings_dir={args.external_rankings_dir}")
 
     # Load test instances by task and pooled.
     per_task_instances = {}
@@ -519,13 +584,32 @@ def main():
     # Load model.
     print(f"\nLoading model: {args.model_name}")
     tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name)
-    model = transformers.LlamaForCausalLM.from_pretrained(
-        args.model_name,
-        torch_dtype=torch.float16,
-        attn_implementation="flash_attention_2",
-        device_map="auto",
-    )
-    model.config.pad_token_id = model.config.eos_token_id
+    try:
+        model = transformers.AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            torch_dtype=torch.float16,
+            attn_implementation=args.attn_implementation,
+            device_map="auto",
+        )
+    except (ImportError, RuntimeError) as e:
+        if args.attn_implementation == "flash_attention_2":
+            print(
+                "flash_attention_2 unavailable or incompatible in this environment; "
+                "retrying with sdpa."
+            )
+            print(f"Original error: {e}")
+            model = transformers.AutoModelForCausalLM.from_pretrained(
+                args.model_name,
+                torch_dtype=torch.float16,
+                attn_implementation="sdpa",
+                device_map="auto",
+            )
+        else:
+            raise
+    if tokenizer.pad_token_id is None and tokenizer.eos_token_id is not None:
+        tokenizer.pad_token_id = tokenizer.eos_token_id
+    if model.config.pad_token_id is None:
+        model.config.pad_token_id = tokenizer.pad_token_id
     model.eval()
     install_head_masking(model)
 

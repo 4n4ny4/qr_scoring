@@ -46,13 +46,32 @@ class AttnBasedRetriever:
         BaseClass = LlamaForCausalLM
         
         self.tokenizer = transformers.AutoTokenizer.from_pretrained(self.model_name_or_path)
-        self.llm = BaseClass.from_pretrained(
-            self.model_name_or_path,
-            torch_dtype=torch.float16,
-            attn_implementation="flash_attention_2",
-            device_map='auto'
-        )
-        self.llm.config.pad_token_id = self.llm.config.eos_token_id
+        try:
+            self.llm = BaseClass.from_pretrained(
+                self.model_name_or_path,
+                torch_dtype=torch.float16,
+                attn_implementation="eager",
+                device_map='auto'
+            )
+        except (ImportError, RuntimeError) as e:
+            print(
+                "eager backend failed to load model; retrying with sdpa attention. "
+                f"Original error: {e}"
+            )
+            self.llm = BaseClass.from_pretrained(
+                self.model_name_or_path,
+                torch_dtype=torch.float16,
+                attn_implementation="sdpa",
+                device_map='auto'
+            )
+        eos_token_id = self.llm.config.eos_token_id
+        if isinstance(eos_token_id, list):
+            eos_token_id = eos_token_id[0] if eos_token_id else None
+
+        if self.tokenizer.pad_token_id is None and eos_token_id is not None:
+            self.tokenizer.pad_token_id = eos_token_id
+        if self.llm.config.pad_token_id is None:
+            self.llm.config.pad_token_id = self.tokenizer.pad_token_id
 
         self.start_layer = 0
         self.end_layer = self.llm.config.num_hidden_layers - 1
@@ -194,16 +213,16 @@ class AttnBasedRetriever:
         assert query_span[0] == null_query_span[0], "Query start indices do not match between query and null query."
 
         # scoring with actual query
-        per_token_scores, kv_cache = self.score_per_token_attention_to_query(prompt, query_span, None, 0)
+        per_token_scores, _ = self.score_per_token_attention_to_query(prompt, query_span, None, 0)
 
-        # use kv_cache from first query to speed up forward() for the calibration query.
-        for i in range(len(kv_cache.key_cache)):
-            kv_cache.key_cache[i] = kv_cache.key_cache[i][:,:,:query_span[0],:]
-            kv_cache.value_cache[i] = kv_cache.value_cache[i][:,:,:query_span[0],:]
-        kv_cache._seen_tokens = query_span[0]
-        start_idx = query_span[0]
-
-        null_per_token_scores, _ = self.score_per_token_attention_to_query(null_prompt, null_query_span, kv_cache, start_idx)
+        # Avoid cache reuse across passes because some transformers versions
+        # produce incompatible mask/cache shapes in this custom model path.
+        null_per_token_scores, _ = self.score_per_token_attention_to_query(
+            null_prompt,
+            null_query_span,
+            None,
+            0,
+        )
 
         min_length = min(per_token_scores.shape[-1], null_per_token_scores.shape[-1])
         per_token_scores_CAL = per_token_scores[:,:,:min_length] - null_per_token_scores[:,:,:min_length]
@@ -269,16 +288,16 @@ class AttnBasedRetriever:
         assert query_span[0] == null_query_span[0], "Query start indices do not match between query and null query."
 
         # scoring with actual query
-        per_token_scores, kv_cache = self.score_per_token_attention_to_query(prompt, query_span, None, 0)
+        per_token_scores, _ = self.score_per_token_attention_to_query(prompt, query_span, None, 0)
 
-        # use kv_cache from first query to speed up forward() for the calibration query.
-        for i in range(len(kv_cache.key_cache)):
-            kv_cache.key_cache[i] = kv_cache.key_cache[i][:,:,:query_span[0],:]
-            kv_cache.value_cache[i] = kv_cache.value_cache[i][:,:,:query_span[0],:]
-        kv_cache._seen_tokens = query_span[0]
-        start_idx = query_span[0]
-
-        null_per_token_scores, _ = self.score_per_token_attention_to_query(null_prompt, null_query_span, kv_cache, start_idx)
+        # Avoid cache reuse across passes because some transformers versions
+        # produce incompatible mask/cache shapes in this custom model path.
+        null_per_token_scores, _ = self.score_per_token_attention_to_query(
+            null_prompt,
+            null_query_span,
+            None,
+            0,
+        )
 
         min_length = min(per_token_scores.shape[-1], null_per_token_scores.shape[-1])
         per_token_scores_CAL = per_token_scores[:,:,:min_length] - null_per_token_scores[:,:,:min_length] # shape: (n_layers, n_heads, n_tok)

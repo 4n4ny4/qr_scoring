@@ -1,0 +1,23 @@
+{
+  "source_file": "data/long_context_detection_optionA/incorporation_year_detection.json",
+  "output_file": "results/detection/long_context_incorporation_year_heads.json",
+  "export_prefix": "long_context_incorporation_year",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "results/detection/topk/long_context_incorporation_year_top8.json",
+    "16": "results/detection/topk/long_context_incorporation_year_top16.json",
+    "32": "results/detection/topk/long_context_incorporation_year_top32.json",
+    "48": "results/detection/topk/long_context_incorporation_year_top48.json",
+    "64": "results/detection/topk/long_context_incorporation_year_top64.json",
+    "96": "results/detection/topk/long_context_incorporation_year_top96.json",
+    "128": "results/detection/topk/long_context_incorporation_year_top128.json"
+  }
+}
