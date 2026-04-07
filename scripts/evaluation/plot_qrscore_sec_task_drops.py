@@ -1,12 +1,18 @@
 #!/usr/bin/env python3
-"""Plot per-task raw accuracy vs K for QRScore-SEC only.
+"""Plot per-task raw accuracy or drop vs K for QRScore-SEC only.
 
 Input:
   - QRScore-SEC_results.json
 
-Output:
+Output (mode=accuracy):
     - qrscore_sec_task_accuracy_vs_k.png
     - qrscore_sec_task_accuracy/          (one mini graph per task)
+    - qrscore_sec_task_accuracy_grid.png  (8 mini graphs in one page)
+
+Output (mode=drop):
+    - qrscore_sec_task_drop_vs_k.png
+    - qrscore_sec_task_drop/
+    - qrscore_sec_task_drop_grid.png
 
 Usage:
   python scripts/evaluation/plot_qrscore_sec_task_drops.py \
@@ -24,7 +30,7 @@ import matplotlib.pyplot as plt
 
 
 def main():
-    parser = argparse.ArgumentParser(description="QRScore-SEC per-task raw accuracy vs K")
+    parser = argparse.ArgumentParser(description="QRScore-SEC per-task raw accuracy/drop vs K")
     parser.add_argument(
         "--results_dir",
         default="results/comparison_ablation",
@@ -34,6 +40,12 @@ def main():
         "--output_dir",
         default=None,
         help="Output directory (default: results_dir)",
+    )
+    parser.add_argument(
+        "--mode",
+        choices=["accuracy", "drop"],
+        default="accuracy",
+        help="Plot raw accuracy or drop from K=0.",
     )
     args = parser.parse_args()
 
@@ -57,49 +69,64 @@ def main():
 
     for task in sorted(per_task_curves.keys()):
         curve = per_task_curves[task]
-        accs = [curve[str(k)] for k in ks]
+        baseline = curve["0"]
+        vals = [curve[str(k)] for k in ks]
+        if args.mode == "drop":
+            vals = [baseline - v for v in vals]
         ax.plot(
             ks,
-            accs,
+            vals,
             marker="o",
             linewidth=2,
             label=task.replace("_", " "),
         )
 
-    ax.set_title("QRScore-SEC: Per-Task Raw Accuracy vs K", fontsize=14)
+    y_label = "Raw accuracy" if args.mode == "accuracy" else "Accuracy drop from K=0"
+    ax.set_title(f"QRScore-SEC: Per-Task {y_label} vs K", fontsize=14)
     ax.set_xlabel("Knockout size (K)", fontsize=12)
-    ax.set_ylabel("Raw accuracy", fontsize=12)
+    ax.set_ylabel(y_label, fontsize=12)
     ax.set_xticks(ks)
-    ax.set_ylim(0.0, 1.0)
+    if args.mode == "accuracy":
+        ax.set_ylim(0.0, 1.0)
+    else:
+        ax.axhline(0.0, color="black", linewidth=0.8)
     ax.grid(True, alpha=0.3)
     ax.legend(fontsize=9, ncol=2, loc="upper left")
 
     fig.tight_layout()
-    out_path = os.path.join(output_dir, "qrscore_sec_task_accuracy_vs_k.png")
+    prefix = "qrscore_sec_task_accuracy" if args.mode == "accuracy" else "qrscore_sec_task_drop"
+    out_path = os.path.join(output_dir, f"{prefix}_vs_k.png")
     fig.savefig(out_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
 
     print(f"Saved: {out_path}")
 
     # Export one mini graph per task.
-    mini_dir = os.path.join(output_dir, "qrscore_sec_task_accuracy")
+    mini_dir = os.path.join(output_dir, prefix)
     os.makedirs(mini_dir, exist_ok=True)
 
     for task in sorted(per_task_curves.keys()):
         curve = per_task_curves[task]
-        accs = [curve[str(k)] for k in ks]
+        baseline = curve["0"]
+        vals = [curve[str(k)] for k in ks]
+        if args.mode == "drop":
+            vals = [baseline - v for v in vals]
 
         fig, ax = plt.subplots(figsize=(5.2, 3.4))
-        ax.plot(ks, accs, marker="o", linewidth=2, color="#1f77b4")
+        ax.plot(ks, vals, marker="o", linewidth=2, color="#1f77b4")
         ax.set_title(task.replace("_", " "), fontsize=11)
         ax.set_xlabel("K", fontsize=10)
-        ax.set_ylabel("Accuracy", fontsize=10)
+        ax.set_ylabel("Accuracy" if args.mode == "accuracy" else "Drop", fontsize=10)
         ax.set_xticks(ks)
-        ax.set_ylim(0.0, 1.0)
+        if args.mode == "accuracy":
+            ax.set_ylim(0.0, 1.0)
+        else:
+            ax.axhline(0.0, color="black", linewidth=0.8)
         ax.grid(True, alpha=0.3)
         fig.tight_layout()
 
-        task_file = f"{task}_accuracy_vs_k.png"
+        suffix = "accuracy_vs_k" if args.mode == "accuracy" else "drop_vs_k"
+        task_file = f"{task}_{suffix}.png"
         task_path = os.path.join(mini_dir, task_file)
         fig.savefig(task_path, dpi=180, bbox_inches="tight")
         plt.close(fig)
@@ -115,22 +142,29 @@ def main():
     for i, task in enumerate(tasks):
         ax = axes[i // cols][i % cols]
         curve = per_task_curves[task]
-        accs = [curve[str(k)] for k in ks]
-        ax.plot(ks, accs, marker="o", linewidth=2, color="#1f77b4")
+        baseline = curve["0"]
+        vals = [curve[str(k)] for k in ks]
+        if args.mode == "drop":
+            vals = [baseline - v for v in vals]
+        ax.plot(ks, vals, marker="o", linewidth=2, color="#1f77b4")
         ax.set_title(task.replace("_", " "), fontsize=11)
         ax.set_xlabel("K", fontsize=10)
-        ax.set_ylabel("Accuracy", fontsize=10)
+        ax.set_ylabel("Accuracy" if args.mode == "accuracy" else "Drop", fontsize=10)
         ax.set_xticks(ks)
-        ax.set_ylim(0.0, 1.0)
+        if args.mode == "accuracy":
+            ax.set_ylim(0.0, 1.0)
+        else:
+            ax.axhline(0.0, color="black", linewidth=0.8)
         ax.grid(True, alpha=0.3)
 
     # Hide any unused axes (for safety if task count changes).
     for j in range(len(tasks), rows * cols):
         axes[j // cols][j % cols].set_visible(False)
 
-    fig.suptitle("QRScore-SEC Per-Task Raw Accuracy vs K", fontsize=16, y=0.98)
+    title_label = "Raw Accuracy" if args.mode == "accuracy" else "Accuracy Drop from K=0"
+    fig.suptitle(f"QRScore-SEC Per-Task {title_label} vs K", fontsize=16, y=0.98)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    grid_path = os.path.join(output_dir, "qrscore_sec_task_accuracy_grid.png")
+    grid_path = os.path.join(output_dir, f"{prefix}_grid.png")
     fig.savefig(grid_path, dpi=180, bbox_inches="tight")
     plt.close(fig)
     print(f"Saved: {grid_path}")
