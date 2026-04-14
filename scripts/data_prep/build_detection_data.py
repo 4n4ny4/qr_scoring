@@ -43,6 +43,23 @@ MAX_INSTANCES_PER_TASK = None
 _SENT_BOUNDARY = re.compile(r"(?<=[.!?])\s+(?=[A-Z])")
 
 
+def order_sections_by_filing(section_ids, section_order):
+    """Return unique section ids in the filing order defined by sections.csv."""
+    seen = set()
+    ordered = []
+    for sec_id in section_ids:
+        sec_id = (sec_id or "").strip()
+        if not sec_id or sec_id in seen:
+            continue
+        seen.add(sec_id)
+        ordered.append(sec_id)
+
+    return sorted(
+        ordered,
+        key=lambda sec_id: (section_order.get(sec_id, float("inf")), sec_id),
+    )
+
+
 def chunk_text_with_needle(full_context: str, needle_sentence: str, chunk_words: int = CHUNK_WORDS):
     """Split context into chunks, keeping needle_sentence within a single chunk."""
     needle_char_start = full_context.find(needle_sentence)
@@ -159,6 +176,11 @@ def main():
     sections_by_filename = {}
     with open(sections_path, newline="", encoding="utf-8") as f:
         reader = csv.DictReader(f)
+        section_field_order = {
+            field: idx
+            for idx, field in enumerate(reader.fieldnames or [])
+            if field.startswith("section_")
+        }
         for row in reader:
             sections_by_filename[row["filename"]] = row
 
@@ -209,13 +231,15 @@ def main():
                 skip_count += 1
                 continue
 
-            # Build context: gold section + distractor sections from haystack_sections_used
-            parts = [needle_text]
+            # Build context in filing order so the gold section stays in a natural position.
             used_sections = (row.get("haystack_sections_used") or "").split("|")
-            for sec_id in used_sections:
-                sec_id = sec_id.strip()
-                if not sec_id or sec_id == needle_section_id:
-                    continue
+            ordered_section_ids = order_sections_by_filing(
+                [needle_section_id, *used_sections],
+                section_field_order,
+            )
+
+            parts = []
+            for sec_id in ordered_section_ids:
                 txt = (sec_row.get(sec_id, "") or "").strip()
                 if txt:
                     parts.append(txt)
@@ -301,4 +325,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

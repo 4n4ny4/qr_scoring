@@ -193,6 +193,9 @@ We ran 8 source rankings (one per task) × 8 target tasks × 8 K-values using on
 
 **Charts:** `transfer_drop_heatmap_K16.png`, `transfer_drop_heatmap_K32.png`, `transfer_drop_heatmap_K128.png`
 
+Additional multi-panel views (all K in one figure):
+`specificity_raw_accuracy_heatmaps_qrscore_sec.png`, `specificity_drop_from_k0_heatmaps_qrscore_sec.png`
+
 ### Key Finding 4: Heads are NOT task-specific — ablation causes broad collateral damage
 
 At K=16, the specificity metrics reveal that most task-specific head knockouts cause as much or more damage to *other* tasks than to the source task:

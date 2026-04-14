@@ -3,6 +3,10 @@
 
 Outputs:
   - transfer_drop_heatmap_K{k}.png   (source×target drop heatmap, one per K>0)
+    - specificity_raw_accuracy_heatmaps_qrscore_sec.png
+        (source×target raw-accuracy heatmap panels, one panel per K>0)
+    - specificity_drop_from_k0_heatmaps_qrscore_sec.png
+        (source×target drop-from-K0 heatmap panels, one panel per K>0)
   - head_similarity_heatmaps.png     (Jaccard overlap panels at each top-K)
   - specificity_bars.png             (on-target vs off-target drop + specificity index)
   - specificity_table.csv            (same data in tabular form)
@@ -75,6 +79,108 @@ def plot_transfer_heatmaps(data, output_dir):
         fig.savefig(out, dpi=150, bbox_inches="tight")
         plt.close(fig)
         print(f"Saved: {out}")
+
+
+def _plot_transfer_metric_panels(
+    data,
+    output_path,
+    metric_key,
+    title,
+    cmap,
+    include_k0=False,
+):
+    """Plot one sourcextarget heatmap panel per K for a metric.
+
+    By default K=0 is omitted to match historical behavior for ablation-focused
+    panels. Set include_k0=True to include a baseline panel.
+    """
+    sources = data["sources"]
+    targets = data["targets"]
+    if include_k0:
+        ks = list(data["knockout_sizes"])
+    else:
+        ks = [k for k in data["knockout_sizes"] if k != 0]
+
+    n = len(ks)
+    cols = min(4, n)
+    rows = (n + cols - 1) // cols
+
+    fig, axes = plt.subplots(rows, cols, figsize=(5.2 * cols, 4.4 * rows), squeeze=False)
+    short_t = [t.replace("_", "\n") for t in targets]
+    short_s = [s.replace("_", "\n") for s in sources]
+    im = None
+
+    for idx, k in enumerate(ks):
+        ax = axes[idx // cols][idx % cols]
+        matrix = np.zeros((len(sources), len(targets)))
+        for r, src in enumerate(sources):
+            for c, tgt in enumerate(targets):
+                matrix[r, c] = data["results"][src][tgt]["by_k"][str(k)][metric_key]
+
+        im = ax.imshow(matrix, vmin=0, vmax=1, cmap=cmap, aspect="auto")
+        ax.set_xticks(range(len(targets)))
+        ax.set_xticklabels(short_t, fontsize=7, rotation=45, ha="right")
+        ax.set_yticks(range(len(sources)))
+        ax.set_yticklabels(short_s, fontsize=7)
+        ax.set_title(f"K={k}", fontsize=11)
+
+        for r in range(len(sources)):
+            for c in range(len(targets)):
+                val = matrix[r, c]
+                color = "white" if val > 0.6 or (metric_key == "accuracy" and val < 0.4) else "black"
+                ax.text(c, r, f"{val:.2f}", ha="center", va="center", fontsize=7, color=color)
+
+    for idx in range(n, rows * cols):
+        axes[idx // cols][idx % cols].set_visible(False)
+
+    for ax in axes[-1]:
+        if ax.get_visible():
+            ax.set_xlabel("Target task (evaluated on)", fontsize=9)
+    for row_axes in axes:
+        first_ax = row_axes[0]
+        if first_ax.get_visible():
+            first_ax.set_ylabel("Source task (heads knocked out)", fontsize=9)
+
+    if im is not None:
+        cbar_label = "Raw accuracy" if metric_key == "accuracy" else "Drop from K=0"
+        # Reserve a dedicated colorbar axis so it never overlays any subplot.
+        cax = fig.add_axes([0.935, 0.18, 0.015, 0.64])
+        fig.colorbar(im, cax=cax, label=cbar_label)
+
+    fig.suptitle(title, fontsize=14, y=0.98)
+    fig.subplots_adjust(left=0.08, right=0.90, bottom=0.12, top=0.90, wspace=0.35, hspace=0.38)
+    fig.savefig(output_path, dpi=150, bbox_inches="tight")
+    plt.close(fig)
+    print(f"Saved: {output_path}")
+
+
+def plot_transfer_specificity_heatmaps(data, output_dir):
+    """Generate multi-panel cross-ablation heatmaps for specificity interpretation."""
+    raw_out = os.path.join(
+        output_dir,
+        "specificity_raw_accuracy_heatmaps_qrscore_sec.png",
+    )
+    drop_out = os.path.join(
+        output_dir,
+        "specificity_drop_from_k0_heatmaps_qrscore_sec.png",
+    )
+
+    _plot_transfer_metric_panels(
+        data,
+        output_path=raw_out,
+        metric_key="accuracy",
+        title="Cross-Ablation Raw Accuracy by K",
+        cmap="RdYlGn",
+        include_k0=True,
+    )
+    _plot_transfer_metric_panels(
+        data,
+        output_path=drop_out,
+        metric_key="drop_from_k0",
+        title="Cross-Ablation Drop from Baseline by K",
+        cmap="YlOrRd",
+        include_k0=False,
+    )
 
 
 # ── 2. Head similarity (Jaccard) panels ───────────────────────────────────
@@ -272,6 +378,7 @@ def main():
         with open(transfer_path, encoding="utf-8") as f:
             transfer_data = json.load(f)
             plot_transfer_heatmaps(transfer_data, output_dir)
+            plot_transfer_specificity_heatmaps(transfer_data, output_dir)
             if args.generate_pair_curves:
                 pair_curves_dir = args.pair_curves_output_dir or os.path.join(
                     output_dir, "cross_ablation_curves"

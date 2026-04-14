@@ -1,5 +1,5 @@
 """
-Comparison ablation for SEC NIAH tasks using only Llama-3.1-8B-derived head rankings.
+Comparison ablation for SEC NIAH tasks using stock Hugging Face causal LMs.
 
 Methods supported:
 - QRScore-SEC (combined SEC detection)
@@ -37,12 +37,33 @@ DEFAULT_KNOCKOUT_SIZES = [0, 8, 16, 32, 48, 64, 96, 128]
 DEFAULT_EXPORT_TOP_K = [8, 16, 32, 48, 64, 96, 128]
 
 
+def resolve_device(device_arg):
+    if device_arg != "auto":
+        return device_arg
+    if torch.cuda.is_available():
+        return "cuda"
+    if getattr(torch.backends, "mps", None) and torch.backends.mps.is_available():
+        # MPS is fragile for long-context 7B generation; prefer CPU by default.
+        return "cpu"
+    return "cpu"
+
+
+def clear_device_cache(device):
+    if device == "cuda" and torch.cuda.is_available():
+        torch.cuda.empty_cache()
+    elif device == "mps" and getattr(torch, "mps", None) is not None:
+        try:
+            torch.mps.empty_cache()
+        except Exception:
+            pass
+
+
 # ---------------------------------------------------------------------------
-# Lightweight head-masking on top of the stock transformers LlamaForCausalLM.
+# Lightweight head-masking on top of stock transformers causal LMs.
 # We register a pre-forward hook on each attention layer's o_proj that zeros
 # out the head slices listed in _masked_head_indices before the projection.
-# This replaces the old custom_modeling_llama copy which diverged from the
-# installed transformers version and produced corrupt outputs.
+# This works for Llama/Qwen-style decoder stacks whose attention module exposes
+# an o_proj receiving concatenated attention-head outputs.
 # ---------------------------------------------------------------------------
 
 def _make_o_proj_hook(attn_module, head_dim):
@@ -59,16 +80,29 @@ def _make_o_proj_hook(attn_module, head_dim):
     return hook
 
 
+def get_decoder_layers(model):
+    """Return the decoder layers for common HF causal LM architectures."""
+    if hasattr(model, "model") and hasattr(model.model, "layers"):
+        return model.model.layers
+    if hasattr(model, "transformer") and hasattr(model.transformer, "h"):
+        return model.transformer.h
+    raise ValueError(
+        "Unsupported model structure for head masking. Expected `model.layers` "
+        "or `transformer.h` decoder blocks."
+    )
+
+
 def install_head_masking(model):
-    """Patch a stock LlamaForCausalLM with set_head_mask / per-layer hooks."""
+    """Patch a stock causal LM with set_head_mask / per-layer hooks."""
     head_dim = model.config.hidden_size // model.config.num_attention_heads
-    for layer in model.model.layers:
+    layers = get_decoder_layers(model)
+    for layer in layers:
         attn = layer.self_attn
         attn._masked_head_indices = None
         attn.o_proj.register_forward_pre_hook(_make_o_proj_hook(attn, head_dim))
 
     def set_head_mask(masked_heads):
-        for layer in model.model.layers:
+        for layer in layers:
             layer.self_attn._masked_head_indices = None
         if not masked_heads:
             return
@@ -76,7 +110,18 @@ def install_head_masking(model):
         for layer_idx, head_idx in masked_heads:
             per_layer[layer_idx].append(head_idx)
         for layer_idx, head_indices in per_layer.items():
-            model.model.layers[layer_idx].self_attn._masked_head_indices = head_indices
+            if layer_idx >= len(layers):
+                raise IndexError(
+                    f"Head ranking references layer {layer_idx}, but model only has {len(layers)} layers."
+                )
+            max_head = model.config.num_attention_heads
+            invalid = [h for h in head_indices if h >= max_head]
+            if invalid:
+                raise IndexError(
+                    f"Head ranking references head(s) {invalid} in layer {layer_idx}, "
+                    f"but model only has {max_head} attention heads."
+                )
+            layers[layer_idx].self_attn._masked_head_indices = head_indices
 
     model.set_head_mask = set_head_mask
 
@@ -116,27 +161,54 @@ def answers_match(pred, gold):
 
 def build_prompt(context, question):
     return (
-        f"<|start_header_id|>user<|end_header_id|>\n\n"
-        f"Read the following document and answer the question.\n\n"
+        "Read the following document and answer the question.\n\n"
         f"Document:\n{context}\n\n"
         f"Question: {question}\n\n"
-        f"Answer concisely with just the answer value."
-        f"<|eot_id|><|start_header_id|>assistant<|end_header_id|>\n\n"
+        "Answer concisely with just the answer value."
+    )
+
+
+def format_messages(context, question):
+    return [{"role": "user", "content": build_prompt(context, question)}]
+
+
+def tokenize_messages(tokenizer, messages, prompt_text, max_context_tokens):
+    if hasattr(tokenizer, "apply_chat_template") and tokenizer.chat_template:
+        return tokenizer.apply_chat_template(
+            messages,
+            add_generation_prompt=True,
+            tokenize=True,
+            truncation=True,
+            max_length=max_context_tokens,
+            return_dict=True,
+            return_tensors="pt",
+        )
+
+    return tokenizer(
+        prompt_text,
+        return_tensors="pt",
+        truncation=True,
+        max_length=max_context_tokens,
     )
 
 
 def generate_answer(model, tokenizer, prompt, max_new_tokens=MAX_NEW_TOKENS,
                     max_context_tokens=8192):
     tokenizer.truncation_side = "left"
-    inputs = tokenizer(prompt, return_tensors="pt", truncation=True,
-                       max_length=max_context_tokens)
+    prompt_text = build_prompt(prompt["context"], prompt["question"])
+    messages = format_messages(prompt["context"], prompt["question"])
+    inputs = tokenize_messages(tokenizer, messages, prompt_text, max_context_tokens)
     inputs = {k: v.to(model.device) for k, v in inputs.items()}
-    with torch.no_grad():
+    with torch.inference_mode():
         out = model.generate(
             **inputs,
             max_new_tokens=max_new_tokens,
             do_sample=False,
-            pad_token_id=tokenizer.eos_token_id,
+            temperature=None,
+            top_p=None,
+            top_k=None,
+            pad_token_id=model.config.pad_token_id,
+            use_cache=True,
         )
     start = inputs["input_ids"].shape[1]
     new_tokens = out[0][start:]
@@ -154,6 +226,22 @@ def load_ranked_heads_json(path):
         layer, head = map(int, head_str.split("-"))
         heads.append((layer, head))
     return heads
+
+
+def resolve_topk_export_from_manifest(manifest_path):
+    with open(manifest_path, encoding="utf-8") as f:
+        manifest = json.load(f)
+    exports = manifest.get("exports", {})
+    if not exports:
+        return None, None
+
+    best_k = max(int(k) for k in exports.keys())
+    export_path = exports[str(best_k)]
+    if not os.path.exists(export_path):
+        export_path = os.path.join(os.path.dirname(manifest_path), os.path.basename(export_path))
+    if not os.path.exists(export_path):
+        return None, best_k
+    return export_path, best_k
 
 
 def ensure_full_ranking(heads, num_layers, num_heads_per_layer, seed):
@@ -269,15 +357,37 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
                 os.path.join(results_dir, f"{task}_heads.json"),
             ]
             task_path = next((p for p in candidate_paths if os.path.exists(p)), None)
-            if task_path is None:
-                raise FileNotFoundError(
-                    "Transfer mode requires per-task ranking file. Checked: "
-                    + ", ".join(candidate_paths)
+            ranking_source = None
+            if task_path is not None:
+                task_heads = load_ranked_heads_json(task_path)
+                ranking_source = task_path
+            else:
+                manifest_candidates = [
+                    os.path.join(results_dir, "topk", f"long_context_{task}_heads_manifest.json"),
+                    os.path.join(results_dir, "topk", f"{task}_heads_manifest.json"),
+                ]
+                manifest_path = next((p for p in manifest_candidates if os.path.exists(p)), None)
+                if manifest_path is None:
+                    raise FileNotFoundError(
+                        "Transfer mode requires a per-task ranking file or exported top-K manifest. Checked: "
+                        + ", ".join(candidate_paths + manifest_candidates)
+                    )
+                export_path, recovered_k = resolve_topk_export_from_manifest(manifest_path)
+                if export_path is None:
+                    raise FileNotFoundError(
+                        f"Found manifest for task `{task}` but could not resolve a local exported ranking from "
+                        f"{manifest_path}."
+                    )
+                task_heads = load_ranked_heads_json(export_path)
+                ranking_source = f"{export_path} (top-{recovered_k} fallback)"
+                print(
+                    f"  Transfer-{task}: full ranking missing, using exported top-{recovered_k} "
+                    f"fallback from {export_path}"
                 )
-            task_heads = load_ranked_heads_json(task_path)
             transfer_rankings[task] = ensure_full_ranking(
                 task_heads, num_layers, num_heads_per_layer, seed=100 + args.tasks.index(task)
             )
+            print(f"  Transfer-{task}: loaded from {ranking_source}")
             methods[f"Transfer-{task}"] = transfer_rankings[task]
 
     # 4) Optional random baselines.
@@ -293,6 +403,23 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
             print(f"  {name}: {len(methods[name])} heads")
 
     return methods, transfer_rankings
+
+
+def validate_ranking_compatibility(method_name, ranking, num_layers, num_heads):
+    invalid = [
+        (layer_idx, head_idx)
+        for layer_idx, head_idx in ranking
+        if layer_idx >= num_layers or head_idx >= num_heads
+    ]
+    if invalid:
+        sample = ", ".join(f"({l},{h})" for l, h in invalid[:5])
+        return (
+            False,
+            f"Ranking `{method_name}` is incompatible with the loaded model "
+            f"({num_layers} layers x {num_heads} heads). Example invalid entries: {sample}. "
+            "You likely need rankings generated for this model family rather than the existing saved rankings."
+        )
+    return True, None
 
 
 def run_single_sweep(model, tokenizer, test_instances, head_ranking,
@@ -323,7 +450,7 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
         details = []
 
         for idx, inst in enumerate(test_instances, start=1):
-            prompt = build_prompt(inst["context"], inst["question"])
+            prompt = {"context": inst["context"], "question": inst["question"]}
             pred, raw_text, token_ids = generate_answer(
                 model, tokenizer, prompt,
                 max_context_tokens=max_context_tokens)
@@ -342,6 +469,7 @@ def run_single_sweep(model, tokenizer, test_instances, head_ranking,
                 "token_ids": token_ids,
                 "correct": int(match),
             })
+            clear_device_cache(model.device.type)
 
             completed_steps += 1
             should_log = (
@@ -461,10 +589,16 @@ def compute_specificity_metrics(transfer_matrix, summary_k):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="8B-only comparison ablation across detection methods")
+    parser = argparse.ArgumentParser(description="Comparison ablation across detection methods")
     parser.add_argument("--niah_dir", default=os.path.join(PROJECT_DIR, "data", "niah_input"))
     parser.add_argument("--output_dir", default=os.path.join(PROJECT_DIR, "results", "comparison_ablation"))
     parser.add_argument("--model_name", default=MODEL_NAME)
+    parser.add_argument(
+        "--device",
+        choices=["auto", "cpu", "cuda", "mps"],
+        default="auto",
+        help="Execution device. `auto` prefers CUDA, otherwise falls back to CPU.",
+    )
     parser.add_argument("--knockout_sizes", nargs="+", type=int, default=DEFAULT_KNOCKOUT_SIZES)
     parser.add_argument("--max_instances_per_task", type=int, default=None)
     parser.add_argument(
@@ -518,14 +652,44 @@ def main():
 
     # Load model.
     print(f"\nLoading model: {args.model_name}")
+    resolved_device = resolve_device(args.device)
+    print(f"Resolved device: {resolved_device}")
     tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name)
-    model = transformers.LlamaForCausalLM.from_pretrained(
-        args.model_name,
-        torch_dtype=torch.float16,
-        attn_implementation="flash_attention_2",
-        device_map="auto",
-    )
-    model.config.pad_token_id = model.config.eos_token_id
+    if tokenizer.pad_token_id is None and tokenizer.eos_token_id is not None:
+        tokenizer.pad_token = tokenizer.eos_token
+
+    model_load_kwargs = {"low_cpu_mem_usage": True}
+    if resolved_device == "cuda":
+        model_load_kwargs["torch_dtype"] = torch.float16
+        model_load_kwargs["device_map"] = "auto"
+        try:
+            model = transformers.AutoModelForCausalLM.from_pretrained(
+                args.model_name,
+                attn_implementation="flash_attention_2",
+                **model_load_kwargs,
+            )
+        except Exception as exc:
+            print(f"  flash_attention_2 load failed ({exc}); retrying with default attention.")
+            model = transformers.AutoModelForCausalLM.from_pretrained(
+                args.model_name,
+                **model_load_kwargs,
+            )
+    else:
+        if resolved_device == "mps":
+            model_load_kwargs["torch_dtype"] = torch.float16
+        model = transformers.AutoModelForCausalLM.from_pretrained(
+            args.model_name,
+            **model_load_kwargs,
+        )
+        model = model.to(resolved_device)
+
+    if model.config.pad_token_id is None:
+        model.config.pad_token_id = tokenizer.pad_token_id or model.config.eos_token_id
+    if hasattr(model, "generation_config"):
+        model.generation_config.do_sample = False
+        for attr in ("temperature", "top_p", "top_k"):
+            if hasattr(model.generation_config, attr):
+                setattr(model.generation_config, attr, None)
     model.eval()
     install_head_masking(model)
 
@@ -542,6 +706,33 @@ def main():
 
     if not all_methods:
         print("ERROR: No methods available. Run detection first.")
+        sys.exit(1)
+
+    compatible_methods = {}
+    skipped_methods = {}
+    for method_name, ranking in all_methods.items():
+        is_compatible, reason = validate_ranking_compatibility(
+            method_name, ranking, num_layers, num_heads
+        )
+        if is_compatible:
+            compatible_methods[method_name] = ranking
+        else:
+            skipped_methods[method_name] = reason
+
+    if skipped_methods:
+        print("\nSkipping incompatible ranking methods for this model:")
+        for method_name, reason in skipped_methods.items():
+            print(f"  - {method_name}: {reason}")
+
+    all_methods = compatible_methods
+
+    if not all_methods:
+        print("ERROR: No compatible ranking methods are available for this model.")
+        print(
+            "For Qwen, the saved SEC/LME/NQ rankings from this repo are Llama-specific. "
+            "Generate Qwen-specific rankings first, or rerun with --include_random_baselines "
+            "for a smoke test."
+        )
         sys.exit(1)
 
     print(f"\nMethods to evaluate: {list(all_methods.keys())}")

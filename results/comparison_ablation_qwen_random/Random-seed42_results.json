@@ -1,0 +1,55 @@
+{
+  "method": "Random-seed42",
+  "knockout_sizes": [
+    0,
+    8
+  ],
+  "accuracy_curve": {
+    "0": 0.0,
+    "8": 0.0
+  },
+  "per_task_curves": {
+    "registrant_name": {
+      "0": 0.0,
+      "8": 0.0
+    },
+    "headquarters_city": {
+      "0": 0.0,
+      "8": 0.0
+    }
+  },
+  "details": {
+    "0": [
+      {
+        "idx": "29989_1993.txt_registrant_name_52",
+        "task": "registrant_name",
+        "gold": "Omnicom Group Inc.",
+        "pred": "Interpublic Group of Companies, Inc",
+        "correct": 0
+      },
+      {
+        "idx": "74783_1993.txt_headquarters_city_202",
+        "task": "headquarters_city",
+        "gold": "Omaha",
+        "pred": "Chicago",
+        "correct": 0
+      }
+    ],
+    "8": [
+      {
+        "idx": "29989_1993.txt_registrant_name_52",
+        "task": "registrant_name",
+        "gold": "Omnicom Group Inc.",
+        "pred": "Interpublic Group of Companies, Inc",
+        "correct": 0
+      },
+      {
+        "idx": "74783_1993.txt_headquarters_city_202",
+        "task": "headquarters_city",
+        "gold": "Omaha",
+        "pred": "Chicago",
+        "correct": 0
+      }
+    ]
+  }
+}
