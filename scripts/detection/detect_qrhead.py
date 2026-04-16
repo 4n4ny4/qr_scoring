@@ -9,8 +9,21 @@ except ModuleNotFoundError as exc:
 from itertools import product
 import json
 import os
+import sys
 import numpy as np
-from qrretriever.attn_retriever import FullHeadRetriever
+
+SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
+PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+SRC_DIR = os.path.join(PROJECT_DIR, "src")
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
+
+from qrretriever.config import load_config
+from qrretriever.detection_backends import build_full_head_retriever
+from qrretriever.model_runtime import (
+    resolve_detection_dir,
+    resolve_model_spec,
+)
 
 DEFAULT_EXPORT_TOP_K = [8, 16, 32, 48, 64, 96, 128]
 
@@ -110,13 +123,24 @@ def score_heads(doc_scores_per_head, data_instances):
     return head_scores_list # a list of tuples (head, score)
 
 
-def export_top_k_files(head_scores_list, export_dir, export_prefix, top_ks, source_file, output_file):
+def export_top_k_files(
+    head_scores_list,
+    export_dir,
+    export_prefix,
+    top_ks,
+    source_file,
+    output_file,
+    model_metadata,
+):
     os.makedirs(export_dir, exist_ok=True)
     manifest = {
         "source_file": source_file,
         "output_file": output_file,
         "export_prefix": export_prefix,
         "top_k_values": top_ks,
+        "model_name": model_metadata["model_name"],
+        "model_slug": model_metadata["model_slug"],
+        "model_family": model_metadata["model_family"],
         "exports": {},
     }
 
@@ -141,12 +165,16 @@ def export_top_k_files(head_scores_list, export_dir, export_prefix, top_ks, sour
 if __name__=="__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_file", type=str, required=True, help="Path to the input JSON file to find QRHead.")
-    parser.add_argument("--output_file", type=str, required=True, help="Path to the output JSON file to save scores for each head.")
+    parser.add_argument("--output_file", type=str, default=None, help="Path to the output JSON file to save scores for each head.")
+    parser.add_argument("--detection_dir", type=str, default=None, help="Optional model-specific detection output directory.")
 
     parser.add_argument("--truncate_by_space", type=int, default=0, help="Truncate paragraphs by number of words. Default is 0 (no truncation).")
 
     parser.add_argument("--config_or_config_path", type=str, default=None, help="Path to the configuration file or a configuration string. If not provided, defaults will be used.")
     parser.add_argument("--model_name_or_path", type=str, default=None, help="Path to the model directory or model name.")
+    parser.add_argument("--tokenizer_name_or_path", type=str, default=None, help="Optional tokenizer override.")
+    parser.add_argument("--model_slug", type=str, default=None, help="Optional slug override for per-model output directories.")
+    parser.add_argument("--trust_remote_code", action="store_true", help="Allow Hugging Face remote code when required by the model family.")
     parser.add_argument("--task_name", type=str, default=None, help="Optional task label used in export file naming.")
     parser.add_argument("--export_dir", type=str, default=None, help="Optional directory for top-K export files.")
     parser.add_argument(
@@ -159,9 +187,43 @@ if __name__=="__main__":
 
     args = parser.parse_args()
 
-    full_head_retriever = FullHeadRetriever(
+    config = load_config(args.config_or_config_path) if args.config_or_config_path else {}
+    resolved_model_name = (
+        args.model_name_or_path
+        or config.get("model_name_or_path")
+        or config.get("model_base_class")
+    )
+    if resolved_model_name is None:
+        raise ValueError(
+            "Detection requires --model_name_or_path or a config that provides model_name_or_path/model_base_class."
+        )
+    model_spec = resolve_model_spec(
+        model_name=resolved_model_name,
+        model_slug=args.model_slug,
+        tokenizer_name=args.tokenizer_name_or_path,
+        trust_remote_code=args.trust_remote_code,
+    )
+    detection_dir = resolve_detection_dir(PROJECT_DIR, model_spec, args.detection_dir)
+    if args.output_file is not None:
+        output_file = args.output_file
+    else:
+        if not args.task_name:
+            raise ValueError("Provide --output_file or --task_name so detection can resolve a per-model output path.")
+        output_file = os.path.join(detection_dir, f"{args.task_name}_heads.json")
+    export_dir = args.export_dir or os.path.join(detection_dir, "topk")
+
+    os.makedirs(os.path.dirname(os.path.abspath(output_file)), exist_ok=True)
+    print(f"Resolved project_dir={PROJECT_DIR}", flush=True)
+    print(f"Resolved detection_dir={detection_dir}", flush=True)
+    print(f"Resolved output_file={output_file}", flush=True)
+    print(f"Resolved export_dir={export_dir}", flush=True)
+    print(f"Resolved model={model_spec.model_name} ({model_spec.model_family})", flush=True)
+
+    full_head_retriever = build_full_head_retriever(
         config_or_config_path=args.config_or_config_path,
         model_name_or_path=args.model_name_or_path,
+        tokenizer_name_or_path=args.tokenizer_name_or_path,
+        trust_remote_code=args.trust_remote_code,
     )
 
     # read input file
@@ -172,11 +234,10 @@ if __name__=="__main__":
     doc_scores_per_head = get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_space=args.truncate_by_space) # qid -> {doc_id -> score tensor with shape (n_layers, n_heads)}
     head_scores_list = score_heads(doc_scores_per_head, data_instances)
 
-    with open(args.output_file, "w", encoding="utf-8") as f:
+    with open(output_file, "w", encoding="utf-8") as f:
         json.dump(head_scores_list, f, indent=4)
 
-    export_dir = args.export_dir or os.path.dirname(os.path.abspath(args.output_file))
-    export_prefix = args.task_name or os.path.splitext(os.path.basename(args.output_file))[0]
+    export_prefix = args.task_name or os.path.splitext(os.path.basename(output_file))[0]
     top_ks = sorted(set(k for k in args.export_top_k if k > 0))
     export_top_k_files(
         head_scores_list=head_scores_list,
@@ -184,5 +245,6 @@ if __name__=="__main__":
         export_prefix=export_prefix,
         top_ks=top_ks,
         source_file=args.input_file,
-        output_file=args.output_file,
+        output_file=output_file,
+        model_metadata=model_spec.as_metadata(),
     )

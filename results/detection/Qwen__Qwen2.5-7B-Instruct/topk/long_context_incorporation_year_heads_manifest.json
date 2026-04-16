@@ -1,0 +1,26 @@
+{
+  "source_file": "/Users/ananyaanand/Desktop/qr_scoring/data/long_context_detection_optionA/incorporation_year_detection.json",
+  "output_file": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/long_context_incorporation_year_heads.json",
+  "export_prefix": "long_context_incorporation_year",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top8.json",
+    "16": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top16.json",
+    "32": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top32.json",
+    "48": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top48.json",
+    "64": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top64.json",
+    "96": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top96.json",
+    "128": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_incorporation_year_top128.json"
+  },
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen"
+}

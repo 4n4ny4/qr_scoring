@@ -1,0 +1,34 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "model_family": "llama",
+  "methods": {
+    "QRScore-SEC": {
+      "accuracy_curve": {
+        "0": 0.9114583333333334,
+        "8": 0.5520833333333334,
+        "16": 0.3958333333333333,
+        "32": 0.296875,
+        "48": 0.171875,
+        "64": 0.3177083333333333,
+        "96": 0.17708333333333334,
+        "128": 0.0625
+      },
+      "baseline_accuracy": 0.9114583333333334,
+      "accuracy_at_k16": 0.3958333333333333,
+      "drop_at_k16": 0.515625
+    }
+  },
+  "knockout_sizes": [
+    0,
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "num_instances": 192
+}

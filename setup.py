@@ -13,6 +13,7 @@ def get_requires():
         "torch",
         "transformers>=4.44.0,<5.0.0",
         "flash_attn",
+        "jinja2>=3.1.0",
         "pyyaml>=5.1",
         "tqdm",
         "Pillow>=9.1.0",

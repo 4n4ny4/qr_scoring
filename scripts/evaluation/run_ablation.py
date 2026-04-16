@@ -24,6 +24,17 @@ import transformers
 
 SCRIPT_DIR = os.path.dirname(os.path.abspath(__file__))
 PROJECT_DIR = os.path.dirname(os.path.dirname(SCRIPT_DIR))
+SRC_DIR = os.path.join(PROJECT_DIR, "src")
+if SRC_DIR not in sys.path:
+    sys.path.insert(0, SRC_DIR)
+
+from qrretriever.model_runtime import (
+    load_stock_causal_lm,
+    load_tokenizer,
+    resolve_ablation_dir,
+    resolve_detection_dir,
+    resolve_model_spec,
+)
 
 TASKS = [
     "registrant_name", "headquarters_city", "headquarters_state",
@@ -275,6 +286,23 @@ def export_top_k_from_ranking(path, label, top_ks, export_dir):
         json.dump(manifest, f, indent=2)
 
 
+def sanitize_ranking(heads, num_layers, num_heads_per_layer, label):
+    """Drop any head indices that are invalid for the current model shape."""
+    valid = []
+    dropped = 0
+    for layer, head in heads:
+        if 0 <= layer < num_layers and 0 <= head < num_heads_per_layer:
+            valid.append((layer, head))
+        else:
+            dropped += 1
+    if dropped:
+        print(
+            f"  {label}: dropped {dropped} out-of-range heads "
+            f"for model shape {num_layers}x{num_heads_per_layer}"
+        )
+    return valid
+
+
 def compute_jaccard(a, b):
     if not a and not b:
         return 1.0
@@ -284,12 +312,14 @@ def compute_jaccard(a, b):
     return len(a & b) / len(union)
 
 
-def save_head_similarity(task_rankings, top_ks, output_path):
+def save_head_similarity(task_rankings, top_ks, output_path, model_metadata=None):
     tasks = sorted(task_rankings.keys())
     payload = {
         "tasks": tasks,
         "top_k": {},
     }
+    if model_metadata is not None:
+        payload.update(model_metadata)
     for k in sorted(set(top_ks)):
         matrix = []
         for src in tasks:
@@ -313,40 +343,55 @@ def generate_random_heads(num_layers, num_heads_per_layer, total_heads, seed=42)
     return all_heads[:total_heads]
 
 
-def load_method_rankings(args, num_layers, num_heads_per_layer):
-    results_dir = os.path.join(PROJECT_DIR, "results", "detection")
+def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
+    results_dir = resolve_detection_dir(PROJECT_DIR, model_spec, args.ranking_dir)
+    legacy_results_dir = os.path.join(PROJECT_DIR, "results", "detection")
     methods = {}
 
     # 1) SEC combined ranking
-    sec_path = os.path.join(results_dir, "long_context_combined_heads.json")
-    if os.path.exists(sec_path):
+    sec_candidates = [os.path.join(results_dir, "long_context_combined_heads.json")]
+    if model_spec.model_family == "llama":
+        sec_candidates.append(os.path.join(legacy_results_dir, "long_context_combined_heads.json"))
+    sec_path = next((path for path in sec_candidates if os.path.exists(path)), None)
+    if sec_path is not None:
         methods["QRScore-SEC"] = load_ranked_heads_json(sec_path)
         print(f"  QRScore-SEC: loaded from {sec_path} ({len(methods['QRScore-SEC'])} heads)")
     else:
-        print("  QRScore-SEC: not found (run detection first)")
+        print(f"  QRScore-SEC: not found under {results_dir} (run same-model detection first)")
 
-    # 2) External 8B LME/NQ train rankings
-    lme_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json")
-    nq_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json")
+    # 2) External 8B LME/NQ train rankings (Llama only).
+    if model_spec.allow_external_rankings:
+        lme_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json")
+        nq_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json")
 
-    if os.path.exists(lme_train_path):
-        lme_heads = load_ranked_heads_json(lme_train_path)
-        methods["QRScore-8B-LME-TRAIN"] = ensure_full_ranking(
-            lme_heads, num_layers, num_heads_per_layer, seed=42
-        )
-        print(f"  QRScore-8B-LME-TRAIN: loaded from {lme_train_path}")
+        if os.path.exists(lme_train_path):
+            lme_heads = sanitize_ranking(
+                load_ranked_heads_json(lme_train_path),
+                num_layers,
+                num_heads_per_layer,
+                "QRScore-8B-LME-TRAIN",
+            )
+            methods["QRScore-8B-LME-TRAIN"] = ensure_full_ranking(
+                lme_heads, num_layers, num_heads_per_layer, seed=42
+            )
+            print(f"  QRScore-8B-LME-TRAIN: loaded from {lme_train_path}")
 
-    if os.path.exists(nq_train_path):
-        nq_heads = load_ranked_heads_json(nq_train_path)
-        methods["QRScore-8B-NQ-TRAIN"] = ensure_full_ranking(
-            nq_heads, num_layers, num_heads_per_layer, seed=43
-        )
-        print(f"  QRScore-8B-NQ-TRAIN: loaded from {nq_train_path}")
+        if os.path.exists(nq_train_path):
+            nq_heads = sanitize_ranking(
+                load_ranked_heads_json(nq_train_path),
+                num_layers,
+                num_heads_per_layer,
+                "QRScore-8B-NQ-TRAIN",
+            )
+            methods["QRScore-8B-NQ-TRAIN"] = ensure_full_ranking(
+                nq_heads, num_layers, num_heads_per_layer, seed=43
+            )
+            print(f"  QRScore-8B-NQ-TRAIN: loaded from {nq_train_path}")
 
-    # Export deterministic top-K slices for external 8B rankings.
-    external_export_dir = os.path.join(results_dir, "topk", "8b_external")
-    export_top_k_from_ranking(lme_train_path, "lme_train", args.export_top_k, external_export_dir)
-    export_top_k_from_ranking(nq_train_path, "nq_train", args.export_top_k, external_export_dir)
+        # Export deterministic top-K slices for external 8B rankings.
+        external_export_dir = os.path.join(results_dir, "topk", "external")
+        export_top_k_from_ranking(lme_train_path, "lme_train", args.export_top_k, external_export_dir)
+        export_top_k_from_ranking(nq_train_path, "nq_train", args.export_top_k, external_export_dir)
 
     # 3) Optional cross-task transfer methods.
     transfer_rankings = {}
@@ -356,6 +401,13 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
                 os.path.join(results_dir, f"long_context_{task}_heads.json"),
                 os.path.join(results_dir, f"{task}_heads.json"),
             ]
+            if model_spec.model_family == "llama":
+                candidate_paths.extend(
+                    [
+                        os.path.join(legacy_results_dir, f"long_context_{task}_heads.json"),
+                        os.path.join(legacy_results_dir, f"{task}_heads.json"),
+                    ]
+                )
             task_path = next((p for p in candidate_paths if os.path.exists(p)), None)
             ranking_source = None
             if task_path is not None:
@@ -366,6 +418,13 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
                     os.path.join(results_dir, "topk", f"long_context_{task}_heads_manifest.json"),
                     os.path.join(results_dir, "topk", f"{task}_heads_manifest.json"),
                 ]
+                if model_spec.model_family == "llama":
+                    manifest_candidates.extend(
+                        [
+                            os.path.join(legacy_results_dir, "topk", f"long_context_{task}_heads_manifest.json"),
+                            os.path.join(legacy_results_dir, "topk", f"{task}_heads_manifest.json"),
+                        ]
+                    )
                 manifest_path = next((p for p in manifest_candidates if os.path.exists(p)), None)
                 if manifest_path is None:
                     raise FileNotFoundError(
@@ -405,7 +464,7 @@ def load_method_rankings(args, num_layers, num_heads_per_layer):
     return methods, transfer_rankings
 
 
-def validate_ranking_compatibility(method_name, ranking, num_layers, num_heads):
+def validate_ranking_compatibility(method_name, ranking, model_spec, num_layers, num_heads):
     invalid = [
         (layer_idx, head_idx)
         for layer_idx, head_idx in ranking
@@ -416,8 +475,8 @@ def validate_ranking_compatibility(method_name, ranking, num_layers, num_heads):
         return (
             False,
             f"Ranking `{method_name}` is incompatible with the loaded model "
-            f"({num_layers} layers x {num_heads} heads). Example invalid entries: {sample}. "
-            "You likely need rankings generated for this model family rather than the existing saved rankings."
+            f"`{model_spec.model_name}` ({num_layers} layers x {num_heads} heads). "
+            f"Example invalid entries: {sample}. You likely need same-model rankings."
         )
     return True, None
 
@@ -591,8 +650,12 @@ def compute_specificity_metrics(transfer_matrix, summary_k):
 def main():
     parser = argparse.ArgumentParser(description="Comparison ablation across detection methods")
     parser.add_argument("--niah_dir", default=os.path.join(PROJECT_DIR, "data", "niah_input"))
-    parser.add_argument("--output_dir", default=os.path.join(PROJECT_DIR, "results", "comparison_ablation"))
+    parser.add_argument("--output_dir", default=None)
+    parser.add_argument("--ranking_dir", default=None, help="Optional override for model-specific detection rankings.")
     parser.add_argument("--model_name", default=MODEL_NAME)
+    parser.add_argument("--model_slug", default=None, help="Optional slug override used for result directory resolution.")
+    parser.add_argument("--tokenizer_name", default=None, help="Optional tokenizer override.")
+    parser.add_argument("--trust_remote_code", action="store_true")
     parser.add_argument(
         "--device",
         choices=["auto", "cpu", "cuda", "mps"],
@@ -627,10 +690,20 @@ def main():
     )
     args = parser.parse_args()
 
+    model_spec = resolve_model_spec(
+        model_name=args.model_name,
+        model_slug=args.model_slug,
+        tokenizer_name=args.tokenizer_name,
+        trust_remote_code=args.trust_remote_code,
+    )
+    args.output_dir = resolve_ablation_dir(PROJECT_DIR, model_spec, args.output_dir)
+    args.ranking_dir = resolve_detection_dir(PROJECT_DIR, model_spec, args.ranking_dir)
     os.makedirs(args.output_dir, exist_ok=True)
     print(f"Resolved project_dir={PROJECT_DIR}")
     print(f"Resolved niah_dir={args.niah_dir}")
     print(f"Resolved output_dir={args.output_dir}")
+    print(f"Resolved ranking_dir={args.ranking_dir}")
+    print(f"Resolved model={model_spec.model_name} ({model_spec.model_family})")
 
     # Load test instances by task and pooled.
     per_task_instances = {}
@@ -654,35 +727,8 @@ def main():
     print(f"\nLoading model: {args.model_name}")
     resolved_device = resolve_device(args.device)
     print(f"Resolved device: {resolved_device}")
-    tokenizer = transformers.AutoTokenizer.from_pretrained(args.model_name)
-    if tokenizer.pad_token_id is None and tokenizer.eos_token_id is not None:
-        tokenizer.pad_token = tokenizer.eos_token
-
-    model_load_kwargs = {"low_cpu_mem_usage": True}
-    if resolved_device == "cuda":
-        model_load_kwargs["torch_dtype"] = torch.float16
-        model_load_kwargs["device_map"] = "auto"
-        try:
-            model = transformers.AutoModelForCausalLM.from_pretrained(
-                args.model_name,
-                attn_implementation="flash_attention_2",
-                **model_load_kwargs,
-            )
-        except Exception as exc:
-            print(f"  flash_attention_2 load failed ({exc}); retrying with default attention.")
-            model = transformers.AutoModelForCausalLM.from_pretrained(
-                args.model_name,
-                **model_load_kwargs,
-            )
-    else:
-        if resolved_device == "mps":
-            model_load_kwargs["torch_dtype"] = torch.float16
-        model = transformers.AutoModelForCausalLM.from_pretrained(
-            args.model_name,
-            **model_load_kwargs,
-        )
-        model = model.to(resolved_device)
-
+    tokenizer = load_tokenizer(model_spec)
+    model = load_stock_causal_lm(model_spec, resolved_device, for_detection=False)
     if model.config.pad_token_id is None:
         model.config.pad_token_id = tokenizer.pad_token_id or model.config.eos_token_id
     if hasattr(model, "generation_config"):
@@ -699,7 +745,7 @@ def main():
 
     # Load method rankings.
     print("\nLoading method rankings...")
-    all_methods, transfer_rankings = load_method_rankings(args, num_layers, num_heads)
+    all_methods, transfer_rankings = load_method_rankings(args, model_spec, num_layers, num_heads)
 
     if args.methods:
         all_methods = {k: v for k, v in all_methods.items() if k in args.methods}
@@ -712,7 +758,7 @@ def main():
     skipped_methods = {}
     for method_name, ranking in all_methods.items():
         is_compatible, reason = validate_ranking_compatibility(
-            method_name, ranking, num_layers, num_heads
+            method_name, ranking, model_spec, num_layers, num_heads
         )
         if is_compatible:
             compatible_methods[method_name] = ranking
@@ -729,9 +775,8 @@ def main():
     if not all_methods:
         print("ERROR: No compatible ranking methods are available for this model.")
         print(
-            "For Qwen, the saved SEC/LME/NQ rankings from this repo are Llama-specific. "
-            "Generate Qwen-specific rankings first, or rerun with --include_random_baselines "
-            "for a smoke test."
+            f"For `{model_spec.model_name}`, generate same-model SEC detection rankings first, "
+            "or rerun with --include_random_baselines for a smoke test."
         )
         sys.exit(1)
 
@@ -794,6 +839,9 @@ def main():
         with open(method_path, "w", encoding="utf-8") as f:
             json.dump(
                 {
+                    "model_name": model_spec.model_name,
+                    "model_slug": model_spec.model_slug,
+                    "model_family": model_spec.model_family,
                     "method": method_name,
                     "knockout_sizes": args.knockout_sizes,
                     "accuracy_curve": {
@@ -816,6 +864,10 @@ def main():
     # Build main summary.
     summary = {
         "model": args.model_name,
+        "model_name": model_spec.model_name,
+        "model_slug": model_spec.model_slug,
+        "model_family": model_spec.model_family,
+        "ranking_dir": args.ranking_dir,
         "num_instances": len(test_instances),
         "knockout_sizes": args.knockout_sizes,
         "methods": {},
@@ -839,8 +891,9 @@ def main():
     if os.path.exists(summary_path):
         with open(summary_path, "r", encoding="utf-8") as f:
             existing = json.load(f)
-        existing.setdefault("methods", {}).update(summary["methods"])
-        summary["methods"] = existing["methods"]
+        if existing.get("model_slug") == summary["model_slug"]:
+            existing.setdefault("methods", {}).update(summary["methods"])
+            summary["methods"] = existing["methods"]
     with open(summary_path, "w", encoding="utf-8") as f:
         json.dump(summary, f, indent=2)
     print(f"\nSummary saved to {summary_path}")
@@ -859,6 +912,13 @@ def main():
             args.max_context_tokens,
             args.progress_every,
         )
+        transfer_matrix.update(
+            {
+                "model_name": model_spec.model_name,
+                "model_slug": model_spec.model_slug,
+                "model_family": model_spec.model_family,
+            }
+        )
 
         transfer_path = os.path.join(args.output_dir, "cross_task_transfer_matrix.json")
         with open(transfer_path, "w", encoding="utf-8") as f:
@@ -866,13 +926,20 @@ def main():
         print(f"Saved transfer matrix: {transfer_path}")
 
         specificity = compute_specificity_metrics(transfer_matrix, args.transfer_summary_k)
+        specificity.update(
+            {
+                "model_name": model_spec.model_name,
+                "model_slug": model_spec.model_slug,
+                "model_family": model_spec.model_family,
+            }
+        )
         specificity_path = os.path.join(args.output_dir, "cross_task_specificity_metrics.json")
         with open(specificity_path, "w", encoding="utf-8") as f:
             json.dump(specificity, f, indent=2)
         print(f"Saved specificity metrics: {specificity_path}")
 
         similarity_path = os.path.join(args.output_dir, "cross_task_head_similarity_topk.json")
-        save_head_similarity(transfer_rankings, args.export_top_k, similarity_path)
+        save_head_similarity(transfer_rankings, args.export_top_k, similarity_path, model_spec.as_metadata())
         print(f"Saved head similarity matrices: {similarity_path}")
 
 

@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
-"""Compute Jaccard similarity between head rankings from the three methods
-(SEC, LME-TRAIN, NQ-TRAIN) at various top-K thresholds.
+"""Compute Jaccard similarity between SEC, LME, and NQ head rankings.
 
-Outputs results to results/comparison_ablation/cross_method_head_overlap.json
-and prints a summary table.
+By default this script reads the canonical Llama submission artifacts under:
+  results/detection/meta-llama__Llama-3.1-8B-Instruct/
+and writes:
+  results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/cross_method_head_overlap.json
 """
 
 import json
@@ -12,7 +13,13 @@ import os
 PROJECT_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), "..", ".."))
 
 RANKING_PATHS = {
-    "SEC": os.path.join(PROJECT_DIR, "results", "detection", "long_context_combined_heads.json"),
+    "SEC": os.path.join(
+        PROJECT_DIR,
+        "results",
+        "detection",
+        "meta-llama__Llama-3.1-8B-Instruct",
+        "long_context_combined_heads.json",
+    ),
     "LME": os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json"),
     "NQ":  os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json"),
 }
@@ -105,7 +112,12 @@ def main():
         print()
 
     # Save results
-    out_dir = os.path.join(PROJECT_DIR, "results", "comparison_ablation")
+    out_dir = os.path.join(
+        PROJECT_DIR,
+        "results",
+        "comparison_ablation",
+        "meta-llama__Llama-3.1-8B-Instruct",
+    )
     os.makedirs(out_dir, exist_ok=True)
     out_path = os.path.join(out_dir, "cross_method_head_overlap.json")
     with open(out_path, "w", encoding="utf-8") as f:

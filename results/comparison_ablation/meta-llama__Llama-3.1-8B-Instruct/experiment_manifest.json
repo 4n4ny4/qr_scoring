@@ -1,0 +1,20 @@
+{
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "model_family": "llama",
+  "source_kind": "filesystem",
+  "source_ref": null,
+  "included_in_submission": true,
+  "source_detection_dir": "results/detection/meta-llama__Llama-3.1-8B-Instruct",
+  "source_ablation_dir": "results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct",
+  "notes": [
+    "Llama artifacts are migrated from the legacy root-level results layout."
+  ],
+  "detection_file_count": 60,
+  "ablation_file_count": 50,
+  "status": "complete",
+  "methods": [
+    "QRScore-SEC"
+  ],
+  "has_transfer_matrix": true
+}

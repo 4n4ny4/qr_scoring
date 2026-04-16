@@ -1,0 +1,73 @@
+{
+  "generated_from_repo": "/Users/ananyaanand/Desktop/qr_scoring",
+  "experiments": [
+    {
+      "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+      "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+      "model_family": "llama",
+      "source_kind": "filesystem",
+      "source_ref": null,
+      "included_in_submission": true,
+      "source_detection_dir": "results/detection/meta-llama__Llama-3.1-8B-Instruct",
+      "source_ablation_dir": "results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct",
+      "notes": [
+        "Llama artifacts are migrated from the legacy root-level results layout."
+      ],
+      "detection_file_count": 60,
+      "ablation_file_count": 50,
+      "status": "complete",
+      "methods": [
+        "QRScore-SEC"
+      ],
+      "has_transfer_matrix": true
+    },
+    {
+      "model_name": "Qwen/Qwen2.5-7B-Instruct",
+      "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+      "model_family": "qwen",
+      "source_kind": "git",
+      "source_ref": "origin/ananya/qwen_exp",
+      "included_in_submission": true,
+      "source_detection_dir": "results/detection_qwen",
+      "source_ablation_dir": "results/runs/qwen_true_detect_2026-04-07",
+      "notes": [
+        "Qwen artifacts are imported from the historical qwen experiment branch."
+      ],
+      "detection_file_count": 97,
+      "ablation_file_count": 27,
+      "status": "complete",
+      "methods": [
+        "QRScore-8B-LME-TRAIN",
+        "QRScore-8B-NQ-TRAIN",
+        "QRScore-SEC",
+        "Transfer-ceo_lastname",
+        "Transfer-employees_count_total",
+        "Transfer-headquarters_city",
+        "Transfer-headquarters_state",
+        "Transfer-holder_record_amount",
+        "Transfer-incorporation_state",
+        "Transfer-incorporation_year",
+        "Transfer-registrant_name"
+      ],
+      "has_transfer_matrix": true
+    },
+    {
+      "model_name": "allenai/OLMo-7B",
+      "model_slug": "allenai__OLMo-7B",
+      "model_family": "olmo",
+      "source_kind": "git",
+      "source_ref": "origin/ananya/gamma_olmo",
+      "included_in_submission": false,
+      "source_detection_dir": null,
+      "source_ablation_dir": null,
+      "notes": [
+        "OLMo code support is retained, but OLMo result artifacts are excluded from this submission-cleanup branch."
+      ],
+      "detection_file_count": 0,
+      "ablation_file_count": 0,
+      "status": "excluded",
+      "methods": [],
+      "has_transfer_matrix": false
+    }
+  ]
+}

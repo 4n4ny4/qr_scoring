@@ -1,0 +1,26 @@
+{
+  "source_file": "/Users/ananyaanand/Desktop/qr_scoring/data/long_context_detection_optionA/holder_record_amount_detection.json",
+  "output_file": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_holder_record_amount_heads.json",
+  "export_prefix": "long_context_holder_record_amount",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top8.json",
+    "16": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top16.json",
+    "32": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top32.json",
+    "48": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top48.json",
+    "64": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top64.json",
+    "96": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top96.json",
+    "128": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/long_context_holder_record_amount_top128.json"
+  },
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "model_family": "llama"
+}

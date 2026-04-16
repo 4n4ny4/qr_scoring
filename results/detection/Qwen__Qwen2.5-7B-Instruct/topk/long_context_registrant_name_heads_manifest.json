@@ -1,0 +1,26 @@
+{
+  "source_file": "/Users/ananyaanand/Desktop/qr_scoring/data/long_context_detection_optionA/registrant_name_detection.json",
+  "output_file": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/long_context_registrant_name_heads.json",
+  "export_prefix": "long_context_registrant_name",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top8.json",
+    "16": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top16.json",
+    "32": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top32.json",
+    "48": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top48.json",
+    "64": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top64.json",
+    "96": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top96.json",
+    "128": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/long_context_registrant_name_top128.json"
+  },
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen"
+}

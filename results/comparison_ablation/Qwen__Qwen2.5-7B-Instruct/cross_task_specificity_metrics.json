@@ -1,0 +1,56 @@
+{
+  "summary_k": 16,
+  "sources": {
+    "ceo_lastname": {
+      "on_target_drop": 0.02857142857142858,
+      "off_target_mean_drop": 0.07032312925170069,
+      "specificity_index": -0.041751700680272105,
+      "surgicality_ratio": 0.4062877871825878
+    },
+    "employees_count_total": {
+      "on_target_drop": 0.9166666666666667,
+      "off_target_mean_drop": 0.2686215272016666,
+      "specificity_index": 0.6480451394650002,
+      "surgicality_ratio": 3.412484011299968
+    },
+    "headquarters_city": {
+      "on_target_drop": 0.7857142857142858,
+      "off_target_mean_drop": 0.6581319248566635,
+      "specificity_index": 0.1275823608576223,
+      "surgicality_ratio": 1.193855298670413
+    },
+    "headquarters_state": {
+      "on_target_drop": 0.4814814814814815,
+      "off_target_mean_drop": 0.6308549029367845,
+      "specificity_index": -0.14937342145530297,
+      "surgicality_ratio": 0.7632206379629721
+    },
+    "holder_record_amount": {
+      "on_target_drop": 0.5416666666666666,
+      "off_target_mean_drop": 0.425246806039489,
+      "specificity_index": 0.11641986062717763,
+      "surgicality_ratio": 1.273770100030726
+    },
+    "incorporation_state": {
+      "on_target_drop": 0.71875,
+      "off_target_mean_drop": 0.5783478974245524,
+      "specificity_index": 0.1404021025754476,
+      "surgicality_ratio": 1.242764092686554
+    },
+    "incorporation_year": {
+      "on_target_drop": 0.8333333333333334,
+      "off_target_mean_drop": 0.5911029994653688,
+      "specificity_index": 0.24223033386796455,
+      "surgicality_ratio": 1.409793782279997
+    },
+    "registrant_name": {
+      "on_target_drop": 0.19512195121951215,
+      "off_target_mean_drop": 0.723162320483749,
+      "specificity_index": -0.5280403692642368,
+      "surgicality_ratio": 0.26981764078773923
+    }
+  },
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen"
+}

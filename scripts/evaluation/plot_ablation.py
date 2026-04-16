@@ -1,6 +1,7 @@
 """
-Plot accuracy vs knockout size for each retrieval method from
-`results/comparison_ablation/*_results.json`.
+Plot accuracy vs knockout size for each retrieval method from a canonical
+per-model ablation directory such as:
+`results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/`.
 
 Outputs:
   - accuracy_vs_knockout.png        (overall curves)
@@ -12,8 +13,8 @@ Outputs:
 Usage:
   python scripts/evaluation/plot_ablation.py
   python scripts/evaluation/plot_ablation.py \\
-    --results_dir results/comparison_ablation \\
-    --output_dir results/comparison_ablation
+    --results_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct \\
+    --output_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct
 """
 
 import argparse
@@ -429,4 +430,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-

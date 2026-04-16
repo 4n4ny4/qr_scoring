@@ -1,0 +1,30 @@
+{
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen",
+  "source_kind": "git",
+  "source_ref": "origin/ananya/qwen_exp",
+  "included_in_submission": true,
+  "source_detection_dir": "results/detection_qwen",
+  "source_ablation_dir": "results/runs/qwen_true_detect_2026-04-07",
+  "notes": [
+    "Qwen artifacts are imported from the historical qwen experiment branch."
+  ],
+  "detection_file_count": 97,
+  "ablation_file_count": 27,
+  "status": "complete",
+  "methods": [
+    "QRScore-8B-LME-TRAIN",
+    "QRScore-8B-NQ-TRAIN",
+    "QRScore-SEC",
+    "Transfer-ceo_lastname",
+    "Transfer-employees_count_total",
+    "Transfer-headquarters_city",
+    "Transfer-headquarters_state",
+    "Transfer-holder_record_amount",
+    "Transfer-incorporation_state",
+    "Transfer-incorporation_year",
+    "Transfer-registrant_name"
+  ],
+  "has_transfer_matrix": true
+}

@@ -1,12 +1,16 @@
-# QRScore: Attention Head Detection & Ablation for Long-Context Retrieval
+# QRScore: ICML 2026 Workshop Submission Repo
 
 ## What This Project Does
 
-This framework identifies which **attention heads** in Llama-3.1-8B-Instruct are responsible for retrieving information from long documents, then tests that claim by **knocking those heads out** and measuring the accuracy drop.
+This branch is the cleaned submission repository for our ICML 2026 workshop experiments on **query-relevant attention heads** in long-context language models. It identifies which attention heads are responsible for retrieval, then tests that claim by knocking those heads out and measuring the accuracy drop.
 
 The core idea: if a set of heads truly drives retrieval, zeroing them out at inference time should destroy the model's ability to answer questions about the document. By comparing head rankings from different data sources, we measure whether head importance is domain-specific or universal.
 
-**Model:** `meta-llama/Llama-3.1-8B-Instruct` (1024 attention heads: 32 layers × 32 heads/layer)
+**Submission artifacts included:** `meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`
+
+**Code support retained:** `meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, `google/gemma-7b`, `allenai/OLMo-7B`
+
+OLMo support remains in the codebase, but OLMo result artifacts are intentionally not bundled in this submission-cleanup branch because the completed outputs were not available in the locally discoverable committed refs.
 
 ### The Three Experiments
 
@@ -46,8 +50,8 @@ The experiments compare head rankings produced from three different data domains
 **How it's built:** `scripts/detection/detect_qrhead.py` processes the training instances in `data/long_context_detection_optionA/`. For each instance, the model reads a long document (~5K–30K tokens) containing a gold passage (with the answer) and distractor passages (from the same filing). The script calls `score_docs_per_head_for_detection()` which computes a per-head retrieval score: how much each individual head's attention to the query tokens helps rank the gold passage above distractors. Heads are ranked by their aggregated QRScore across all training instances.
 
 **Files:**
-- Per-task: `results/detection/long_context_{task}_heads.json` (8 files)
-- Combined (pooled across all tasks): `results/detection/long_context_combined_heads.json`
+- Per-task: `results/detection/<model_slug>/long_context_{task}_heads.json`
+- Combined (pooled across all tasks): `results/detection/<model_slug>/long_context_combined_heads.json`
 
 **Why it matters:** This is the in-domain ranking. If QRScore works, these heads should be the most damaging to knock out on SEC test data.
 
@@ -89,15 +93,16 @@ qr_scoring/
 │   ├── lme_TRAIN.json                     # External LME head ranking
 │   └── nq_TRAIN.json                      # External NQ head ranking
 ├── results/
-│   ├── detection/                         # Head detection outputs
-│   │   ├── long_context_*_heads.json      # Per-task and combined rankings
-│   │   └── topk/8b_external/             # Top-K slices for LME/NQ
-│   └── comparison_ablation/               # Ablation experiment results
-│       ├── *_results.json                 # Per-method accuracy curves
-│       ├── cross_task_*.json              # Transfer matrix + specificity
-│       ├── *.png                          # All plots
-│       ├── *.csv                          # Summary tables
-│       └── FINDINGS.md                    # Key experimental findings
+│   ├── detection/
+│   │   ├── <model_slug>/                  # Canonical per-model rankings + top-K exports
+│   ├── comparison_ablation/
+│   │   └── <model_slug>/                  # Canonical per-model ablation outputs
+│   │       ├── *_results.json             # Per-method accuracy curves
+│   │       ├── cross_task_*.json          # Transfer matrix + specificity
+│   │       ├── *.png                      # Plots
+│   │       ├── *.csv                      # Summary tables
+│   │       └── experiment_manifest.json   # Provenance + labeling metadata
+│   └── cross_ablation_index.json          # Repo-level index of collected workshop artifacts
 ├── scripts/
 │   ├── data_prep/
 │   │   ├── split_dataset.py               # 80/20 train/test split
@@ -127,17 +132,40 @@ qr_scoring/
 
 ## Setup
 
-**Requirements:** Python ≥ 3.9, CUDA GPU, HuggingFace access to `meta-llama/Llama-3.1-8B-Instruct`
+**Requirements:** Python ≥ 3.9, CUDA GPU, HuggingFace access to the supported checkpoints you want to run.
 
 ```bash
 pip install -e .
 ```
 
-Dependencies: `torch`, `transformers>=4.44.0,<5.0.0`, `flash_attn`, `pyyaml>=5.1`, `tqdm`, `Pillow>=9.1.0`
+Dependencies: `torch`, `transformers>=4.44.0,<5.0.0`, `flash_attn`, `jinja2>=3.1.0`, `pyyaml>=5.1`, `tqdm`, `Pillow>=9.1.0`
+
+Gemma and OLMo use stock Hugging Face model loading in this repo. If model import fails before download, check your local `torch` / `torchvision` install first; the scripts now preflight that runtime and surface a targeted error.
 
 For plotting: `pip install matplotlib pandas`
 
 ---
+
+## Workshop Artifact Collection
+
+If you have completed cross-ablation experiments spread across branches, collect
+them into the canonical per-model layout with:
+
+```bash
+python scripts/evaluation/collect_cross_ablation_experiments.py
+```
+
+This imports the locally available historical results into:
+
+- `results/detection/meta-llama__Llama-3.1-8B-Instruct/`
+- `results/detection/Qwen__Qwen2.5-7B-Instruct/`
+- `results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/`
+- `results/comparison_ablation/Qwen__Qwen2.5-7B-Instruct/`
+
+and writes `results/cross_ablation_index.json`, which labels each experiment by
+model family, source branch, status, and available methods. OLMo is listed in
+the index as excluded from the bundled submission artifacts, rather than being
+presented as a completed included result set.
 
 ## Running the Full Pipeline
 
@@ -189,11 +217,34 @@ Scores all 1024 heads on the training data. For each head, computes how well it 
 bash scripts/detection/run_detection.sh
 ```
 
+Gemma example:
+
+```bash
+MODEL_NAME=google/gemma-7b \
+bash scripts/detection/run_detection.sh --combined-only
+```
+
+OLMo example:
+
+```bash
+MODEL_NAME=allenai/OLMo-7B \
+TRUST_REMOTE_CODE=1 \
+bash scripts/detection/run_detection.sh --combined-only
+```
+
 This runs detection on all 8 per-task files and the combined file. Use `--combined-only` to skip per-task detection.
 
 **Output:**
-- `results/detection/long_context_combined_heads.json`
-- `results/detection/long_context_{task}_heads.json` (8 files)
+- `results/detection/<model_slug>/long_context_combined_heads.json`
+- `results/detection/<model_slug>/long_context_{task}_heads.json` (8 files)
+
+Qwen example:
+
+```bash
+MODEL_NAME=Qwen/Qwen2.5-7B-Instruct \
+TRUNCATE_BY_SPACE=20 \
+bash scripts/detection/run_detection.sh --combined-only
+```
 
 ### Step 6: Pooled Ablation Comparison
 
@@ -202,7 +253,7 @@ Compares all three ranking sources by knocking out their top-K heads and measuri
 ```bash
 python scripts/evaluation/run_ablation.py \
   --niah_dir data/niah_input \
-  --output_dir results/comparison_ablation \
+  --model_name meta-llama/Llama-3.1-8B-Instruct \
   --max_instances_per_task 24 \
   --max_context_tokens 8192 \
   --knockout_sizes 0 8 16 32 48 64 96 128 \
@@ -213,6 +264,41 @@ python scripts/evaluation/run_ablation.py \
 
 **Output:** `{method}_results.json`, `comparison_summary.json`
 
+Gemma example:
+
+```bash
+python scripts/evaluation/run_ablation.py \
+  --model_name google/gemma-7b \
+  --ranking_dir results/detection/google__gemma-7b \
+  --max_instances_per_task 24 \
+  --methods QRScore-SEC
+```
+
+OLMo example:
+
+```bash
+python scripts/evaluation/run_ablation.py \
+  --model_name allenai/OLMo-7B \
+  --trust_remote_code \
+  --ranking_dir results/detection/allenai__OLMo-7B \
+  --max_instances_per_task 24 \
+  --methods QRScore-SEC
+```
+
+Qwen example:
+
+```bash
+python scripts/evaluation/run_ablation.py \
+  --model_name Qwen/Qwen2.5-7B-Instruct \
+  --ranking_dir results/detection/Qwen__Qwen2.5-7B-Instruct \
+  --max_instances_per_task 24 \
+  --methods QRScore-SEC QRScore-8B-LME-TRAIN QRScore-8B-NQ-TRAIN
+```
+
+For non-Llama models, the external `LME` / `NQ` rankings come from the
+Llama-3.1-8B detector and are projected onto the target model shape by dropping
+out-of-range heads and deterministically filling the remainder of the ranking.
+
 ### Step 7: Cross-Task Transfer Ablation
 
 Runs an 8×8 source-task × target-task ablation matrix using per-task SEC head rankings:
@@ -220,7 +306,7 @@ Runs an 8×8 source-task × target-task ablation matrix using per-task SEC head 
 ```bash
 python scripts/evaluation/run_ablation.py \
   --niah_dir data/niah_input \
-  --output_dir results/comparison_ablation \
+  --output_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct \
   --max_instances_per_task 24 \
   --max_context_tokens 8192 \
   --knockout_sizes 0 8 16 32 48 64 96 128 \
@@ -239,15 +325,15 @@ python scripts/evaluation/run_ablation.py \
 
 ```bash
 python scripts/evaluation/plot_ablation.py \
-  --results_dir results/comparison_ablation \
-  --output_dir results/comparison_ablation
+  --results_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct \
+  --output_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct
 
 python scripts/evaluation/plot_transfer.py \
-  --results_dir results/comparison_ablation \
-  --output_dir results/comparison_ablation
+  --results_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct \
+  --output_dir results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct
 ```
 
-**Output:** See `results/comparison_ablation/FINDINGS.md` for a full list of generated plots, tables, and findings.
+**Output:** The plots and tables are written into the selected per-model ablation directory.
 
 ### Smoke Test (Quick Validation)
 
@@ -283,7 +369,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 | Argument | Default | Description |
 |----------|---------|-------------|
 | `--niah_dir` | `data/niah_input` | Directory with test JSON files |
-| `--output_dir` | `results/comparison_ablation` | Where to write results |
+| `--output_dir` | `results/comparison_ablation/<model_slug>` | Where to write results |
 | `--model_name` | `meta-llama/Llama-3.1-8B-Instruct` | HuggingFace model |
 | `--knockout_sizes` | `0 8 16 32 48 64 96 128` | Number of heads to knock out |
 | `--max_instances_per_task` | all | Cap instances per task (use 24 for balanced comparison) |
@@ -317,7 +403,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 | `accuracy_table.csv` | Method × Task × K accuracy matrix |
 | `drop_from_baseline_table.csv` | Drop from K=0 baseline for each cell |
 | `specificity_table.csv` | Per-task specificity index and surgicality ratio |
-| `FINDINGS.md` | Detailed experimental findings with metric definitions |
+| `experiment_manifest.json` | Provenance, inclusion status, and labeling metadata for the bundled run |
 
 ### Key Metrics
 
@@ -326,7 +412,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 - **Surgicality Ratio** = on-target drop / off-target mean drop. >1 means surgical; <1 means broad.
 - **Jaccard Similarity** = |intersection| / |union| of two tasks' top-K head sets. 1 = identical heads, 0 = no overlap.
 
-See `results/comparison_ablation/FINDINGS.md` for full metric definitions and experimental conclusions.
+Use the per-model `comparison_summary.json`, transfer metrics, and figures inside `results/comparison_ablation/<model_slug>/` as the canonical submission artifacts.
 
 ---
 
