@@ -31,7 +31,7 @@ TASKS = [
     "ceo_lastname", "holder_record_amount",
 ]
 
-MODEL_NAME = "Qwen/Qwen2.5-7B-Instruct"
+MODEL_NAME = "mistralai/Mistral-7B-Instruct-v0.3"
 DEFAULT_EXTERNAL_RANKINGS_DIR = "Llama-3.1-8B-Instruct"
 MAX_NEW_TOKENS = 30
 DEFAULT_KNOCKOUT_SIZES = [0, 8, 16, 32, 48, 64, 96, 128]

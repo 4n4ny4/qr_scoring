@@ -41,6 +41,7 @@ class AttnBasedRetriever:
         model_name_lower = self.model_name_or_path.lower()
         self.use_native_attentions = (
             "qwen" in model_base_class_lower or "qwen" in model_name_lower
+            or "mistral" in model_base_class_lower or "mistral" in model_name_lower
         )
         if self.use_native_attentions:
             BaseClass = transformers.AutoModelForCausalLM
@@ -49,7 +50,7 @@ class AttnBasedRetriever:
             if self.model_base_class.lower() != 'llama-3.1-8b-instruct':
                 raise ValueError(
                     f"Unsupported model class: {self.model_base_class}. "
-                    "Supported: 'Llama-3.1-8B-Instruct' and Qwen variants."
+                    "Supported: 'Llama-3.1-8B-Instruct', Qwen, and Mistral variants."
                 )
             BaseClass = LlamaForCausalLM
         
@@ -466,6 +467,8 @@ class FullHeadRetriever(AttnBasedRetriever):
                     config = load_config(CONFIG_DIR / 'Llama-3.1-8B-Instruct_full_head.yaml')
                 elif model_base_class.lower() == 'qwen2.5-7b-instruct':
                     config = load_config(CONFIG_DIR / 'Qwen2.5-7B-Instruct_full_head.yaml')
+                elif model_base_class.lower() == 'mistral-7b-instruct-v0.3':
+                    config = load_config(CONFIG_DIR / 'Mistral-7B-Instruct-v0.3_full_head.yaml')
                 else:
                     raise NotImplementedError(f"Config inference for model_base_class {model_base_class} is not implemented.")
             elif model_name_or_path is not None:
@@ -474,6 +477,8 @@ class FullHeadRetriever(AttnBasedRetriever):
                     config = load_config(CONFIG_DIR / 'Llama-3.1-8B-Instruct_full_head.yaml')
                 elif 'qwen2.5-7b-instruct' in model_name_or_path.lower():
                     config = load_config(CONFIG_DIR / 'Qwen2.5-7B-Instruct_full_head.yaml')
+                elif 'mistral-7b-instruct' in model_name_or_path.lower():
+                    config = load_config(CONFIG_DIR / 'Mistral-7B-Instruct-v0.3_full_head.yaml')
                 else:
                     raise NotImplementedError(f"Config inference for model_name_or_path {model_name_or_path} is not implemented.")
             else:
