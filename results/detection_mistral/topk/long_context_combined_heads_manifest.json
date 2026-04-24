@@ -1,0 +1,23 @@
+{
+  "source_file": "/root/qr_scoring/data/long_context_detection_optionA/combined_detection.json",
+  "output_file": "/root/qr_scoring/results/detection_mistral/long_context_combined_heads.json",
+  "export_prefix": "long_context_combined",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top8.json",
+    "16": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top16.json",
+    "32": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top32.json",
+    "48": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top48.json",
+    "64": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top64.json",
+    "96": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top96.json",
+    "128": "/root/qr_scoring/results/detection_mistral/topk/long_context_combined_top128.json"
+  }
+}

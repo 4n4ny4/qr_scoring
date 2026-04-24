@@ -301,6 +301,9 @@ class AttnBasedRetriever:
 
         # scoring with actual query
         per_token_scores, _ = self.score_per_token_attention_to_query(prompt, query_span, None, 0)
+        per_token_scores = per_token_scores.cpu()
+        gc.collect()
+        torch.cuda.empty_cache()
 
         # Avoid cache reuse across passes because some transformers versions
         # produce incompatible mask/cache shapes in this custom model path.
@@ -310,9 +313,12 @@ class AttnBasedRetriever:
             None,
             0,
         )
+        null_per_token_scores = null_per_token_scores.cpu()
+        gc.collect()
+        torch.cuda.empty_cache()
 
         min_length = min(per_token_scores.shape[-1], null_per_token_scores.shape[-1])
-        per_token_scores_CAL = per_token_scores[:,:,:min_length] - null_per_token_scores[:,:,:min_length] # shape: (n_layers, n_heads, n_tok)
+        per_token_scores_CAL = per_token_scores[:,:,:min_length] - null_per_token_scores[:,:,:min_length]
 
         # Steps:
         # 1. each doc has a (n_layers, n_heads, n_tok) per_token_scores_CAL Tensor
@@ -363,12 +369,14 @@ class AttnBasedRetriever:
 
             per_token_scores = []
             for layer_attn in output.attentions[self.start_layer:self.end_layer+1]:
-                # layer_attn: (bsz, n_heads, seq_len, seq_len)
                 attn = layer_attn.squeeze(0)
                 layer_scores = attn[:, query_indices, :].mean(dim=1)
                 per_token_scores.append(layer_scores)
 
             per_token_scores = torch.stack(per_token_scores, dim=0)
+            del output, tokenized_input, input_ids
+            gc.collect()
+            torch.cuda.empty_cache()
             return per_token_scores, None
 
         tokenized_input = self.tokenizer(prompt, return_tensors='pt').to(self.device)

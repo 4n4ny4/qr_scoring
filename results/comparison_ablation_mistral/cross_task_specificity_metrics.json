@@ -1,0 +1,53 @@
+{
+  "summary_k": 16,
+  "sources": {
+    "ceo_lastname": {
+      "on_target_drop": 0.29166666666666663,
+      "off_target_mean_drop": 0.22619047619047614,
+      "specificity_index": 0.0654761904761905,
+      "surgicality_ratio": 1.2894736842105265
+    },
+    "employees_count_total": {
+      "on_target_drop": 0.8333333333333334,
+      "off_target_mean_drop": 0.26785714285714285,
+      "specificity_index": 0.5654761904761905,
+      "surgicality_ratio": 3.111111111111111
+    },
+    "headquarters_city": {
+      "on_target_drop": 0.125,
+      "off_target_mean_drop": 0.4642857142857143,
+      "specificity_index": -0.3392857142857143,
+      "surgicality_ratio": 0.2692307692307692
+    },
+    "headquarters_state": {
+      "on_target_drop": 0.16666666666666674,
+      "off_target_mean_drop": 0.4047619047619047,
+      "specificity_index": -0.23809523809523797,
+      "surgicality_ratio": 0.4117647058823532
+    },
+    "holder_record_amount": {
+      "on_target_drop": 0.25,
+      "off_target_mean_drop": 0.16071428571428573,
+      "specificity_index": 0.08928571428571427,
+      "surgicality_ratio": 1.5555555555555554
+    },
+    "incorporation_state": {
+      "on_target_drop": 0.5,
+      "off_target_mean_drop": 0.3333333333333334,
+      "specificity_index": 0.16666666666666657,
+      "surgicality_ratio": 1.4999999999999996
+    },
+    "incorporation_year": {
+      "on_target_drop": 0.625,
+      "off_target_mean_drop": 0.34523809523809523,
+      "specificity_index": 0.27976190476190477,
+      "surgicality_ratio": 1.8103448275862069
+    },
+    "registrant_name": {
+      "on_target_drop": 0.25,
+      "off_target_mean_drop": 0.4404761904761904,
+      "specificity_index": -0.1904761904761904,
+      "surgicality_ratio": 0.5675675675675677
+    }
+  }
+}
