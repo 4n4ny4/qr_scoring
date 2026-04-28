@@ -321,7 +321,49 @@ python scripts/evaluation/run_ablation.py \
 - `cross_task_specificity_metrics.json` — on-target drop, off-target mean drop, specificity index
 - `cross_task_head_similarity_topk.json` — Jaccard overlap between per-task head sets at each K
 
-### Step 8: Generate Plots and Tables
+### Step 8: Reverse-Transfer NQ Ablation
+
+Tests whether SEC-derived heads causally matter on Natural Questions by
+evaluating NQ answer generation while ablating Qwen SEC head rankings:
+
+**Dataset source:** Prefer the original/simplified Natural Questions files from
+Google Research (`https://ai.google.com/research/NaturalQuestions/dataset`) so
+the evaluation has real short-answer gold. The builder accepts local
+JSON/JSONL/JSONL.GZ records with NQ-style `annotations.short_answers`.
+
+```bash
+python scripts/data_prep/build_nq_eval_data.py \
+  --input_file /path/to/simplified-nq-dev.jsonl.gz \
+  --output_file data/nq_input/nq_test.json \
+  --max_instances 512 \
+  --shuffle
+```
+
+For a Hugging Face smoke test, install `datasets` and use a short-answer NQ
+dataset when available. Passage-pair datasets such as
+`sentence-transformers/natural-questions`
+(`https://huggingface.co/datasets/sentence-transformers/natural-questions`) can
+be used with `--allow_passage_answer`, but they are weaker scientific controls
+because they do not expose true short-answer gold.
+
+```bash
+python scripts/evaluation/run_nq_reverse_ablation.py \
+  --model_name Qwen/Qwen2.5-7B-Instruct \
+  --nq_file data/nq_input/nq_test.json \
+  --max_instances 512 \
+  --knockout_sizes 0 8 16 32 48 64 96 128 \
+  --progress_every 20
+```
+
+**Output:** `results/nq_reverse_ablation/<model_slug>/` containing
+`*_results.json`, `comparison_summary.json`, `accuracy_table.csv`,
+`drop_from_baseline_table.csv`, and `accuracy_vs_knockout.png`.
+
+The key metric is `Drop@K = accuracy(K=0) - accuracy(K)`. A large NQ drop from
+SEC category heads supports reverse transfer; a small drop suggests the
+category heads are not general NQ recall heads.
+
+### Step 9: Generate Plots and Tables
 
 ```bash
 python scripts/evaluation/plot_ablation.py \
