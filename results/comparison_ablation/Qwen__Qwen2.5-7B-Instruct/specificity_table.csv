@@ -1,0 +1,9 @@
+Source Task,On-Target Drop,Off-Target Mean Drop,Specificity Index,Surgicality Ratio
+ceo_lastname,0.0286,0.0703,-0.0418,0.4063
+employees_count_total,0.9167,0.2686,0.6480,3.4125
+headquarters_city,0.7857,0.6581,0.1276,1.1939
+headquarters_state,0.4815,0.6309,-0.1494,0.7632
+holder_record_amount,0.5417,0.4252,0.1164,1.2738
+incorporation_state,0.7188,0.5783,0.1404,1.2428
+incorporation_year,0.8333,0.5911,0.2422,1.4098
+registrant_name,0.1951,0.7232,-0.5280,0.2698

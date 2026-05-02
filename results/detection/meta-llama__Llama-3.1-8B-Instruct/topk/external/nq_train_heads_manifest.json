@@ -1,5 +1,5 @@
 {
-  "source_file": "/Users/ananyaanand/Desktop/qr_scoring/Llama-3.1-8B-Instruct/nq_TRAIN.json",
+  "source_file": "/home/ubuntu/qr_scoring/Llama-3.1-8B-Instruct/nq_TRAIN.json",
   "label": "nq_train",
   "top_k_values": [
     8,
@@ -11,15 +11,12 @@
     128
   ],
   "exports": {
-    "8": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top8.json",
-    "16": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top16.json",
-    "32": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top32.json",
-    "48": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top48.json",
-    "64": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top64.json",
-    "96": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top96.json",
-    "128": "/Users/ananyaanand/Desktop/qr_scoring/results/detection/topk/8b_external/nq_train_top128.json"
-  },
-  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
-  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
-  "model_family": "llama"
+    "8": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top8.json",
+    "16": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top16.json",
+    "32": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top32.json",
+    "48": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top48.json",
+    "64": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top64.json",
+    "96": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top96.json",
+    "128": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top128.json"
+  }
 }

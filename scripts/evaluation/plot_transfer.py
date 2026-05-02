@@ -154,7 +154,7 @@ def _plot_transfer_metric_panels(
     print(f"Saved: {output_path}")
 
 
-def plot_transfer_specificity_heatmaps(data, output_dir):
+def plot_transfer_specificity_heatmaps(data, output_dir, model_name=None):
     """Generate multi-panel cross-ablation heatmaps for specificity interpretation."""
     raw_out = os.path.join(
         output_dir,
@@ -165,11 +165,13 @@ def plot_transfer_specificity_heatmaps(data, output_dir):
         "specificity_drop_from_k0_heatmaps_qrscore_sec.png",
     )
 
+    title_suffix = f" ({model_name})" if model_name else ""
+
     _plot_transfer_metric_panels(
         data,
         output_path=raw_out,
         metric_key="accuracy",
-        title="Cross-Ablation Raw Accuracy by K",
+        title=f"Cross-Ablation Raw Accuracy by K{title_suffix}",
         cmap="RdYlGn",
         include_k0=True,
     )
@@ -177,7 +179,7 @@ def plot_transfer_specificity_heatmaps(data, output_dir):
         data,
         output_path=drop_out,
         metric_key="drop_from_k0",
-        title="Cross-Ablation Drop from Baseline by K",
+        title=f"Cross-Ablation Drop from Baseline by K{title_suffix}",
         cmap="YlOrRd",
         include_k0=False,
     )
@@ -344,6 +346,64 @@ def plot_pair_accuracy_curves(transfer_data, output_dir):
     print(f"Saved: {summary_path}")
 
 
+# ── helper functions ───────────────────────────────────────────────────────
+
+def _get_random_baseline_results(results_dir, tasks, ks):
+    """Load results from multiple random baseline runs, keeping them separate."""
+    random_files = [
+        f for f in os.listdir(results_dir)
+        if f.startswith("Random-seed") and f.endswith("_results.json")
+    ]
+    if not random_files:
+        return None
+
+    all_random_results = {}
+
+    for fname in random_files:
+        with open(os.path.join(results_dir, fname), encoding="utf-8") as f:
+            data = json.load(f)
+            method_name = data.get("method", os.path.basename(fname).replace("_results.json", ""))
+            
+            # {task: {k: {accuracy, drop_from_k0}}}
+            task_accuracies = {t: {"by_k": {str(k): {} for k in ks}} for t in tasks}
+
+            if "per_task_curves" in data:
+                for task_name, k_accuracies_map in data["per_task_curves"].items():
+                    if task_name in tasks:
+                        for k_str, acc in k_accuracies_map.items():
+                            if k_str in task_accuracies[task_name]["by_k"]:
+                                task_accuracies[task_name]["by_k"][k_str]["accuracy"] = acc
+            
+            # Calculate drop_from_k0
+            for task in tasks:
+                if "0" in task_accuracies[task]["by_k"]:
+                    k0_acc = task_accuracies[task]["by_k"]["0"].get("accuracy", 0)
+                    for k_str, k_data in task_accuracies[task]["by_k"].items():
+                        k_data["drop_from_k0"] = k0_acc - k_data.get("accuracy", 0)
+
+            all_random_results[method_name] = task_accuracies
+
+    return all_random_results
+
+
+def add_random_baseline_to_transfer_data(transfer_data, all_random_results):
+    """Inject multiple random baseline results into the transfer data structure."""
+    for method_name, random_results in all_random_results.items():
+        if method_name not in transfer_data["sources"]:
+            transfer_data["sources"].append(method_name)
+        
+        transfer_data["results"][method_name] = {}
+        for target_task in transfer_data["targets"]:
+            if target_task in random_results:
+                transfer_data["results"][method_name][target_task] = random_results[target_task]
+            else:
+                # Fill with empty data if a task is missing
+                transfer_data["results"][method_name][target_task] = {"by_k": {
+                    str(k): {"accuracy": 0, "drop_from_k0": 0} for k in transfer_data["knockout_sizes"]
+                }}
+    return transfer_data
+
+
 # ── main ──────────────────────────────────────────────────────────────────
 
 def main():
@@ -377,8 +437,22 @@ def main():
     if os.path.exists(transfer_path):
         with open(transfer_path, encoding="utf-8") as f:
             transfer_data = json.load(f)
+            model_name = transfer_data.get("model_slug") or transfer_data.get("model_name")
+
+            # Load, average, and inject random baseline data
+            random_results = _get_random_baseline_results(
+                args.results_dir,
+                transfer_data["targets"],
+                transfer_data["knockout_sizes"]
+            )
+            if random_results:
+                print("Found and processed random baseline results.")
+                transfer_data = add_random_baseline_to_transfer_data(transfer_data, random_results)
+            else:
+                print("No random baseline results found in results directory.")
+
             plot_transfer_heatmaps(transfer_data, output_dir)
-            plot_transfer_specificity_heatmaps(transfer_data, output_dir)
+            plot_transfer_specificity_heatmaps(transfer_data, output_dir, model_name=model_name)
             if args.generate_pair_curves:
                 pair_curves_dir = args.pair_curves_output_dir or os.path.join(
                     output_dir, "cross_ablation_curves"
