@@ -1,0 +1,100 @@
+{
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "detection_dir": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct",
+  "num_total_heads": 784,
+  "rankings": {
+    "NQ": {
+      "path": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/nq_train_heads.json",
+      "num_heads": 784,
+      "source_file": null,
+      "note": null
+    },
+    "SEC": {
+      "path": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/long_context_combined_heads.json",
+      "num_heads": 784,
+      "source_file": null,
+      "note": null
+    }
+  },
+  "pairs": {
+    "SEC-NQ": {
+      "8": {
+        "jaccard": 0.2308,
+        "overlap_coefficient": 0.375,
+        "overlap_count": 3,
+        "union_size": 13,
+        "left_size": 8,
+        "right_size": 8
+      },
+      "16": {
+        "jaccard": 0.3333,
+        "overlap_coefficient": 0.5,
+        "overlap_count": 8,
+        "union_size": 24,
+        "left_size": 16,
+        "right_size": 16
+      },
+      "32": {
+        "jaccard": 0.3061,
+        "overlap_coefficient": 0.4688,
+        "overlap_count": 15,
+        "union_size": 49,
+        "left_size": 32,
+        "right_size": 32
+      },
+      "48": {
+        "jaccard": 0.3333,
+        "overlap_coefficient": 0.5,
+        "overlap_count": 24,
+        "union_size": 72,
+        "left_size": 48,
+        "right_size": 48
+      },
+      "64": {
+        "jaccard": 0.3333,
+        "overlap_coefficient": 0.5,
+        "overlap_count": 32,
+        "union_size": 96,
+        "left_size": 64,
+        "right_size": 64
+      },
+      "96": {
+        "jaccard": 0.4436,
+        "overlap_coefficient": 0.6146,
+        "overlap_count": 59,
+        "union_size": 133,
+        "left_size": 96,
+        "right_size": 96
+      },
+      "128": {
+        "jaccard": 0.4884,
+        "overlap_coefficient": 0.6562,
+        "overlap_count": 84,
+        "union_size": 172,
+        "left_size": 128,
+        "right_size": 128
+      }
+    }
+  },
+  "random_expected": {
+    "8": 0.0051,
+    "16": 0.0103,
+    "32": 0.0208,
+    "48": 0.0316,
+    "64": 0.0426,
+    "96": 0.0652,
+    "128": 0.0889
+  },
+  "missing": {
+    "SEC-LME": {
+      "missing_rankings": [
+        "LME"
+      ]
+    },
+    "LME-NQ": {
+      "missing_rankings": [
+        "LME"
+      ]
+    }
+  }
+}

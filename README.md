@@ -377,6 +377,67 @@ python scripts/evaluation/plot_transfer.py \
 
 **Output:** The plots and tables are written into the selected per-model ablation directory.
 
+To compute cross-dataset head overlap, including the SEC--NQ Jaccard analysis
+used to explain cross-dataset transfer, run:
+
+```bash
+python scripts/evaluation/compute_cross_method_overlap.py --allow-missing
+```
+
+By default this discovers available per-model detection directories, uses only
+same-model ranking files such as `nq_train_heads.json`, and writes
+`results/comparison_ablation/cross_model_head_overlap.{json,csv}` plus
+per-model `cross_method_head_overlap.json` files. Models without same-model NQ
+rankings are reported as missing rather than silently using Llama-derived heads.
+To check a specific set of models as their SEC or NQ rankings become available:
+
+```bash
+python scripts/evaluation/compute_cross_method_overlap.py \
+  --model-slugs Qwen__Qwen2.5-7B-Instruct allenai__OLMo-7B mistralai__Mistral-7B-Instruct-v0.3 \
+  --pairs SEC:NQ \
+  --allow-missing
+```
+
+For same-model SEC--NQ Jaccard, each model must have both files below:
+
+- `results/detection/<model_slug>/long_context_combined_heads.json` — SEC heads
+- `results/detection/<model_slug>/nq_train_heads.json` — same-model NQ heads
+
+Qwen is ready to evaluate because its NQ heads are available from the
+PrincetonPLI QRHead release:
+
+```bash
+python scripts/evaluation/compute_cross_method_overlap.py \
+  --model-slugs Qwen__Qwen2.5-7B-Instruct \
+  --pairs SEC:NQ \
+  --allow-missing
+```
+
+OLMo and Mistral are reported as missing until same-model SEC and NQ rankings
+exist. For OLMo SEC detection, run:
+
+```bash
+MODEL_NAME=allenai/OLMo-7B \
+TRUST_REMOTE_CODE=1 \
+bash scripts/detection/run_detection.sh --combined-only
+```
+
+Then run NQ detection against an NQ detection file in the same JSON format used
+by `detect_qrhead.py` (`idx`, `question`, `paragraphs`, `gt_docs`) and write the
+ranking to `results/detection/allenai__OLMo-7B/nq_train_heads.json`. Mistral
+requires adding model-runtime support before running the same SEC/NQ detection
+pattern.
+
+If you intentionally want the legacy transferred/external rankings, for example
+to label a Llama-NQ transferred-head baseline, opt in explicitly:
+
+```bash
+python scripts/evaluation/compute_cross_method_overlap.py \
+  --pairs SEC:NQ \
+  --include-transferred-external \
+  --allow-missing
+```
+
 ### Smoke Test (Quick Validation)
 
 Run a minimal version to verify the pipeline works before committing to a full run:

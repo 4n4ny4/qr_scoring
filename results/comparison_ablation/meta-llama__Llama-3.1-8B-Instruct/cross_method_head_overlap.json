@@ -1,0 +1,210 @@
+{
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "detection_dir": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct",
+  "num_total_heads": 1024,
+  "rankings": {
+    "LME": {
+      "path": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/lme_train_heads.json",
+      "num_heads": 1024,
+      "source_file": null,
+      "note": null
+    },
+    "NQ": {
+      "path": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/nq_train_heads.json",
+      "num_heads": 1024,
+      "source_file": null,
+      "note": null
+    },
+    "SEC": {
+      "path": "/Users/ananyaanand/Downloads/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+      "num_heads": 1024,
+      "source_file": null,
+      "note": null
+    }
+  },
+  "pairs": {
+    "SEC-LME": {
+      "8": {
+        "jaccard": 0.3333,
+        "overlap_coefficient": 0.5,
+        "overlap_count": 4,
+        "union_size": 12,
+        "left_size": 8,
+        "right_size": 8
+      },
+      "16": {
+        "jaccard": 0.4545,
+        "overlap_coefficient": 0.625,
+        "overlap_count": 10,
+        "union_size": 22,
+        "left_size": 16,
+        "right_size": 16
+      },
+      "32": {
+        "jaccard": 0.561,
+        "overlap_coefficient": 0.7188,
+        "overlap_count": 23,
+        "union_size": 41,
+        "left_size": 32,
+        "right_size": 32
+      },
+      "48": {
+        "jaccard": 0.5738,
+        "overlap_coefficient": 0.7292,
+        "overlap_count": 35,
+        "union_size": 61,
+        "left_size": 48,
+        "right_size": 48
+      },
+      "64": {
+        "jaccard": 0.5802,
+        "overlap_coefficient": 0.7344,
+        "overlap_count": 47,
+        "union_size": 81,
+        "left_size": 64,
+        "right_size": 64
+      },
+      "96": {
+        "jaccard": 0.6,
+        "overlap_coefficient": 0.75,
+        "overlap_count": 72,
+        "union_size": 120,
+        "left_size": 96,
+        "right_size": 96
+      },
+      "128": {
+        "jaccard": 0.6306,
+        "overlap_coefficient": 0.7734,
+        "overlap_count": 99,
+        "union_size": 157,
+        "left_size": 128,
+        "right_size": 128
+      }
+    },
+    "SEC-NQ": {
+      "8": {
+        "jaccard": 0.1429,
+        "overlap_coefficient": 0.25,
+        "overlap_count": 2,
+        "union_size": 14,
+        "left_size": 8,
+        "right_size": 8
+      },
+      "16": {
+        "jaccard": 0.1429,
+        "overlap_coefficient": 0.25,
+        "overlap_count": 4,
+        "union_size": 28,
+        "left_size": 16,
+        "right_size": 16
+      },
+      "32": {
+        "jaccard": 0.3913,
+        "overlap_coefficient": 0.5625,
+        "overlap_count": 18,
+        "union_size": 46,
+        "left_size": 32,
+        "right_size": 32
+      },
+      "48": {
+        "jaccard": 0.3913,
+        "overlap_coefficient": 0.5625,
+        "overlap_count": 27,
+        "union_size": 69,
+        "left_size": 48,
+        "right_size": 48
+      },
+      "64": {
+        "jaccard": 0.561,
+        "overlap_coefficient": 0.7188,
+        "overlap_count": 46,
+        "union_size": 82,
+        "left_size": 64,
+        "right_size": 64
+      },
+      "96": {
+        "jaccard": 0.5738,
+        "overlap_coefficient": 0.7292,
+        "overlap_count": 70,
+        "union_size": 122,
+        "left_size": 96,
+        "right_size": 96
+      },
+      "128": {
+        "jaccard": 0.6,
+        "overlap_coefficient": 0.75,
+        "overlap_count": 96,
+        "union_size": 160,
+        "left_size": 128,
+        "right_size": 128
+      }
+    },
+    "LME-NQ": {
+      "8": {
+        "jaccard": 0.0667,
+        "overlap_coefficient": 0.125,
+        "overlap_count": 1,
+        "union_size": 15,
+        "left_size": 8,
+        "right_size": 8
+      },
+      "16": {
+        "jaccard": 0.1429,
+        "overlap_coefficient": 0.25,
+        "overlap_count": 4,
+        "union_size": 28,
+        "left_size": 16,
+        "right_size": 16
+      },
+      "32": {
+        "jaccard": 0.3617,
+        "overlap_coefficient": 0.5312,
+        "overlap_count": 17,
+        "union_size": 47,
+        "left_size": 32,
+        "right_size": 32
+      },
+      "48": {
+        "jaccard": 0.5,
+        "overlap_coefficient": 0.6667,
+        "overlap_count": 32,
+        "union_size": 64,
+        "left_size": 48,
+        "right_size": 48
+      },
+      "64": {
+        "jaccard": 0.561,
+        "overlap_coefficient": 0.7188,
+        "overlap_count": 46,
+        "union_size": 82,
+        "left_size": 64,
+        "right_size": 64
+      },
+      "96": {
+        "jaccard": 0.5238,
+        "overlap_coefficient": 0.6875,
+        "overlap_count": 66,
+        "union_size": 126,
+        "left_size": 96,
+        "right_size": 96
+      },
+      "128": {
+        "jaccard": 0.561,
+        "overlap_coefficient": 0.7188,
+        "overlap_count": 92,
+        "union_size": 164,
+        "left_size": 128,
+        "right_size": 128
+      }
+    }
+  },
+  "random_expected": {
+    "8": 0.0039,
+    "16": 0.0079,
+    "32": 0.0159,
+    "48": 0.024,
+    "64": 0.0323,
+    "96": 0.0492,
+    "128": 0.0667
+  }
+}

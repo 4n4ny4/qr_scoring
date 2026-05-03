@@ -1,5 +1,5 @@
 {
-  "source_file": "/home/ubuntu/qr_scoring/Llama-3.1-8B-Instruct/nq_TRAIN.json",
+  "source_file": "results/detection/meta-llama__Llama-3.1-8B-Instruct/nq_train_heads.json",
   "label": "nq_train",
   "top_k_values": [
     8,
@@ -10,13 +10,15 @@
     96,
     128
   ],
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "source_type": "same_model",
   "exports": {
-    "8": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top8.json",
-    "16": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top16.json",
-    "32": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top32.json",
-    "48": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top48.json",
-    "64": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top64.json",
-    "96": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top96.json",
-    "128": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top128.json"
+    "8": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top8.json",
+    "16": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top16.json",
+    "32": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top32.json",
+    "48": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top48.json",
+    "64": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top64.json",
+    "96": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top96.json",
+    "128": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top128.json"
   }
 }
