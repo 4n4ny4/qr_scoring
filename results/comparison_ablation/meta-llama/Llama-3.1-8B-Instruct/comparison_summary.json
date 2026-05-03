@@ -1,0 +1,50 @@
+{
+  "model": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_slug": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_family": "llama",
+  "ranking_dir": "/home/ubuntu/qr_scoring/results/detection/meta-llama/Llama-3.1-8B-Instruct",
+  "num_instances": 241,
+  "knockout_sizes": [
+    0,
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "methods": {
+    "QRScore-8B-LME-TRAIN": {
+      "accuracy_curve": {
+        "0": 0.8962655601659751,
+        "8": 0.6058091286307054,
+        "16": 0.25311203319502074,
+        "32": 0.15767634854771784,
+        "48": 0.37344398340248963,
+        "64": 0.2033195020746888,
+        "96": 0.16182572614107885,
+        "128": 0.0995850622406639
+      },
+      "baseline_accuracy": 0.8962655601659751,
+      "accuracy_at_k16": 0.25311203319502074,
+      "drop_at_k16": 0.6431535269709544
+    },
+    "QRScore-8B-NQ-TRAIN": {
+      "accuracy_curve": {
+        "0": 0.8962655601659751,
+        "8": 0.9045643153526971,
+        "16": 0.8547717842323651,
+        "32": 0.7842323651452282,
+        "48": 0.4854771784232365,
+        "64": 0.3941908713692946,
+        "96": 0.45643153526970953,
+        "128": 0.27800829875518673
+      },
+      "baseline_accuracy": 0.8962655601659751,
+      "accuracy_at_k16": 0.8547717842323651,
+      "drop_at_k16": 0.04149377593361003
+    }
+  }
+}
