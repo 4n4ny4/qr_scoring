@@ -284,10 +284,13 @@ def compute_jaccard(a, b):
     return len(a & b) / len(union)
 
 
-def save_head_similarity(task_rankings, top_ks, output_path):
+def save_head_similarity(task_rankings, top_ks, output_path, model_name=None):
     tasks = sorted(task_rankings.keys())
+    if model_name is None:
+        model_name = MODEL_NAME
     payload = {
         "tasks": tasks,
+        "model": model_name,
         "top_k": {},
     }
     for k in sorted(set(top_ks)):

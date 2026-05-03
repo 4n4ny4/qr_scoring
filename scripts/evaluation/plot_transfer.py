@@ -185,7 +185,10 @@ def plot_transfer_specificity_heatmaps(data, output_dir):
 
 # ── 2. Head similarity (Jaccard) panels ───────────────────────────────────
 
-def plot_head_similarity(sim_data, output_dir):
+_DEFAULT_JACCARD_MODEL_LABEL = "meta-llama/Llama-3.1-8B-Instruct"
+
+
+def plot_head_similarity(sim_data, output_dir, model_label=None):
     tasks = sim_data["tasks"]
     top_ks = sorted(sim_data["top_k"].keys(), key=int)
     short = [t.replace("_", "\n") for t in tasks]
@@ -213,7 +216,12 @@ def plot_head_similarity(sim_data, output_dir):
     for j in range(n, rows * cols):
         axes[j // cols][j % cols].set_visible(False)
 
-    fig.suptitle("Head Overlap (Jaccard Similarity) Across Tasks", fontsize=14, y=1.01)
+    model = model_label or sim_data.get("model") or _DEFAULT_JACCARD_MODEL_LABEL
+    fig.suptitle(
+        f"Head Overlap (Jaccard Similarity) Across Tasks\n{model}",
+        fontsize=13,
+        y=1.02,
+    )
     fig.tight_layout()
     out = os.path.join(output_dir, "head_similarity_heatmaps.png")
     fig.savefig(out, dpi=150, bbox_inches="tight")
