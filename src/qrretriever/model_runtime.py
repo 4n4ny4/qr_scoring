@@ -171,17 +171,25 @@ def load_tokenizer(model_spec: ModelSpec):
     return tokenizer
 
 
-def load_stock_causal_lm(model_spec: ModelSpec, resolved_device: str, *, for_detection: bool = False):
+def load_stock_causal_lm(
+    model_spec: ModelSpec,
+    resolved_device: str,
+    *,
+    for_detection: bool = False,
+    load_in_8bit: bool = False,
+):
     preflight_model_environment(model_spec)
 
     load_kwargs = {
         "low_cpu_mem_usage": True,
         "trust_remote_code": model_spec.trust_remote_code,
+        "load_in_8bit": load_in_8bit,
     }
     preferred_attn = None
 
     if resolved_device == "cuda":
-        load_kwargs["device_map"] = "auto"
+        if not load_in_8bit:
+            load_kwargs["device_map"] = "auto"
         load_kwargs["torch_dtype"] = "auto" if model_spec.model_family == "olmo" else torch.float16
         preferred_attn = "eager" if for_detection else "flash_attention_2"
     elif resolved_device == "mps":
@@ -207,7 +215,16 @@ def load_stock_causal_lm(model_spec: ModelSpec, resolved_device: str, *, for_det
             **load_kwargs,
         )
 
-    if resolved_device != "cuda":
+    if resolved_device != "cuda" and not load_in_8bit:
+        model = model.to(resolved_device)
+    elif resolved_device == "cuda" and not load_in_8bit:
+        # device_map="auto" handles this, so we don't need to move it.
+        pass
+    elif load_in_8bit:
+        # 8-bit models loaded with device_map="auto" (the default for 8-bit)
+        # should not be moved again.
+        pass
+    else:
         model = model.to(resolved_device)
 
     return model

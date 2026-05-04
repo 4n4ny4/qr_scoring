@@ -78,7 +78,7 @@ def get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_spa
             else:
                 p['paragraph_text'] = paragraph_text
 
-        retrieval_scores = full_head_retriever.score_docs_per_head_for_detection(query, docs, trust_remote_code=trust_remote_code) # doc_id -> score tensor with shape (n_layers, n_heads)
+        retrieval_scores = full_head_retriever.score_docs_per_head_for_detection(query, docs) # doc_id -> score tensor with shape (n_layers, n_heads)
         doc_scores_per_head[data['idx']] = retrieval_scores
 
     return doc_scores_per_head
@@ -175,6 +175,7 @@ if __name__=="__main__":
     parser.add_argument("--tokenizer_name_or_path", type=str, default=None, help="Optional tokenizer override.")
     parser.add_argument("--model_slug", type=str, default=None, help="Optional slug override for per-model output directories.")
     parser.add_argument("--trust_remote_code", action="store_true", help="Allow Hugging Face remote code when required by the model family.")
+    parser.add_argument("--model_load_in_8bit", action="store_true", help="Load model in 8-bit mode.")
     parser.add_argument("--task_name", type=str, default=None, help="Optional task label used in export file naming.")
     parser.add_argument("--export_dir", type=str, default=None, help="Optional directory for top-K export files.")
     parser.add_argument(
@@ -224,6 +225,7 @@ if __name__=="__main__":
         model_name_or_path=args.model_name_or_path,
         tokenizer_name_or_path=args.tokenizer_name_or_path,
         trust_remote_code=args.trust_remote_code,
+        model_load_in_8bit=args.model_load_in_8bit,
     )
 
     # read input file

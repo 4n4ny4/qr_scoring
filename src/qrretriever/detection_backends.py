@@ -26,6 +26,7 @@ class StockFullHeadRetriever:
         tokenizer_name_or_path: Optional[str] = None,
         trust_remote_code: bool = False,
         device: Optional[str] = None,
+        load_in_8bit: bool = False,
     ):
         self.device = device or ("cuda" if torch.cuda.is_available() else "cpu")
         self.model_spec = resolve_model_spec(
@@ -44,6 +45,7 @@ class StockFullHeadRetriever:
             self.model_spec,
             self.device,
             for_detection=True,
+            load_in_8bit=load_in_8bit,
         )
         if self.llm.config.pad_token_id is None:
             self.llm.config.pad_token_id = self.tokenizer.pad_token_id or self.llm.config.eos_token_id
@@ -130,13 +132,39 @@ class StockFullHeadRetriever:
         cache_position = torch.arange(query_start, query_start + query_len, device=input_ids.device)
         try:
             query_outputs = self.llm(cache_position=cache_position, **query_kwargs)
-        except TypeError:
-            query_outputs = self.llm(**query_kwargs)
+        except TypeError as e:
+            # OLMo doesn't support output_attentions, so we have to handle it differently
+            if "output_attentions is not yet supported" in str(e) or (
+                "unexpected keyword argument" in str(e) and "output_attentions" in str(e)
+            ):
+                del query_kwargs["output_attentions"]
+                query_outputs = self.llm(**query_kwargs)
+                # Manually get attentions from the cache if possible
+                if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
+                    # This is a model-specific hack and might not be stable.
+                    # The location of attention scores in the cache can vary.
+                    # This is a guess for OLMo based on common patterns.
+                    attentions = [layer[2] for layer in query_outputs.past_key_values]
+                    query_outputs.attentions = tuple(attentions)
+                else:
+                    raise ValueError("Could not retrieve attention scores from OLMo model.")
+            else:
+                query_outputs = self.llm(**query_kwargs)
+        except ValueError as e:
+            if "output_attentions is not yet supported" in str(e):
+                del query_kwargs["output_attentions"]
+                query_outputs = self.llm(**query_kwargs)
+                if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
+                    attentions = [layer[2] for layer in query_outputs.past_key_values] # Heuristic
+                    query_outputs.attentions = tuple(attentions)
+                else:
+                    raise ValueError("Could not retrieve attention scores from OLMo model after fallback.")
+            else:
+                raise e
 
         per_layer = []
-        for attn in query_outputs.attentions:
-            per_layer.append(attn[0].mean(dim=1))
-        return torch.stack(per_layer, dim=0)
+        if not hasattr(query_outputs, "attentions") or not query_outputs.attentions:
+            raise ValueError("Model output does not contain attention scores.")
 
     def score_docs_per_head_for_detection(self, query: str, docs: List[Dict]) -> Dict[str, torch.Tensor]:
         prompt_text, tokenized_prompt, query_span, doc_spans = self.compose_scoring_prompt(query, docs)
@@ -181,6 +209,7 @@ def build_full_head_retriever(
     device: Optional[str] = None,
     trust_remote_code: bool = False,
     tokenizer_name_or_path: Optional[str] = None,
+    model_load_in_8bit: bool = False,
 ):
     config = _resolve_detection_config(config_or_config_path, model_name_or_path, model_base_class)
     resolved_model_name = model_name_or_path
@@ -214,4 +243,5 @@ def build_full_head_retriever(
         tokenizer_name_or_path=tokenizer_name_or_path,
         trust_remote_code=trust_remote_code,
         device=device,
+        load_in_8bit=model_load_in_8bit,
     )

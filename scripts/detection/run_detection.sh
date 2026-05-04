@@ -1,11 +1,5 @@
-#!/bin/bash
-# Run QRHead detection on long-context data (~30K tokens per instance).
-# This should produce proper QRScore rankings with top heads in middle layers.
-#
-# Usage:
-#   bash scripts/detection/run_detection.sh
-#   bash scripts/detection/run_detection.sh --combined-only  # only run combined
-set -e
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
 
 # Default model if not set from environment
 MODEL_NAME="${MODEL_NAME:-meta-llama/Llama-3.1-8B-Instruct}"
@@ -25,10 +19,8 @@ INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection_optionA}"
 OUTPUT_DIR="${DETECTION_DIR:-}"
 TOPK_EXPORT_DIR="${TOPK_EXPORT_DIR:-}"
 EXPORT_TOP_K=(8 16 32 48 64 96 128)
-TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-0}"
-
-PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
+TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-512}"
+MODEL_LOAD_IN_8BIT="${MODEL_LOAD_IN_8BIT:-1}"
 
 check_python_dependencies() {
     # Use the same interpreter as the run command so checks match runtime behavior.
@@ -36,7 +28,7 @@ check_python_dependencies() {
 import importlib
 import sys
 
-required = ["tqdm", "numpy", "torch", "transformers", "yaml"]
+required = ["tqdm", "numpy", "torch", "transformers", "yaml", "bitsandbytes"]
 missing = [name for name in required if importlib.util.find_spec(name) is None]
 
 if missing:
@@ -145,6 +137,9 @@ if [ "$COMBINED_ONLY" = false ]; then
         if [ "$TRUST_REMOTE_CODE" = "1" ] || [ "$TRUST_REMOTE_CODE" = "true" ]; then
             DETECTION_ARGS+=(--trust_remote_code)
         fi
+        if [ "$MODEL_LOAD_IN_8BIT" = "1" ] || [ "$MODEL_LOAD_IN_8BIT" = "true" ]; then
+            DETECTION_ARGS+=(--model_load_in_8bit)
+        fi
 
         python "$PROJECT_DIR/scripts/detection/detect_qrhead.py" \
             "${DETECTION_ARGS[@]}"
@@ -188,6 +183,9 @@ if [ -f "$COMBINED_INPUT" ]; then
         fi
         if [ "$TRUST_REMOTE_CODE" = "1" ] || [ "$TRUST_REMOTE_CODE" = "true" ]; then
             DETECTION_ARGS+=(--trust_remote_code)
+        fi
+        if [ "$MODEL_LOAD_IN_8BIT" = "1" ] || [ "$MODEL_LOAD_IN_8BIT" = "true" ]; then
+            DETECTION_ARGS+=(--model_load_in_8bit)
         fi
 
         python "$PROJECT_DIR/scripts/detection/detect_qrhead.py" \
