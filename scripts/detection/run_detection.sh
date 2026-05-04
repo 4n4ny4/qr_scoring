@@ -7,8 +7,7 @@
 #   bash scripts/detection/run_detection.sh --combined-only  # only run combined
 set -e
 
-PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
-export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
+# Default model if not set from environment
 MODEL_NAME="${MODEL_NAME:-meta-llama/Llama-3.1-8B-Instruct}"
 MODEL_SLUG="${MODEL_SLUG:-}"
 TOKENIZER_NAME="${TOKENIZER_NAME:-}"
@@ -18,6 +17,8 @@ if [ "$MODEL_NAME" = "meta-llama/Llama-3.1-8B-Instruct" ]; then
     CONFIG="$PROJECT_DIR/src/qrretriever/configs/Llama-3.1-8B-Instruct_full_head.yaml"
 elif [ "$MODEL_NAME" = "Qwen/Qwen2.5-7B-Instruct" ]; then
     CONFIG="$PROJECT_DIR/src/qrretriever/configs/Qwen2.5-7B-Instruct_full_head.yaml"
+elif [ -f "$PROJECT_DIR/src/qrretriever/configs/${MODEL_NAME}_full_head.yaml" ]; then
+    CONFIG="$PROJECT_DIR/src/qrretriever/configs/${MODEL_NAME}_full_head.yaml"
 fi
 # Allow overriding INPUT_DIR from environment; default to Option A dataset
 INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection_optionA}"
@@ -25,6 +26,9 @@ OUTPUT_DIR="${DETECTION_DIR:-}"
 TOPK_EXPORT_DIR="${TOPK_EXPORT_DIR:-}"
 EXPORT_TOP_K=(8 16 32 48 64 96 128)
 TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-0}"
+
+PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
+export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
 
 check_python_dependencies() {
     # Use the same interpreter as the run command so checks match runtime behavior.

@@ -54,7 +54,7 @@ def lme_eval(retrieval_results, data_instances):
     return mean_score_over_gold # QRScore for a specific head
 
 
-def get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_space=0):
+def get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_space=0, trust_remote_code=False):
     """
     data_instances: a list of dicts, each dict represents an instance
     """
@@ -78,7 +78,7 @@ def get_doc_scores_per_head(full_head_retriever, data_instances, truncate_by_spa
             else:
                 p['paragraph_text'] = paragraph_text
 
-        retrieval_scores = full_head_retriever.score_docs_per_head_for_detection(query, docs) # doc_id -> score tensor with shape (n_layers, n_heads)
+        retrieval_scores = full_head_retriever.score_docs_per_head_for_detection(query, docs, trust_remote_code=trust_remote_code) # doc_id -> score tensor with shape (n_layers, n_heads)
         doc_scores_per_head[data['idx']] = retrieval_scores
 
     return doc_scores_per_head
