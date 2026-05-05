@@ -1,0 +1,22 @@
+{
+  "source_file": "/home/ubuntu/qr_scoring/Llama-3.1-8B-Instruct/nq_TRAIN.json",
+  "label": "nq_train",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "exports": {
+    "8": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top8.json",
+    "16": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top16.json",
+    "32": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top32.json",
+    "48": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top48.json",
+    "64": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top64.json",
+    "96": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top96.json",
+    "128": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-Instruct-hf/topk/external/nq_train_top128.json"
+  }
+}

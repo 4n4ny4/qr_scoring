@@ -35,6 +35,16 @@ SUPPORTED_MODEL_NAMES = {
         "allow_external_rankings": True,
         "requires_trust_remote_code": False,
     },
+    "allenai/OLMo-7B-Instruct": {
+        "family": "olmo",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": True,
+    },
+    "allenai/OLMo-7B-Instruct-hf": {
+        "family": "olmo",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": False,
+    },
 }
 
 FAMILY_MODELING_MODULES = {
