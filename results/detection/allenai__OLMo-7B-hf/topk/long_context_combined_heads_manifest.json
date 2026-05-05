@@ -1,0 +1,26 @@
+{
+  "source_file": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/_inputs/combined_detection.generated.json",
+  "output_file": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/long_context_combined_heads.json",
+  "export_prefix": "long_context_combined",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "model_name": "allenai/OLMo-7B-hf",
+  "model_slug": "allenai__OLMo-7B-hf",
+  "model_family": "olmo",
+  "exports": {
+    "8": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top8.json",
+    "16": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top16.json",
+    "32": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top32.json",
+    "48": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top48.json",
+    "64": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top64.json",
+    "96": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top96.json",
+    "128": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_combined_top128.json"
+  }
+}

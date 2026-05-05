@@ -1,6 +1,7 @@
 #!/usr/bin/env bash
 # Run OLMo per-task SEC retrieval-head detection, task-head Jaccard, and
-# optional cross-task ablations.
+# optional cross-task ablations. Defaults to the HF-native OLMo checkpoint so
+# no ai2-olmo / hf_olmo custom-code package is needed.
 #
 # Full run:
 #   bash scripts/evaluation/run_olmo_cross_task.sh
@@ -18,9 +19,11 @@ PROJECT_DIR="$(cd "$(dirname "$0")/../.." && pwd)"
 export PYTHONPATH="$PROJECT_DIR/src:${PYTHONPATH:-}"
 
 PYTHON_BIN="${PYTHON_BIN:-python}"
-MODEL_NAME="${MODEL_NAME:-allenai/OLMo-7B}"
-MODEL_SLUG="${MODEL_SLUG:-allenai__OLMo-7B}"
+MODEL_NAME="${MODEL_NAME:-allenai/OLMo-7B-hf}"
+MODEL_SLUG="${MODEL_SLUG:-allenai__OLMo-7B-hf}"
 TOKENIZER_NAME="${TOKENIZER_NAME:-}"
+# The repo's OLMo preflight path expects the trust flag for OLMo-family models.
+# With allenai/OLMo-7B-hf this does not pull in the old hf_olmo custom package.
 TRUST_REMOTE_CODE="${TRUST_REMOTE_CODE:-1}"
 
 INPUT_DIR="${INPUT_DIR:-$PROJECT_DIR/data/long_context_detection_optionA}"
@@ -43,13 +46,17 @@ K_VALUES="${K_VALUES:-8 16 32 48 64 96 128}"
 KNOCKOUT_SIZES="${KNOCKOUT_SIZES:-0 8 16 32 48 64 96 128}"
 PROGRESS_EVERY="${PROGRESS_EVERY:-20}"
 DEVICE="${DEVICE:-auto}"
-TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-0}"
+# OLMo detection materializes attention tensors; full SEC paragraphs can OOM
+# even on 40GB GPUs. Override to 0 only if you have enough memory.
+TRUNCATE_BY_SPACE="${TRUNCATE_BY_SPACE:-20}"
 TRANSFER_SUMMARY_K="${TRANSFER_SUMMARY_K:-16}"
 LOG_TOKENS="${LOG_TOKENS:-0}"
 
 CACHE_ROOT="${CACHE_ROOT:-${TMPDIR:-/tmp}/qr_scoring_olmo_cache}"
 export MPLCONFIGDIR="${MPLCONFIGDIR:-$CACHE_ROOT/matplotlib}"
 export XDG_CACHE_HOME="${XDG_CACHE_HOME:-$CACHE_ROOT/xdg}"
+export PYTORCH_CUDA_ALLOC_CONF="${PYTORCH_CUDA_ALLOC_CONF:-expandable_segments:True}"
+export QRRETRIEVER_TORCH_DTYPE="${QRRETRIEVER_TORCH_DTYPE:-bfloat16}"
 
 TASKS=(
     "registrant_name"

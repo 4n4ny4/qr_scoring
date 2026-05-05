@@ -110,33 +110,34 @@ class StockFullHeadRetriever:
         query_len = query_end - query_start + 1
         prefix_len = query_start
 
-        prefix_outputs = None
-        if prefix_len > 0:
-            prefix_outputs = self.llm(
-                input_ids=input_ids[:, :prefix_len],
-                attention_mask=attention_mask[:, :prefix_len],
-                use_cache=True,
-                return_dict=True,
-            )
+        with torch.inference_mode():
+            prefix_outputs = None
+            if prefix_len > 0:
+                prefix_outputs = self.llm(
+                    input_ids=input_ids[:, :prefix_len],
+                    attention_mask=attention_mask[:, :prefix_len],
+                    use_cache=True,
+                    return_dict=True,
+                )
 
-        query_kwargs = {
-            "input_ids": input_ids[:, query_start : query_end + 1],
-            "attention_mask": attention_mask[:, : query_end + 1],
-            "past_key_values": None if prefix_outputs is None else prefix_outputs.past_key_values,
-            "use_cache": True,
-            "output_attentions": True,
-            "return_dict": True,
-        }
-        cache_position = torch.arange(query_start, query_start + query_len, device=input_ids.device)
-        try:
-            query_outputs = self.llm(cache_position=cache_position, **query_kwargs)
-        except TypeError:
-            query_outputs = self.llm(**query_kwargs)
+            query_kwargs = {
+                "input_ids": input_ids[:, query_start : query_end + 1],
+                "attention_mask": attention_mask[:, : query_end + 1],
+                "past_key_values": None if prefix_outputs is None else prefix_outputs.past_key_values,
+                "use_cache": True,
+                "output_attentions": True,
+                "return_dict": True,
+            }
+            cache_position = torch.arange(query_start, query_start + query_len, device=input_ids.device)
+            try:
+                query_outputs = self.llm(cache_position=cache_position, **query_kwargs)
+            except TypeError:
+                query_outputs = self.llm(**query_kwargs)
 
-        per_layer = []
-        for attn in query_outputs.attentions:
-            per_layer.append(attn[0].mean(dim=1))
-        return torch.stack(per_layer, dim=0)
+            per_layer = []
+            for attn in query_outputs.attentions:
+                per_layer.append(attn[0].mean(dim=1))
+            return torch.stack(per_layer, dim=0)
 
     def score_docs_per_head_for_detection(self, query: str, docs: List[Dict]) -> Dict[str, torch.Tensor]:
         prompt_text, tokenized_prompt, query_span, doc_spans = self.compose_scoring_prompt(query, docs)
@@ -157,7 +158,11 @@ class StockFullHeadRetriever:
             curr = per_token_scores_cal[:, :, start_idx : end_idx + 1]
             threshold = curr.mean(dim=-1) - 2 * curr.std(dim=-1)
             tok_mask = curr > threshold.unsqueeze(-1)
-            results[doc["idx"]] = curr.masked_fill(~tok_mask, 0.0).sum(dim=-1)
+            results[doc["idx"]] = curr.masked_fill(~tok_mask, 0.0).sum(dim=-1).detach().cpu()
+
+        del doc_scores, null_doc_scores, per_token_scores_cal
+        if getattr(self.llm, "device", None) is not None and self.llm.device.type == "cuda":
+            torch.cuda.empty_cache()
 
         return results
 

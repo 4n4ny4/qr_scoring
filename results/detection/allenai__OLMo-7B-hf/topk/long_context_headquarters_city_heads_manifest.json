@@ -1,0 +1,26 @@
+{
+  "source_file": "/home/ubuntu/qr_scoring/data/long_context_detection_optionA/headquarters_city_detection.json",
+  "output_file": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/long_context_headquarters_city_heads.json",
+  "export_prefix": "long_context_headquarters_city",
+  "top_k_values": [
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "model_name": "allenai/OLMo-7B-hf",
+  "model_slug": "allenai__OLMo-7B-hf",
+  "model_family": "olmo",
+  "exports": {
+    "8": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top8.json",
+    "16": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top16.json",
+    "32": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top32.json",
+    "48": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top48.json",
+    "64": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top64.json",
+    "96": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top96.json",
+    "128": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-7B-hf/topk/long_context_headquarters_city_top128.json"
+  }
+}

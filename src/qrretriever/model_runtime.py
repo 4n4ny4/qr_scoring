@@ -30,6 +30,11 @@ SUPPORTED_MODEL_NAMES = {
         "allow_external_rankings": True,
         "requires_trust_remote_code": True,
     },
+    "allenai/OLMo-7B-hf": {
+        "family": "olmo",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": False,
+    },
 }
 
 FAMILY_MODELING_MODULES = {
@@ -73,7 +78,7 @@ def infer_model_family(model_name: str) -> str:
     raise ValueError(
         "Unsupported model_name. Supported examples: "
         "`meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, "
-        "`google/gemma-7b`, `allenai/OLMo-7B`."
+        "`google/gemma-7b`, `allenai/OLMo-7B-hf`."
     )
 
 
@@ -171,6 +176,38 @@ def load_tokenizer(model_spec: ModelSpec):
     return tokenizer
 
 
+def _dtype_from_name(dtype_name: str):
+    normalized = dtype_name.strip().lower()
+    if normalized in {"auto", ""}:
+        return "auto"
+    if normalized in {"bf16", "bfloat16", "torch.bfloat16"}:
+        return torch.bfloat16
+    if normalized in {"fp16", "float16", "half", "torch.float16"}:
+        return torch.float16
+    if normalized in {"fp32", "float32", "torch.float32"}:
+        return torch.float32
+    raise ValueError(
+        f"Unsupported torch dtype override `{dtype_name}`. "
+        "Use auto, bfloat16, float16, or float32."
+    )
+
+
+def _runtime_dtype_override():
+    dtype_name = os.environ.get("QRRETRIEVER_TORCH_DTYPE") or os.environ.get("OLMO_TORCH_DTYPE")
+    if not dtype_name:
+        return None
+    return _dtype_from_name(dtype_name)
+
+
+def _default_cuda_olmo_dtype():
+    try:
+        if torch.cuda.is_available() and torch.cuda.is_bf16_supported():
+            return torch.bfloat16
+    except Exception:
+        pass
+    return torch.float16
+
+
 def load_stock_causal_lm(model_spec: ModelSpec, resolved_device: str, *, for_detection: bool = False):
     preflight_model_environment(model_spec)
 
@@ -179,15 +216,21 @@ def load_stock_causal_lm(model_spec: ModelSpec, resolved_device: str, *, for_det
         "trust_remote_code": model_spec.trust_remote_code,
     }
     preferred_attn = None
+    dtype_override = _runtime_dtype_override()
 
     if resolved_device == "cuda":
         load_kwargs["device_map"] = "auto"
-        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family == "olmo" else torch.float16
+        if dtype_override is not None:
+            load_kwargs["torch_dtype"] = dtype_override
+        elif model_spec.model_family == "olmo":
+            load_kwargs["torch_dtype"] = _default_cuda_olmo_dtype()
+        else:
+            load_kwargs["torch_dtype"] = torch.float16
         preferred_attn = "eager" if for_detection else "flash_attention_2"
     elif resolved_device == "mps":
-        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family == "olmo" else torch.float16
+        load_kwargs["torch_dtype"] = dtype_override or ("auto" if model_spec.model_family == "olmo" else torch.float16)
     elif model_spec.model_family == "olmo":
-        load_kwargs["torch_dtype"] = "auto"
+        load_kwargs["torch_dtype"] = dtype_override or "auto"
 
     if preferred_attn is not None:
         try:
