@@ -137,7 +137,7 @@ def build_display_curves(method_curves, average_random=True):
     return display_curves
 
 
-def plot_accuracy_curves(display_curves, output_path):
+def plot_accuracy_curves(display_curves, output_path, model_name: str):
     if not HAS_MPL:
         return
 
@@ -172,7 +172,7 @@ def plot_accuracy_curves(display_curves, output_path):
     ax.set_xlabel("Number of Knocked-Out Heads (K)", fontsize=13)
     ax.set_ylabel("Answer Accuracy", fontsize=13)
     ax.set_title(
-        "Head Ablation: Accuracy vs Knockout Size\n"
+        f"{model_name}: Head Ablation Accuracy vs Knockout Size\n"
         "(Steeper drop = more effective detection method)",
         fontsize=14,
     )
@@ -207,13 +207,21 @@ def filter_full_methods(methods: dict, include_methods=None) -> dict:
     return {m: d for m, d in methods.items() if m in include_methods}
 
 
+def infer_model_name(methods: dict, fallback: str = "Unknown Model") -> str:
+    """Infer the model name from one loaded results payload."""
+    if not methods:
+        return fallback
+    first = next(iter(methods.values()))
+    return first.get("model_name") or first.get("model") or fallback
+
+
 def _sorted_ks(accuracy_curve: dict) -> list:
     return sorted(int(k) for k in accuracy_curve)
 
 
 # ── per-task subplot grid ─────────────────────────────────────────────────
 
-def plot_per_task_curves(methods: dict, output_dir: str):
+def plot_per_task_curves(methods: dict, output_dir: str, model_name: str):
     if not HAS_MPL:
         return
     first = next(iter(methods.values()))
@@ -249,6 +257,7 @@ def plot_per_task_curves(methods: dict, output_dir: str):
     handles, labels = axes[0][0].get_legend_handles_labels()
     fig.legend(handles, labels, loc="upper center", ncol=min(len(methods), 4),
                fontsize=9, bbox_to_anchor=(0.5, 1.02))
+    fig.suptitle(f"{model_name}: Per-Task Accuracy Curves", fontsize=14, y=1.05)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
     path = os.path.join(output_dir, "per_task_accuracy_curves.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
@@ -258,7 +267,7 @@ def plot_per_task_curves(methods: dict, output_dir: str):
 
 # ── per-task heatmaps (one panel per method) ──────────────────────────────
 
-def plot_heatmaps(methods: dict, output_dir: str):
+def plot_heatmaps(methods: dict, output_dir: str, model_name: str):
     if not HAS_MPL:
         return
     first = next(iter(methods.values()))
@@ -293,7 +302,7 @@ def plot_heatmaps(methods: dict, output_dir: str):
                         fontsize=8, color=color)
     if im is not None:
         fig.colorbar(im, ax=axes[0].tolist(), shrink=0.8, label="Accuracy")
-    fig.suptitle("Per-Task Accuracy Heatmaps", fontsize=14, y=1.02)
+    fig.suptitle(f"{model_name}: Per-Task Accuracy Heatmaps", fontsize=14, y=1.02)
     fig.subplots_adjust(wspace=0.4)
     path = os.path.join(output_dir, "per_task_heatmaps.png")
     fig.savefig(path, dpi=150, bbox_inches="tight")
@@ -405,24 +414,27 @@ def main():
     if args.method_filter == ["QRScore-SEC"]:
         pooled_plot_name = "qrscore_sec_pooled_accuracy_curve.png"
     output_path = os.path.join(output_dir, pooled_plot_name)
-    plot_accuracy_curves(display_curves, output_path)
 
     # per-task plots, heatmaps, and CSV tables
     full_methods = load_full_method_results(results_dir)
     full_methods = filter_full_methods(full_methods, include_methods=args.method_filter)
+    model_name = infer_model_name(full_methods)
+
+    plot_accuracy_curves(display_curves, output_path, model_name)
+
     if full_methods:
         if args.method_filter == ["QRScore-SEC"]:
             # Save QRScore-SEC-only plot under an explicit name.
-            plot_per_task_curves(full_methods, output_dir)
+            plot_per_task_curves(full_methods, output_dir, model_name)
             src = os.path.join(output_dir, "per_task_accuracy_curves.png")
             dst = os.path.join(output_dir, "qrscore_sec_per_task_accuracy_curves.png")
             if os.path.exists(src):
                 os.replace(src, dst)
                 print(f"Saved per-task curves to {dst}")
         else:
-            plot_per_task_curves(full_methods, output_dir)
+            plot_per_task_curves(full_methods, output_dir, model_name)
 
-        plot_heatmaps(full_methods, output_dir)
+        plot_heatmaps(full_methods, output_dir, model_name)
         write_summary_csv(full_methods, output_dir)
 
     print(f"\nDone. All outputs saved to: {output_dir}")

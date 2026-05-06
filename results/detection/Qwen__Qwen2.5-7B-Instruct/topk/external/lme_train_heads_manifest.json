@@ -1,5 +1,5 @@
 {
-  "source_file": "/home/ubuntu/qr_scoring/Llama-3.1-8B-Instruct/lme_TRAIN.json",
+  "source_file": "Qwen-2.5-7B-Instruct/lme_TRAIN_qwen.json",
   "label": "lme_train",
   "top_k_values": [
     8,
@@ -11,12 +11,12 @@
     128
   ],
   "exports": {
-    "8": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top8.json",
-    "16": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top16.json",
-    "32": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top32.json",
-    "48": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top48.json",
-    "64": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top64.json",
-    "96": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top96.json",
-    "128": "results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top128.json"
+    "8": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top8.json",
+    "16": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top16.json",
+    "32": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top32.json",
+    "48": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top48.json",
+    "64": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top64.json",
+    "96": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top96.json",
+    "128": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/topk/external/lme_train_top128.json"
   }
 }

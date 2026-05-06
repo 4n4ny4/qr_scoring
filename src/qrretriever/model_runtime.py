@@ -183,8 +183,15 @@ def load_stock_causal_lm(
     load_kwargs = {
         "low_cpu_mem_usage": True,
         "trust_remote_code": model_spec.trust_remote_code,
-        "load_in_8bit": load_in_8bit,
     }
+    if load_in_8bit:
+        load_kwargs["load_in_8bit"] = True
+        # Not all models support load_in_8bit; Qwen2 is one example.
+        # We can guard this by checking the model config, but for now, a
+        # targeted exclusion is sufficient.
+        if "qwen2" in model_spec.model_name.lower():
+            del load_kwargs["load_in_8bit"]
+
     preferred_attn = None
 
     if resolved_device == "cuda":

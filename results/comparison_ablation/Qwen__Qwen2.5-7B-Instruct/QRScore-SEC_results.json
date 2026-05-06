@@ -1,4 +1,7 @@
 {
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen",
   "method": "QRScore-SEC",
   "knockout_sizes": [
     0,
@@ -12,7 +15,7 @@
   ],
   "accuracy_curve": {
     "0": 0.8921161825726142,
-    "8": 0.5975103734439834,
+    "8": 0.6016597510373444,
     "16": 0.34024896265560167,
     "32": 0.18672199170124482,
     "48": 0.08298755186721991,
@@ -43,7 +46,7 @@
     },
     "headquarters_state": {
       "0": 0.8518518518518519,
-      "8": 0.7037037037037037,
+      "8": 0.7407407407407407,
       "16": 0.5185185185185185,
       "32": 0.14814814814814814,
       "48": 0.0,
@@ -2329,8 +2332,8 @@
         "idx": "103730_1993.txt_headquarters_state_2",
         "task": "headquarters_state",
         "gold": "Pennsylvania",
-        "pred": "The document does not explicitly state the headquarters state, but it mentions that the company has manufacturing facilities in the United States and provides details about some of these",
-        "correct": 0
+        "pred": "Pennsylvania",
+        "correct": 1
       },
       {
         "idx": "36326_1993.txt_headquarters_state_138",
@@ -2903,7 +2906,7 @@
         "idx": "40878_1993.txt_employees_count_total_18",
         "task": "employees_count_total",
         "gold": "4729",
-        "pred": "The total employee count is not explicitly stated in the provided text, but the closest relevant information is found in the context discussing changes in control and compensation,",
+        "pred": "The total employee count is not explicitly stated in the provided text, but the closest relevant information is found in the note regarding the change in control of the",
         "correct": 0
       },
       {
@@ -3435,7 +3438,7 @@
         "idx": "40878_1993.txt_holder_record_amount_20",
         "task": "holder_record_amount",
         "gold": "1",
-        "pred": "The provided text does not include specific information about a holder record amount",
+        "pred": "The document does not provide specific details about a holder record amount",
         "correct": 0
       },
       {
@@ -3780,7 +3783,7 @@
         "idx": "276999_1993.txt_headquarters_city_159",
         "task": "headquarters_city",
         "gold": "Montvale",
-        "pred": "The document does not specify the exact headquarters location, only providing details about financial and operational aspects across different regions without indicating a specific headquarters city",
+        "pred": "The document does not specify the exact headquarters location, only providing details about financial and operational aspects across different regions and not indicating a specific headquarters city",
         "correct": 0
       },
       {
@@ -3899,7 +3902,7 @@
         "idx": "80661_1993.txt_headquarters_city_26",
         "task": "headquarters_city",
         "gold": "Mayfield Village",
-        "pred": "The document does not specify the exact location of the headquarters, but it focuses on financial and operational details without indicating a specific city",
+        "pred": "The document does not specify the exact location of the headquarters, but it focuses on financial and operational details without indicating a specific city beyond mentioning Ohio and California",
         "correct": 0
       },
       {
@@ -4326,7 +4329,7 @@
         "idx": "732714_1993.txt_incorporation_state_167",
         "task": "incorporation_state",
         "gold": "Delaware",
-        "pred": "The document does not specify the exact state of incorporation, but it focuses on the operations and financial aspects of the company without detailing the specific state incorporation beyond",
+        "pred": "This information is not provided in the excerpt",
         "correct": 0
       },
       {
@@ -4354,7 +4357,7 @@
         "idx": "277509_1993.txt_incorporation_state_225",
         "task": "incorporation_state",
         "gold": "Delaware",
-        "pred": "The document does not specify the exact incorporation state, but it provides details about the company's operations and properties without mentioning a specific state",
+        "pred": "The document does not specify the exact state of incorporation, but it provides details about the company's operations and properties without indicating a specific state",
         "correct": 0
       },
       {
@@ -4396,7 +4399,7 @@
         "idx": "74783_1993.txt_incorporation_year_205",
         "task": "incorporation_year",
         "gold": "1969",
-        "pred": "The document does not specify the exact year of incorporation, only providing details about the properties and financial operations without mentioning a specific incorporation year",
+        "pred": "The passage does not provide a specific incorporation year directly",
         "correct": 0
       },
       {
@@ -4522,7 +4525,7 @@
         "idx": "71180_1993.txt_incorporation_year_213",
         "task": "incorporation_year",
         "gold": "1929",
-        "pred": "1987",
+        "pred": "1993",
         "correct": 0
       },
       {
@@ -4669,7 +4672,7 @@
         "idx": "103392_1993.txt_employees_count_total_176",
         "task": "employees_count_total",
         "gold": "3712",
-        "pred": "The document does not provide a specific number for total employees, only details about facility and office spaces",
+        "pred": "The document does not provide a specific number for total employees, only details about property and facility usage",
         "correct": 0
       },
       {
@@ -5040,7 +5043,7 @@
         "idx": "53347_1993.txt_holder_record_amount_106",
         "task": "holder_record_amount",
         "gold": "9819",
-        "pred": "The document does not specify a particular holder record amount, as it discusses general financial and operational details rather than providing a specific figure for holder records",
+        "pred": "The document does not specify a particular holder record amount, as it discusses general corporate actions and financial details rather than providing a specific figure for a holder record",
         "correct": 0
       },
       {
@@ -5075,7 +5078,7 @@
         "idx": "310431_1993.txt_holder_record_amount_71",
         "task": "holder_record_amount",
         "gold": "7700",
-        "pred": "The provided text does not contain specific financial details such as the exact amount of by-product carbon dioxide or other numerical values that would indicate the holder record amount",
+        "pred": "The provided text does not contain specific financial details about the holder record amount",
         "correct": 0
       },
       {
@@ -5159,7 +5162,7 @@
         "idx": "276999_1993.txt_holder_record_amount_163",
         "task": "holder_record_amount",
         "gold": "1450",
-        "pred": "The document does not provide specific details on the holder record amount, as it focuses on property locations, financial statements, and other operational aspects rather than detailing",
+        "pred": "The document does not provide specific details on the holder record amount",
         "correct": 0
       },
       {
@@ -5637,7 +5640,7 @@
         "idx": "732714_1993.txt_headquarters_city_165",
         "task": "headquarters_city",
         "gold": "White Plains",
-        "pred": "The information provided does not specify the exact location details needed to determine the headquarters city",
+        "pred": "The information provided does not specify the exact location or address, only that it is part of a restructuring and cost-saving initiative",
         "correct": 0
       },
       {
@@ -5700,7 +5703,7 @@
         "idx": "40878_1993.txt_headquarters_state_15",
         "task": "headquarters_state",
         "gold": "Connecticut",
-        "pred": "The information provided does not specify the exact location of the headquarters, but based on typical business structures, we can infer that the headquarters is likely in a",
+        "pred": "The information provided does not specify the exact location of the headquarters, but based on typical business structures, we can infer that the headquarters might be in a",
         "correct": 0
       },
       {
@@ -5896,7 +5899,7 @@
         "idx": "40878_1993.txt_incorporation_state_16",
         "task": "incorporation_state",
         "gold": "Virginia",
-        "pred": "The document does not specify the exact state where the company is incorporated, only providing details about the property and financial conditions",
+        "pred": "The document does not specify the exact state where the company is incorporated, only providing details about the property and financial status",
         "correct": 0
       },
       {
@@ -6365,7 +6368,7 @@
         "idx": "716006_1993.txt_employees_count_total_118",
         "task": "employees_count_total",
         "gold": "35000",
-        "pred": "Based on the information provided, the total employee count cannot be determined directly from the given text as it does not specify a number or percentage",
+        "pred": "I cannot determine the exact number without more context or specific data provided in the document",
         "correct": 0
       },
       {
@@ -6820,7 +6823,7 @@
         "idx": "103730_1993.txt_holder_record_amount_7",
         "task": "holder_record_amount",
         "gold": "1441",
-        "pred": "The provided text does not contain enough information to determine the specific number of shares or the exact amount held by any particular shareholder",
+        "pred": "The provided text does not contain enough information to determine the specific number of shares or the exact amount held by shareholders",
         "correct": 0
       },
       {
@@ -7032,7 +7035,7 @@
         "idx": "716006_1993.txt_registrant_name_116",
         "task": "registrant_name",
         "gold": "Yellow Corporation",
-        "pred": "This information is not provided in the snippet you've given, so I cannot determine the specific name of the company (registrant) without making assumptions",
+        "pred": "This information is not provided in the snippet you've given, so I cannot determine the specific name of the company (registrant) without additional context or",
         "correct": 0
       },
       {
@@ -7648,7 +7651,7 @@
         "idx": "310431_1993.txt_incorporation_state_68",
         "task": "incorporation_state",
         "gold": "Delaware",
-        "pred": "The provided text does not give specific details about the incorporation state",
+        "pred": "The provided text does not give specific details about the executive officers' ages or the exact nature of their positions, so it's not clear how to interpret",
         "correct": 0
       },
       {
@@ -7669,7 +7672,7 @@
         "idx": "18497_1993.txt_incorporation_state_32",
         "task": "incorporation_state",
         "gold": "Delaware",
-        "pred": "The provided text does not contain any information about the incorporation state or details that would allow for determining the state where the company is incorporated",
+        "pred": "The provided text does not contain any information about the specific incorporation state or details that would allow for determining the state without additional context",
         "correct": 0
       },
       {
@@ -7718,7 +7721,7 @@
         "idx": "40454_1993.txt_incorporation_state_88",
         "task": "incorporation_state",
         "gold": "Missouri",
-        "pred": "The information provided does not specify the exact state where the corporation was incorporated, but typically, for a U.S.-based company, it would be important",
+        "pred": "The information provided does not specify the exact state where the corporation was incorporated, but typically, for a U.S.-based company, the incorporation state could",
         "correct": 0
       },
       {
@@ -7893,7 +7896,7 @@
         "idx": "801124_1993.txt_incorporation_year_131",
         "task": "incorporation_year",
         "gold": "1986",
-        "pred": "The provided text does not contain specific details about the incorporation year of any entity or the context necessary to determine a relevant year for incorporation",
+        "pred": "The provided text does not contain specific information about the incorporation year of any entity or the details necessary to determine it from the given context",
         "correct": 0
       },
       {
@@ -7970,7 +7973,7 @@
         "idx": "40878_1993.txt_employees_count_total_18",
         "task": "employees_count_total",
         "gold": "4729",
-        "pred": "The information provided does not specify the exact number of employees, only that the document refers to a change in control scenario which implies a significant number of employees",
+        "pred": "The information provided does not specify the exact number of employees, only that the Company has property additions and financial details that would be relevant to understanding the scale",
         "correct": 0
       },
       {
@@ -8194,7 +8197,7 @@
         "idx": "865227_1993.txt_ceo_lastname_51",
         "task": "ceo_lastname",
         "gold": "Peterson",
-        "pred": "Since the information provided does not specify any individual's name or role beyond the general context of the pooling and servicing agreement, I cannot determine a specific last",
+        "pred": "Since the information provided does not specify any individual's name or role beyond the context of the pooling and servicing agreement, and there's no specific last name",
         "correct": 0
       },
       {
@@ -9288,7 +9291,7 @@
         "idx": "29989_1993.txt_incorporation_state_55",
         "task": "incorporation_state",
         "gold": "New York",
-        "pred": "There is not enough information provided to determine the specific state or states involved in the question, as the scenario described could pertain to various states within the",
+        "pred": "There is not enough information provided to determine the specific state or states involved in the scenario described, as the question pertains to a general process rather than",
         "correct": 0
       },
       {
@@ -9484,7 +9487,7 @@
         "idx": "277509_1993.txt_incorporation_year_226",
         "task": "incorporation_year",
         "gold": "1969",
-        "pred": "There is no specific year provided in the given text for the formation or the last update of the document",
+        "pred": "There is no specific year mentioned for the formation or the last update of the document provided",
         "correct": 0
       },
       {
@@ -9533,14 +9536,14 @@
         "idx": "52485_1993.txt_incorporation_year_221",
         "task": "incorporation_year",
         "gold": "1940",
-        "pred": "There is not enough information provided to determine the specific year or the company being referred to for the business or legal entity's formation date",
+        "pred": "There is no specific year mentioned for the company's formation or the document's creation date that would directly relate to a \"year\" in the context of",
         "correct": 0
       },
       {
         "idx": "3153_1993.txt_incorporation_year_148",
         "task": "incorporation_year",
         "gold": "1945",
-        "pred": "The provided text does not contain specific details about a year or event related to a company's or entity's formation or a legal document's creation",
+        "pred": "The provided text does not contain specific details about a fiscal year or a year of operation for a company or entity",
         "correct": 0
       },
       {
@@ -9666,7 +9669,7 @@
         "idx": "277509_1993.txt_employees_count_total_227",
         "task": "employees_count_total",
         "gold": "4426",
-        "pred": "The information provided does not specify the exact number of employees, but it refers to a scenario where the majority of the manufacturing plants are owned, implying a",
+        "pred": "The information provided does not specify a total employee count",
         "correct": 0
       },
       {
@@ -9890,7 +9893,7 @@
         "idx": "36326_1993.txt_ceo_lastname_142",
         "task": "ceo_lastname",
         "gold": "Thomas",
-        "pred": "The information provided does not contain enough details to determine the last name of the CEO",
+        "pred": "The information provided does not give a specific name for the CEO or mention last names of individuals in the context of the document's content",
         "correct": 0
       },
       {
@@ -10086,14 +10089,14 @@
         "idx": "799319_1993.txt_holder_record_amount_128",
         "task": "holder_record_amount",
         "gold": "732",
-        "pred": "The question and the context provided do not give specific details about the amount or the record holder for the financial instrument or event being discussed",
+        "pred": "The question does not provide specific details about the amount or context needed to determine the holder record amount",
         "correct": 0
       },
       {
         "idx": "77227_1993.txt_holder_record_amount_92",
         "task": "holder_record_amount",
         "gold": "1",
-        "pred": "There is no specific record or context provided in the given text about a holder record amount",
+        "pred": "There is no specific record or context provided in your request about what the holder record amount is for, such as a company's shares, bonds, or",
         "correct": 0
       },
       {
@@ -10233,7 +10236,7 @@
         "idx": "100923_1993.txt_holder_record_amount_191",
         "task": "holder_record_amount",
         "gold": "1",
-        "pred": "The question provided does not contain enough context to determine a specific answer, as it relates to a record or data point that isn't detailed in the given",
+        "pred": "The question provided does not contain enough context to determine a specific value or record",
         "correct": 0
       }
     ],
@@ -10389,7 +10392,7 @@
         "idx": "66740_1993.txt_registrant_name_192",
         "task": "registrant_name",
         "gold": "Minnesota Mining and Manufacturing Company",
-        "pred": "Based on the information provided, the registrant name is not explicitly given",
+        "pred": "The document does not provide specific names, but typically, the registrant name for a public company is the company itself or a designated agent",
         "correct": 0
       },
       {
@@ -10599,7 +10602,7 @@
         "idx": "103730_1993.txt_headquarters_city_1",
         "task": "headquarters_city",
         "gold": "Malvern",
-        "pred": "The document does not provide specific information about the location of headquarters, but typically, for a company like this, the headquarters city would be listed if given",
+        "pred": "The document does not provide specific information about the location of headquarters, but typically, for a company like this, the headquarters would be in a major city",
         "correct": 0
       },
       {
@@ -10914,7 +10917,7 @@
         "idx": "55387_1993.txt_incorporation_state_9",
         "task": "incorporation_state",
         "gold": "Kentucky",
-        "pred": "The question does not specify a particular state, but typically, the process of determining the correct state for a business or organization involves considering the state where the",
+        "pred": "The question does not provide enough information to determine the specific state where the company is located, as it is not mentioned in the context given",
         "correct": 0
       },
       {
@@ -11187,7 +11190,7 @@
         "idx": "53347_1993.txt_incorporation_year_104",
         "task": "incorporation_year",
         "gold": "1968",
-        "pred": "2023",
+        "pred": "The document does not provide a specific year for the events described",
         "correct": 0
       },
       {
@@ -11285,7 +11288,7 @@
         "idx": "66740_1993.txt_incorporation_year_196",
         "task": "incorporation_year",
         "gold": "1929",
-        "pred": "The passage does not provide a specific year for the events described, but it mentions that the events likely took place in the 19th century given",
+        "pred": "The passage does not provide a specific year for the events described",
         "correct": 0
       },
       {
@@ -12190,7 +12193,7 @@
         "idx": "53347_1993.txt_registrant_name_100",
         "task": "registrant_name",
         "gold": "Jefferson-Pilot Corporation",
-        "pred": "registrant name is Jefferson-Pilot",
+        "pred": "registrant name is Jefferson Pilot Corporation",
         "correct": 0
       },
       {
@@ -12316,7 +12319,7 @@
         "idx": "36326_1993.txt_headquarters_city_137",
         "task": "headquarters_city",
         "gold": "Atlanta",
-        "pred": "To determine the headquarters city, let's break down the problem step by step:",
+        "pred": "The text does not specify the exact location or details of the headquarters, but it implies that the headquarters is in a city",
         "correct": 0
       },
       {
@@ -12519,7 +12522,7 @@
         "idx": "732714_1993.txt_headquarters_state_166",
         "task": "headquarters_state",
         "gold": "New York",
-        "pred": "To determine the headquarters state of the company, we need to look at the information provided about the company's operations and the context in which it operates",
+        "pred": "To determine the headquarters state of the company, we need to look at the details provided in the problem",
         "correct": 0
       },
       {
@@ -12596,7 +12599,7 @@
         "idx": "50548_1993.txt_headquarters_state_179",
         "task": "headquarters_state",
         "gold": "Illinois",
-        "pred": "To determine the number of days in a month, we need to consider the typical structure of a calendar year and the rules governing leap years",
+        "pred": "To determine the number of days in a month, we need to consider the typical calendar months and the constraints given",
         "correct": 0
       },
       {
@@ -12659,7 +12662,7 @@
         "idx": "53540_1993.txt_incorporation_state_22",
         "task": "incorporation_state",
         "gold": "California",
-        "pred": "To determine the number of ways to select 3 members from a group of 5 people where order matters and repetitions are allowed, we need to consider",
+        "pred": "To determine the number of ways to choose 3 members from a group of 5, we use the combination formula:",
         "correct": 0
       },
       {
@@ -12764,7 +12767,7 @@
         "idx": "801124_1993.txt_incorporation_state_130",
         "task": "incorporation_state",
         "gold": "Massachusetts",
-        "pred": "To determine the number of shares outstanding, we need to follow these steps:",
+        "pred": "To determine the number of shares outstanding, we need to know the initial number of shares and how many shares are added or removed throughout the day",
         "correct": 0
       },
       {
@@ -13051,7 +13054,7 @@
         "idx": "100923_1993.txt_employees_count_total_189",
         "task": "employees_count_total",
         "gold": "3570",
-        "pred": "To determine the total employee count, I need to know the specific context or scenario you're referring to, such as the organization or industry",
+        "pred": "To determine the total employee count, I need to know the specific numbers of employees for each department or division mentioned in the problem",
         "correct": 0
       },
       {
@@ -13184,7 +13187,7 @@
         "idx": "812427_1993.txt_employees_count_total_248",
         "task": "employees_count_total",
         "gold": "29900",
-        "pred": "Based on the information provided, the total employee count is not explicitly stated",
+        "pred": "Based on the information provided, the total employee count is not directly stated",
         "correct": 0
       },
       {
@@ -13289,7 +13292,7 @@
         "idx": "3153_1993.txt_ceo_lastname_149",
         "task": "ceo_lastname",
         "gold": "Addison",
-        "pred": "It is not specified in the given text when the company's last annual meeting took place, but it can be inferred that the meeting likely occurred in the",
+        "pred": "It is not specified in the given text when the company's last annual meeting took place, but it is implied to be after the events described",
         "correct": 0
       },
       {
@@ -13615,8 +13618,5 @@
         "correct": 0
       }
     ]
-  },
-  "model_name": "Qwen/Qwen2.5-7B-Instruct",
-  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
-  "model_family": "qwen"
+  }
 }

@@ -361,8 +361,16 @@ def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
 
     # 2) External 8B LME/NQ train rankings (Llama only).
     if model_spec.allow_external_rankings:
-        lme_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "lme_TRAIN.json")
-        nq_train_path = os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", "nq_TRAIN.json")
+        lme_train_path = args.lme_ranking_file or os.path.join(
+            PROJECT_DIR,
+            "Llama-3.1-8B-Instruct",
+            "lme_TRAIN.json",
+        )
+        nq_train_path = args.nq_ranking_file or os.path.join(
+            PROJECT_DIR,
+            "Llama-3.1-8B-Instruct",
+            "nq_TRAIN.json",
+        )
 
         if os.path.exists(lme_train_path):
             lme_heads = sanitize_ranking(
@@ -655,6 +663,22 @@ def main():
     parser.add_argument("--model_name", default=MODEL_NAME)
     parser.add_argument("--model_slug", default=None, help="Optional slug override used for result directory resolution.")
     parser.add_argument("--tokenizer_name", default=None, help="Optional tokenizer override.")
+    parser.add_argument(
+        "--lme_ranking_file",
+        default=None,
+        help=(
+            "Optional override for QRScore-8B-LME-TRAIN ranking JSON "
+            "(list of [\"layer-head\", score] rows)."
+        ),
+    )
+    parser.add_argument(
+        "--nq_ranking_file",
+        default=None,
+        help=(
+            "Optional override for QRScore-8B-NQ-TRAIN ranking JSON "
+            "(list of [\"layer-head\", score] rows)."
+        ),
+    )
     parser.add_argument("--trust_remote_code", action="store_true")
     parser.add_argument(
         "--device",
