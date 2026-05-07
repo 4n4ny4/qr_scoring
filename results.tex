@@ -1,0 +1,167 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Results}
+\label{sec:results}
+ 
+\subsection{Recall tasks share a common retrieval-head pool}
+\label{sec:result-shared}
+ 
+QRScore detection produces a top-$K$ head set per task. Within each model,
+these sets substantially overlap across tasks: pairwise top-$K=64$ Jaccard
+similarity ranges from 31--80\% in Llama, 44--83\% in Qwen, and 59--77\% in
+Mistral. Recall tasks draw from a shared pool of retrieval heads rather than
+relying on task-isolated circuits. We characterize the structure of this
+shared pool through cross-task ablation: for every (source task $s$, target
+task $t$, knockout size $K$) tuple, we ablate source $s$'s top-$K$ heads and
+record accuracy on target $t$. We summarize the resulting $8 \times 8$ drop
+matrix at each $K$ through two task-level statistics: \emph{target
+sensitivity} (the column mean: a target's mean drop across all source-task
+ablations, including its own) and \emph{source efficacy} (the off-diagonal
+row mean: a source's mean drop on the seven other target tasks).
+ 
+\subsection{Target-task sensitivity is conserved across model families}
+\label{sec:result-sensitivity}
+ 
+Figure~\ref{fig:sensitivity} reports heatmaps for cross-task sensitivity of
+the three models. For all models, the four most sensitive tasks are
+\texttt{employees\_count\_total} (0.842), \texttt{ceo\_lastname} (0.745),
+\texttt{incorporation\_year} (0.682), and \texttt{incorporation\_state}
+(0.629); the four least sensitive tasks have drop within 0.42--0.58. More
+striking than the magnitude gap is that the most sensitive tasks are
+consistent across models: \texttt{employees\_count\_total} is among the two
+most sensitive tasks in 19 of the 21 $(K,\text{model})$ cells, and
+\texttt{headquarters\_state} is among the four most sensitive tasks in none
+of the cells.
+ 
+\begin{figure*}[t]
+\centering
+\includegraphics[width=\linewidth]{images/target_sensitivity_3models.png}
+\caption{\textbf{Target-task sensitivity is conserved across model families.}
+Accuracy drop on each task, averaged across all ablated source tasks, for the
+three model families (Llama-3.1-8B-Instruct, Qwen-2.5-7B-Instruct, and
+Mistral-7B-Instruct-v0.3). The same four tasks are the most fragile in each
+model family.}
+\label{fig:sensitivity}
+\end{figure*}
+ 
+\subsection{Source-head efficacy is not conserved across model families}
+\label{sec:result-asymmetry}
+ 
+Across model pairs, target sensitivity is $5$--$10\times$ more conserved than
+source efficacy (Table~\ref{tab:kfe}). After residualizing each measure
+against within-$K$ task means to remove the trivial monotonic effect of $K$
+on accuracy drop, sensitivity correlates across model pairs at
+$R^2 = 0.18$--$0.59$ while efficacy correlates at $R^2 = 0.02$--$0.15$.
+The same target tasks are systematically fragile across model families even
+when the source tasks driving the disruption differ. The identity of tasks
+that collapse under ablation is model-independent; the identity of tasks
+whose head ablation impacts other tasks is not.
+ 
+The fragile and robust groups are not separated by the type of information
+requested. Each group contains a name (\texttt{ceo\_lastname} /
+\texttt{registrant\_name}), a state (\texttt{incorporation\_state} /
+\texttt{headquarters\_state}), and a numeric value
+(\texttt{employees\_count\_total} / \texttt{holder\_record\_amount}).
+What feature of the task structure determines fragility is therefore not
+captured by answer type. We discuss possible explanations in
+Section~\ref{sec:disc}.
+ 
+\begin{table}[t]
+\centering
+\small
+\begin{tabular}{lcc}
+\toprule
+Model pair & $R^2$ sensitivity & $R^2$ efficacy \\
+\midrule
+Llama -- Qwen     & 0.18 & 0.02 \\
+Llama -- Mistral  & 0.47 & 0.04 \\
+Qwen -- Mistral   & 0.59 & 0.15 \\
+\bottomrule
+\end{tabular}
+\caption{\textbf{Asymmetry in cross-model conservation.} $K$-fixed-effects
+$R^2$ for the cross-model alignment of target sensitivity (which tasks are
+fragile) and source efficacy (which heads are disruptive), computed by
+residualizing each measure against within-$K$ task means before correlation.
+Fragility patterns survive the $K$-control; head-identity patterns largely do
+not.}
+\label{tab:kfe}
+\end{table}
+ 
+\paragraph{\texttt{holder\_record\_amount} is an outlier.}
+The \texttt{holder\_record\_amount} row in Figure~\ref{fig:sensitivity} is
+visibly the lightest across all three models; it is neither broadly
+disrupted by other tasks' ablations (low sensitivity) nor consistently
+disruptive across model families. Two interpretations are consistent with
+this pattern: the task may use a distributed retrieval strategy not
+captured by current head-identification methods, or it may rely on heads
+outside the shared pool the other seven tasks draw from. A measurement
+caveat applies in Mistral, where \texttt{holder\_record\_amount} has a low
+baseline accuracy ($0.25$) that bounds the observable drop. The same
+low-sensitivity pattern holds in Llama and Qwen, where the baseline is
+$\geq 0.54$, so the outlier status is not solely a baseline artifact.
+ 
+\subsection{High overlap pairs reflect detection-protocol confounds}
+\label{sec:result-overlap}
+ 
+While the average top-$K$ Jaccard overlap among head sets across the eight
+tasks is between 50 and 90 percent, two task pairs have a top-$K$ overlap of
+75 to 95 percent: \texttt{headquarters\_city} with
+\texttt{headquarters\_state}, and \texttt{incorporation\_state} with
+\texttt{incorporation\_year}. In each of these cases, the two tasks share
+the same evidence sentences (for example, ``headquartered in Malvern,
+Pennsylvania'' contains the answer to both \texttt{headquarters\_city} and
+\texttt{headquarters\_state}). The high observed overlap therefore reflects
+the structure of the detection setup, in which QRScore converges on the same
+heads when the evidence span is identical, rather than any sharing of head
+sets within the model itself. We flag these pairs as confounds in the overlap
+analysis; our sensitivity claims, which are derived from column-mean
+structure across all eight tasks, are unaffected.
+ 
+\subsection{Cross-dataset transfer is paradigm-specific}
+\label{sec:result-paradigm}
+ 
+Three different sources of head sets were evaluated for their impact on
+performance on the SEC tasks (see Figure~\ref{fig:cross-dataset}): the head
+sets detected on the SEC dataset itself (QRScore-SEC), head sets detected on
+the LongMemEval dataset~\cite{wu2024longmemeval} (QRScore-LME), and head sets
+detected on the Natural Questions dataset~\cite{kwiatkowski2019natural}
+(QRScore-NQ), in addition to a baseline composed of three random seeds of
+randomly chosen head sets.
+ 
+\begin{figure}[t]
+\centering
+\includegraphics[width=\linewidth]{images/LME_NQ_SEC.png}
+\caption{\textbf{LME heads transfer to SEC; NQ heads do not.} Accuracy on the
+192-instance SEC test set as a function of $K$ on Llama-3.1-8B-Instruct.
+QRScore-SEC and QRScore-LME both collapse to comparably low accuracy by
+$K{=}32$; QRScore-NQ remains within the random-baseline 95\% CI through
+$K{=}16$.}
+\label{fig:cross-dataset}
+\end{figure}
+ 
+\paragraph{Results of head-set ablation on SEC tasks
+(Figure~\ref{fig:cross-dataset}).} For the 192 instances of the SEC
+benchmark, accuracy on the test set is reported at each value of $K$ on
+Llama-3.1-8B-Instruct. The head sets detected on the SEC tasks (QRScore-SEC)
+and on the LongMemEval tasks (QRScore-LME) both drive accuracy to comparably
+low levels by $K{=}32$, while the head sets detected on the Natural Questions
+tasks (QRScore-NQ) remain within the confidence interval of the random
+baseline through $K{=}16$.
+ 
+At $K{=}16$, QRScore-SEC achieves 39.6\% accuracy ($95\%$ CI 32.8\%--46.4\%)
+and QRScore-LME achieves 25.0\% (18.8\%--31.3\%); both are statistically
+distinct from the random baseline of 88.2\% at the same $K$ (the unablated
+baseline is 91.1\%). QRScore-NQ achieves 85.9\% (80.7\%--90.6\%) at $K{=}16$,
+which overlaps with the random baseline; it does not separate from random
+until $K{=}32$.
+ 
+LongMemEval and our SEC benchmark share a structural property: each task is
+posed over a single, continuous document. The Natural Questions detection
+setup used in QRHead, by contrast, builds detection contexts from
+concatenated, mutually disjoint Wikipedia passages. The head sets detected
+under that setup are therefore optimized for inter-passage ranking rather
+than intra-document span location. The transfer success of LME heads to SEC,
+despite a large genre mismatch (chat dialogue vs.\ financial filings),
+suggests that retrieval-head detection generalizes within a task paradigm but
+not across paradigms.
+ 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

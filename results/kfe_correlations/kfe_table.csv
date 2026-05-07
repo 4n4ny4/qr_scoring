@@ -1,0 +1,16 @@
+measure,definition,model_a,model_b,kfe_r2_derived,kfe_r2_published,abs_dev
+sensitivity,column_mean_drop,Llama-3.1-8B-Instruct,Qwen2.5-7B-Instruct,0.183550,0.180,0.003550
+sensitivity,column_mean_drop,Llama-3.1-8B-Instruct,Mistral-7B-Instruct-v0.3,0.471988,0.470,0.001988
+sensitivity,column_mean_drop,Qwen2.5-7B-Instruct,Mistral-7B-Instruct-v0.3,0.592801,0.590,0.002801
+efficacy,on_target_drop,Llama-3.1-8B-Instruct,Qwen2.5-7B-Instruct,0.031123,0.020,0.011123
+efficacy,on_target_drop,Llama-3.1-8B-Instruct,Mistral-7B-Instruct-v0.3,0.332383,0.040,0.292383
+efficacy,on_target_drop,Qwen2.5-7B-Instruct,Mistral-7B-Instruct-v0.3,0.301996,0.150,0.151996
+efficacy,row_mean_drop,Llama-3.1-8B-Instruct,Qwen2.5-7B-Instruct,0.054143,0.020,0.034143
+efficacy,row_mean_drop,Llama-3.1-8B-Instruct,Mistral-7B-Instruct-v0.3,0.001774,0.040,0.038226
+efficacy,row_mean_drop,Qwen2.5-7B-Instruct,Mistral-7B-Instruct-v0.3,0.095778,0.150,0.054222
+efficacy,off_target_mean,Llama-3.1-8B-Instruct,Qwen2.5-7B-Instruct,0.017774,0.020,0.002226
+efficacy,off_target_mean,Llama-3.1-8B-Instruct,Mistral-7B-Instruct-v0.3,0.038581,0.040,0.001419
+efficacy,off_target_mean,Qwen2.5-7B-Instruct,Mistral-7B-Instruct-v0.3,0.153084,0.150,0.003084
+efficacy,specificity_index,Llama-3.1-8B-Instruct,Qwen2.5-7B-Instruct,0.133243,0.020,0.113243
+efficacy,specificity_index,Llama-3.1-8B-Instruct,Mistral-7B-Instruct-v0.3,0.466441,0.040,0.426441
+efficacy,specificity_index,Qwen2.5-7B-Instruct,Mistral-7B-Instruct-v0.3,0.433562,0.150,0.283562
