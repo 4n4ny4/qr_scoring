@@ -497,7 +497,7 @@ def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
 
     # 3) Optional cross-task transfer methods.
     transfer_rankings = {}
-    if args.enable_cross_task_transfer:
+    if args.enable_cross_task_transfer and not args.transfer_only_extra_sources:
         for task in args.tasks:
             candidate_paths = [
                 os.path.join(results_dir, f"long_context_{task}_heads.json"),
@@ -843,6 +843,11 @@ def main():
             "cross-task transfer, e.g. QRScore-8B-LME-TRAIN."
         ),
     )
+    parser.add_argument(
+        "--transfer_only_extra_sources",
+        action="store_true",
+        help="Run cross-transfer only for --transfer_extra_sources, skipping SEC per-task source rows.",
+    )
     parser.add_argument("--include_random_baselines", action="store_true")
     parser.add_argument("--transfer_summary_k", type=int, default=16)
     parser.add_argument("--export_top_k", nargs="+", type=int, default=DEFAULT_EXPORT_TOP_K)
@@ -860,6 +865,8 @@ def main():
     args = parser.parse_args()
     if args.transfer_extra_sources and not args.enable_cross_task_transfer:
         parser.error("--transfer_extra_sources requires --enable_cross_task_transfer")
+    if args.transfer_only_extra_sources and not args.transfer_extra_sources:
+        parser.error("--transfer_only_extra_sources requires --transfer_extra_sources")
 
     model_spec = resolve_model_spec(
         model_name=args.model_name,

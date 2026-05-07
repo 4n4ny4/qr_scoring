@@ -334,6 +334,11 @@ For Qwen, this resolves to `Qwen-2.5-7B-Instruct/lme_TRAIN_qwen.json` by
 default when that file is present. The resulting matrix has the usual SEC
 target-task columns plus an additional LME source row.
 
+To run only a same-model Qwen NQ source row against all SEC target tasks, use
+`--transfer_extra_sources QRScore-8B-NQ-TRAIN --transfer_only_extra_sources`.
+For Qwen, this resolves to `Qwen-2.5-7B-Instruct/nq_TRAIN_qwen.json` by
+default when that file is present.
+
 **Output:**
 - `cross_task_transfer_matrix.json` — accuracy drop for each (source, target, K) triple
 - `cross_task_specificity_metrics.json` — on-target drop, off-target mean drop, specificity index
@@ -498,6 +503,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 | `--methods` | all detected | Which ranking methods to evaluate |
 | `--enable_cross_task_transfer` | off | Run the 8×8 transfer matrix |
 | `--transfer_extra_sources` | none | Add method rankings, e.g. `QRScore-8B-LME-TRAIN`, as extra transfer source rows |
+| `--transfer_only_extra_sources` | off | Run transfer only for extra source rows, skipping SEC per-task sources |
 | `--transfer_summary_k` | `16` | K value for specificity metric computation |
 | `--include_random_baselines` | off | Include random head rankings as control |
 | `--log_tokens` | off | Write per-instance JSONL token logs |
