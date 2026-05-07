@@ -112,70 +112,71 @@ class StockFullHeadRetriever:
         query_len = query_end - query_start + 1
         prefix_len = query_start
 
-        prefix_outputs = None
-        if prefix_len > 0:
-            prefix_outputs = self.llm(
-                input_ids=input_ids[:, :prefix_len],
-                attention_mask=attention_mask[:, :prefix_len],
-                use_cache=True,
-                return_dict=True,
-            )
-
-        query_kwargs = {
-            "input_ids": input_ids[:, query_start : query_end + 1],
-            "attention_mask": attention_mask[:, : query_end + 1],
-            "past_key_values": None if prefix_outputs is None else prefix_outputs.past_key_values,
-            "use_cache": True,
-            "output_attentions": True,
-            "return_dict": True,
-        }
-        cache_position = torch.arange(query_start, query_start + query_len, device=input_ids.device)
-        try:
-            query_outputs = self.llm(cache_position=cache_position, **query_kwargs)
-        except TypeError as e:
-            # OLMo doesn't support output_attentions, so we have to handle it differently
-            if "output_attentions is not yet supported" in str(e) or (
-                "unexpected keyword argument" in str(e) and "output_attentions" in str(e)
-            ):
-                del query_kwargs["output_attentions"]
-                query_outputs = self.llm(**query_kwargs)
-                # Manually get attentions from the cache if possible
-                if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
-                    # This is a model-specific hack and might not be stable.
-                    # The location of attention scores in the cache can vary.
-                    # This is a guess for OLMo based on common patterns.
-                    attentions = [layer[2] for layer in query_outputs.past_key_values]
-                    query_outputs.attentions = tuple(attentions)
-                else:
-                    raise ValueError("Could not retrieve attention scores from OLMo model.")
-            else:
-                query_outputs = self.llm(**query_kwargs)
-        except ValueError as e:
-            if "output_attentions is not yet supported" in str(e):
-                del query_kwargs["output_attentions"]
-                query_outputs = self.llm(**query_kwargs)
-                if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
-                    attentions = [layer[2] for layer in query_outputs.past_key_values] # Heuristic
-                    query_outputs.attentions = tuple(attentions)
-                else:
-                    raise ValueError("Could not retrieve attention scores from OLMo model after fallback.")
-            else:
-                raise e
-
-        per_layer = []
-        if not hasattr(query_outputs, "attentions") or not query_outputs.attentions:
-            raise ValueError("Model output does not contain attention scores.")
-        for layer_attn in query_outputs.attentions:
-            if layer_attn is None:
-                raise ValueError("Model output contains an empty attention tensor.")
-            if layer_attn.dim() != 4:
-                raise ValueError(
-                    "Expected attention tensors with shape "
-                    "(batch, heads, query_tokens, key_tokens)."
+        with torch.inference_mode():
+            prefix_outputs = None
+            if prefix_len > 0:
+                prefix_outputs = self.llm(
+                    input_ids=input_ids[:, :prefix_len],
+                    attention_mask=attention_mask[:, :prefix_len],
+                    use_cache=True,
+                    return_dict=True,
                 )
-            per_layer.append(layer_attn[0].mean(dim=1).detach())
 
-        return torch.stack(per_layer, dim=0)
+            query_kwargs = {
+                "input_ids": input_ids[:, query_start : query_end + 1],
+                "attention_mask": attention_mask[:, : query_end + 1],
+                "past_key_values": None if prefix_outputs is None else prefix_outputs.past_key_values,
+                "use_cache": True,
+                "output_attentions": True,
+                "return_dict": True,
+            }
+            cache_position = torch.arange(query_start, query_start + query_len, device=input_ids.device)
+            try:
+                query_outputs = self.llm(cache_position=cache_position, **query_kwargs)
+            except TypeError as e:
+                # OLMo doesn't support output_attentions, so we have to handle it differently
+                if "output_attentions is not yet supported" in str(e) or (
+                    "unexpected keyword argument" in str(e) and "output_attentions" in str(e)
+                ):
+                    del query_kwargs["output_attentions"]
+                    query_outputs = self.llm(**query_kwargs)
+                    # Manually get attentions from the cache if possible
+                    if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
+                        # This is a model-specific hack and might not be stable.
+                        # The location of attention scores in the cache can vary.
+                        # This is a guess for OLMo based on common patterns.
+                        attentions = [layer[2] for layer in query_outputs.past_key_values]
+                        query_outputs.attentions = tuple(attentions)
+                    else:
+                        raise ValueError("Could not retrieve attention scores from OLMo model.")
+                else:
+                    query_outputs = self.llm(**query_kwargs)
+            except ValueError as e:
+                if "output_attentions is not yet supported" in str(e):
+                    del query_kwargs["output_attentions"]
+                    query_outputs = self.llm(**query_kwargs)
+                    if hasattr(query_outputs, "past_key_values") and query_outputs.past_key_values:
+                        attentions = [layer[2] for layer in query_outputs.past_key_values] # Heuristic
+                        query_outputs.attentions = tuple(attentions)
+                    else:
+                        raise ValueError("Could not retrieve attention scores from OLMo model after fallback.")
+                else:
+                    raise e
+
+            per_layer = []
+            if not hasattr(query_outputs, "attentions") or not query_outputs.attentions:
+                raise ValueError("Model output does not contain attention scores.")
+            for layer_attn in query_outputs.attentions:
+                if layer_attn is None:
+                    raise ValueError("Model output contains an empty attention tensor.")
+                if layer_attn.dim() != 4:
+                    raise ValueError(
+                        "Expected attention tensors with shape "
+                        "(batch, heads, query_tokens, key_tokens)."
+                    )
+                per_layer.append(layer_attn[0].mean(dim=1))
+
+            return torch.stack(per_layer, dim=0)
 
     def score_docs_per_head_for_detection(self, query: str, docs: List[Dict]) -> Dict[str, torch.Tensor]:
         prompt_text, tokenized_prompt, query_span, doc_spans = self.compose_scoring_prompt(query, docs)
@@ -196,7 +197,7 @@ class StockFullHeadRetriever:
             curr = per_token_scores_cal[:, :, start_idx : end_idx + 1]
             threshold = curr.mean(dim=-1) - 2 * curr.std(dim=-1)
             tok_mask = curr > threshold.unsqueeze(-1)
-            results[doc["idx"]] = curr.masked_fill(~tok_mask, 0.0).sum(dim=-1)
+            results[doc["idx"]] = curr.masked_fill(~tok_mask, 0.0).sum(dim=-1).detach().cpu()
 
         return results
 
