@@ -1,0 +1,35 @@
+{
+  "model": "Qwen/Qwen2.5-7B-Instruct",
+  "model_name": "Qwen/Qwen2.5-7B-Instruct",
+  "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+  "model_family": "qwen",
+  "ranking_dir": "results/detection/Qwen__Qwen2.5-7B-Instruct",
+  "num_instances": 192,
+  "knockout_sizes": [
+    0,
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "methods": {
+    "QRScore-8B-LME-TRAIN": {
+      "accuracy_curve": {
+        "0": 0.8802083333333334,
+        "8": 0.7239583333333334,
+        "16": 0.5364583333333334,
+        "32": 0.3333333333333333,
+        "48": 0.13541666666666666,
+        "64": 0.125,
+        "96": 0.1875,
+        "128": 0.109375
+      },
+      "baseline_accuracy": 0.8802083333333334,
+      "accuracy_at_k16": 0.5364583333333334,
+      "drop_at_k16": 0.34375
+    }
+  }
+}

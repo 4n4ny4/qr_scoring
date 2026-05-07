@@ -1,5 +1,5 @@
 {
-  "source_file": "results/detection/meta-llama__Llama-3.1-8B-Instruct/nq_train_heads.json",
+  "source_file": "Llama-3.1-8B-Instruct/nq_TRAIN.json",
   "label": "nq_train",
   "top_k_values": [
     8,
@@ -10,8 +10,6 @@
     96,
     128
   ],
-  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
-  "source_type": "same_model",
   "exports": {
     "8": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top8.json",
     "16": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/nq_train_top16.json",

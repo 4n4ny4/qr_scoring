@@ -1,0 +1,14 @@
+{
+  "summary_k": 16,
+  "sources": {
+    "QRScore-8B-NQ-TRAIN": {
+      "on_target_drop": null,
+      "off_target_mean_drop": 0.046875000000000014,
+      "specificity_index": null,
+      "surgicality_ratio": null
+    }
+  },
+  "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "model_family": "llama"
+}

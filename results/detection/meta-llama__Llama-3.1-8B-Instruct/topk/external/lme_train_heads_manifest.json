@@ -10,8 +10,6 @@
     96,
     128
   ],
-  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
-  "source_type": "same_model",
   "exports": {
     "8": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/lme_train_top8.json",
     "16": "results/detection/meta-llama__Llama-3.1-8B-Instruct/topk/external/lme_train_top16.json",
