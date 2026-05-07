@@ -165,6 +165,17 @@ class StockFullHeadRetriever:
         per_layer = []
         if not hasattr(query_outputs, "attentions") or not query_outputs.attentions:
             raise ValueError("Model output does not contain attention scores.")
+        for layer_attn in query_outputs.attentions:
+            if layer_attn is None:
+                raise ValueError("Model output contains an empty attention tensor.")
+            if layer_attn.dim() != 4:
+                raise ValueError(
+                    "Expected attention tensors with shape "
+                    "(batch, heads, query_tokens, key_tokens)."
+                )
+            per_layer.append(layer_attn[0].mean(dim=1).detach())
+
+        return torch.stack(per_layer, dim=0)
 
     def score_docs_per_head_for_detection(self, query: str, docs: List[Dict]) -> Dict[str, torch.Tensor]:
         prompt_text, tokenized_prompt, query_span, doc_spans = self.compose_scoring_prompt(query, docs)

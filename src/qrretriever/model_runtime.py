@@ -30,11 +30,27 @@ SUPPORTED_MODEL_NAMES = {
         "allow_external_rankings": True,
         "requires_trust_remote_code": True,
     },
+    "allenai/OLMo-7B-Instruct": {
+        "family": "olmo",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": True,
+    },
+    "allenai/OLMo-7B-Instruct-hf": {
+        "family": "olmo",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": False,
+    },
+    "allenai/OLMo-2-1124-7B-Instruct": {
+        "family": "olmo2",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": False,
+    },
 }
 
 FAMILY_MODELING_MODULES = {
     "gemma": "transformers.models.gemma.modeling_gemma",
     "olmo": "transformers.models.olmo.modeling_olmo",
+    "olmo2": "transformers.models.olmo2.modeling_olmo2",
 }
 
 
@@ -68,12 +84,15 @@ def infer_model_family(model_name: str) -> str:
         return "qwen"
     if "gemma-7b" in normalized:
         return "gemma"
+    if "olmo-2" in normalized or "olmo2" in normalized:
+        return "olmo2"
     if "olmo-7b" in normalized:
         return "olmo"
     raise ValueError(
         "Unsupported model_name. Supported examples: "
         "`meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, "
-        "`google/gemma-7b`, `allenai/OLMo-7B`."
+        "`google/gemma-7b`, `allenai/OLMo-7B`, "
+        "`allenai/OLMo-7B-Instruct`, `allenai/OLMo-2-1124-7B-Instruct`."
     )
 
 
@@ -96,9 +115,9 @@ def resolve_model_spec(
         model_family=family,
         tokenizer_name=tokenizer_name or model_name,
         trust_remote_code=trust_remote_code,
-        supports_stock_head_masking=family in {"llama", "qwen", "gemma", "olmo"},
-        detection_backend_available=family in {"llama", "qwen", "gemma", "olmo"},
-        allow_external_rankings=defaults.get("allow_external_rankings", family == "llama"),
+        supports_stock_head_masking=family in {"llama", "qwen", "gemma", "olmo", "olmo2"},
+        detection_backend_available=family in {"llama", "qwen", "gemma", "olmo", "olmo2"},
+        allow_external_rankings=defaults.get("allow_external_rankings", family in {"llama", "olmo", "olmo2"}),
         requires_trust_remote_code=requires_trust_remote_code,
     )
 
@@ -197,11 +216,11 @@ def load_stock_causal_lm(
     if resolved_device == "cuda":
         if not load_in_8bit:
             load_kwargs["device_map"] = "auto"
-        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family == "olmo" else torch.float16
+        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family in {"olmo", "olmo2"} else torch.float16
         preferred_attn = "eager" if for_detection else "flash_attention_2"
     elif resolved_device == "mps":
-        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family == "olmo" else torch.float16
-    elif model_spec.model_family == "olmo":
+        load_kwargs["torch_dtype"] = "auto" if model_spec.model_family in {"olmo", "olmo2"} else torch.float16
+    elif model_spec.model_family in {"olmo", "olmo2"}:
         load_kwargs["torch_dtype"] = "auto"
 
     if preferred_attn is not None:

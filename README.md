@@ -8,7 +8,7 @@ The core idea: if a set of heads truly drives retrieval, zeroing them out at inf
 
 **Submission artifacts included:** `meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`
 
-**Code support retained:** `meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, `google/gemma-7b`, `allenai/OLMo-7B`
+**Code support retained:** `meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, `google/gemma-7b`, `allenai/OLMo-7B`, `allenai/OLMo-7B-Instruct`, `allenai/OLMo-2-1124-7B-Instruct`
 
 OLMo support remains in the codebase, but OLMo result artifacts are intentionally not bundled in this submission-cleanup branch because the completed outputs were not available in the locally discoverable committed refs.
 
@@ -283,6 +283,31 @@ python scripts/evaluation/run_ablation.py \
   --ranking_dir results/detection/allenai__OLMo-7B \
   --max_instances_per_task 24 \
   --methods QRScore-SEC
+```
+
+OLMo Instruct example:
+
+```bash
+MODEL_NAME=allenai/OLMo-7B-Instruct \
+MODEL_SLUG=allenai__OLMo-7B-Instruct \
+MAX_CONTEXT_TOKENS=2048 \
+TRUNCATE_BY_SPACE=80 \
+TRUST_REMOTE_CODE=1 \
+bash scripts/evaluation/run_olmo_cross_task.sh
+```
+
+For modern `transformers` installs, AllenAI also publishes
+`allenai/OLMo-7B-Instruct-hf`, which does not require remote model code.
+
+OLMo 2 Instruct example:
+
+```bash
+MODEL_NAME=allenai/OLMo-2-1124-7B-Instruct \
+MODEL_SLUG=allenai__OLMo-2-1124-7B-Instruct \
+MAX_CONTEXT_TOKENS=4096 \
+TRUNCATE_BY_SPACE=100 \
+TRUST_REMOTE_CODE=0 \
+bash scripts/evaluation/run_olmo_cross_task.sh
 ```
 
 Qwen example:
