@@ -228,9 +228,21 @@ def plot_head_similarity(sim_data, output_dir):
 def plot_specificity(spec_data, output_dir):
     summary_k = spec_data["summary_k"]
     sources = sorted(spec_data["sources"].keys())
-    on_target = [spec_data["sources"][s]["on_target_drop"] for s in sources]
-    off_target = [spec_data["sources"][s]["off_target_mean_drop"] for s in sources]
-    specificity = [spec_data["sources"][s]["specificity_index"] for s in sources]
+    on_target = [
+        spec_data["sources"][s]["on_target_drop"]
+        if spec_data["sources"][s]["on_target_drop"] is not None else np.nan
+        for s in sources
+    ]
+    off_target = [
+        spec_data["sources"][s]["off_target_mean_drop"]
+        if spec_data["sources"][s]["off_target_mean_drop"] is not None else np.nan
+        for s in sources
+    ]
+    specificity = [
+        spec_data["sources"][s]["specificity_index"]
+        if spec_data["sources"][s]["specificity_index"] is not None else np.nan
+        for s in sources
+    ]
 
     short = [s.replace("_", "\n") for s in sources]
     x = np.arange(len(sources))
@@ -247,7 +259,10 @@ def plot_specificity(spec_data, output_dir):
     ax1.grid(axis="y", alpha=0.3)
     ax1.axhline(0, color="black", linewidth=0.5)
 
-    colors = ["#43A047" if v > 0 else "#E53935" for v in specificity]
+    colors = [
+        "#9E9E9E" if np.isnan(v) else ("#43A047" if v > 0 else "#E53935")
+        for v in specificity
+    ]
     ax2.bar(x, specificity, w * 2, color=colors)
     ax2.set_ylabel("Specificity index", fontsize=11)
     ax2.set_xticks(x)
@@ -270,10 +285,13 @@ def plot_specificity(spec_data, output_dir):
                          "Specificity Index", "Surgicality Ratio"])
         for s in sources:
             d = spec_data["sources"][s]
-            writer.writerow([s, f"{d['on_target_drop']:.4f}",
-                             f"{d['off_target_mean_drop']:.4f}",
-                             f"{d['specificity_index']:.4f}",
-                             f"{d['surgicality_ratio']:.4f}"])
+            writer.writerow([
+                s,
+                "N/A" if d["on_target_drop"] is None else f"{d['on_target_drop']:.4f}",
+                "N/A" if d["off_target_mean_drop"] is None else f"{d['off_target_mean_drop']:.4f}",
+                "N/A" if d["specificity_index"] is None else f"{d['specificity_index']:.4f}",
+                "N/A" if d["surgicality_ratio"] is None else f"{d['surgicality_ratio']:.4f}",
+            ])
     print(f"Saved: {csv_path}")
 
 

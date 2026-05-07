@@ -3,9 +3,10 @@ Comparison ablation for SEC NIAH tasks using stock Hugging Face causal LMs.
 
 Methods supported:
 - QRScore-SEC (combined SEC detection)
-- QRScore-8B-LME-TRAIN (external 8B ranking from Llama-3.1-8B-Instruct/lme_TRAIN.json)
-- QRScore-8B-NQ-TRAIN (external 8B ranking from Llama-3.1-8B-Instruct/nq_TRAIN.json)
+- QRScore-8B-LME-TRAIN (same-model LME ranking, when available)
+- QRScore-8B-NQ-TRAIN (same-model NQ ranking, when available)
 - Transfer-<task> (optional cross-task transfer from per-task SEC rankings)
+- Optional method rankings as transfer sources, e.g. QRScore-8B-LME-TRAIN
 - Random-seed{42,123,456} (optional)
 """
 
@@ -286,6 +287,85 @@ def export_top_k_from_ranking(path, label, top_ks, export_dir):
         json.dump(manifest, f, indent=2)
 
 
+def model_specific_train_ranking_candidates(model_spec, results_dir, label, train_ranking_dir=None):
+    """Return candidate train-ranking paths for the current model only.
+
+    The old ablation workflow reused Llama-3.1-8B LME/NQ rankings for every
+    target model. That is misleading for cross-model causal ablations: Qwen
+    should use Qwen-detected train heads, OLMo should use OLMo-detected train
+    heads, and so on. Keep the legacy method labels for result compatibility,
+    but resolve their files in a model-aware way.
+    """
+    label = label.lower()
+    if label not in {"lme", "nq"}:
+        raise ValueError(f"Unsupported train ranking label: {label}")
+
+    file_stems = {
+        "lme": [
+            "lme_train_heads.json",
+            "LME_train_heads.json",
+            "long_context_lme_train_heads.json",
+            "lme_TRAIN.json",
+        ],
+        "nq": [
+            "nq_train_heads.json",
+            "NQ_train_heads.json",
+            "long_context_nq_train_heads.json",
+            "nq_TRAIN.json",
+        ],
+    }[label]
+
+    candidates = []
+    if train_ranking_dir:
+        candidates.extend(os.path.join(train_ranking_dir, name) for name in file_stems)
+        if model_spec.model_family == "qwen":
+            candidates.extend(
+                os.path.join(train_ranking_dir, name)
+                for name in [
+                    f"{label}_TRAIN_qwen.json",
+                    f"{label.upper()}_TRAIN_qwen.json",
+                    f"{label}_train_qwen.json",
+                ]
+            )
+
+    if model_spec.model_family == "llama":
+        candidates.extend(os.path.join(results_dir, name) for name in file_stems)
+        candidates.extend(
+            [
+                os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", f"{label}_TRAIN.json"),
+                os.path.join(PROJECT_DIR, "Llama-3.1-8B-Instruct", f"{label.upper()}_TRAIN.json"),
+            ]
+        )
+    elif model_spec.model_family == "qwen":
+        qwen_dirs = [
+            "Qwen-2.5-7B-Instruct",
+            "Qwen2.5-7B-Instruct",
+            "Qwen__Qwen2.5-7B-Instruct",
+        ]
+        qwen_files = [
+            f"{label}_TRAIN_qwen.json",
+            f"{label.upper()}_TRAIN_qwen.json",
+            f"{label}_train_qwen.json",
+            f"{label}_TRAIN.json",
+            f"{label.upper()}_TRAIN.json",
+        ]
+        for directory in qwen_dirs:
+            candidates.extend(os.path.join(PROJECT_DIR, directory, filename) for filename in qwen_files)
+            candidates.extend(os.path.join(os.sep, directory, filename) for filename in qwen_files)
+        candidates.extend(os.path.join(results_dir, name) for name in file_stems)
+    else:
+        candidates.extend(os.path.join(results_dir, name) for name in file_stems)
+
+    return candidates
+
+
+def resolve_model_specific_train_ranking(model_spec, results_dir, label, train_ranking_dir=None):
+    candidates = model_specific_train_ranking_candidates(
+        model_spec, results_dir, label, train_ranking_dir=train_ranking_dir
+    )
+    return next((path for path in candidates if os.path.exists(path)), None), candidates
+
+
 def sanitize_ranking(heads, num_layers, num_heads_per_layer, label):
     """Drop any head indices that are invalid for the current model shape."""
     valid = []
@@ -359,20 +439,22 @@ def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
     else:
         print(f"  QRScore-SEC: not found under {results_dir} (run same-model detection first)")
 
-    # 2) External 8B LME/NQ train rankings (Llama only).
+    # 2) Same-model LME/NQ train rankings.
     if model_spec.allow_external_rankings:
-        lme_train_path = args.lme_ranking_file or os.path.join(
-            PROJECT_DIR,
-            "Llama-3.1-8B-Instruct",
-            "lme_TRAIN.json",
+        lme_train_path, lme_candidates = resolve_model_specific_train_ranking(
+            model_spec, results_dir, "lme", train_ranking_dir=args.train_ranking_dir
         )
-        nq_train_path = args.nq_ranking_file or os.path.join(
-            PROJECT_DIR,
-            "Llama-3.1-8B-Instruct",
-            "nq_TRAIN.json",
+        nq_train_path, nq_candidates = resolve_model_specific_train_ranking(
+            model_spec, results_dir, "nq", train_ranking_dir=args.train_ranking_dir
         )
+        if args.lme_ranking_file is not None:
+            lme_candidates = [args.lme_ranking_file]
+            lme_train_path = args.lme_ranking_file if os.path.exists(args.lme_ranking_file) else None
+        if args.nq_ranking_file is not None:
+            nq_candidates = [args.nq_ranking_file]
+            nq_train_path = args.nq_ranking_file if os.path.exists(args.nq_ranking_file) else None
 
-        if os.path.exists(lme_train_path):
+        if lme_train_path is not None:
             lme_heads = sanitize_ranking(
                 load_ranked_heads_json(lme_train_path),
                 num_layers,
@@ -383,8 +465,13 @@ def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
                 lme_heads, num_layers, num_heads_per_layer, seed=42
             )
             print(f"  QRScore-8B-LME-TRAIN: loaded from {lme_train_path}")
+        else:
+            print(
+                "  QRScore-8B-LME-TRAIN: not found for this model. Checked: "
+                + ", ".join(lme_candidates)
+            )
 
-        if os.path.exists(nq_train_path):
+        if nq_train_path is not None:
             nq_heads = sanitize_ranking(
                 load_ranked_heads_json(nq_train_path),
                 num_layers,
@@ -395,11 +482,18 @@ def load_method_rankings(args, model_spec, num_layers, num_heads_per_layer):
                 nq_heads, num_layers, num_heads_per_layer, seed=43
             )
             print(f"  QRScore-8B-NQ-TRAIN: loaded from {nq_train_path}")
+        else:
+            print(
+                "  QRScore-8B-NQ-TRAIN: not found for this model. Checked: "
+                + ", ".join(nq_candidates)
+            )
 
-        # Export deterministic top-K slices for external 8B rankings.
+        # Export deterministic top-K slices for train rankings.
         external_export_dir = os.path.join(results_dir, "topk", "external")
-        export_top_k_from_ranking(lme_train_path, "lme_train", args.export_top_k, external_export_dir)
-        export_top_k_from_ranking(nq_train_path, "nq_train", args.export_top_k, external_export_dir)
+        if lme_train_path is not None:
+            export_top_k_from_ranking(lme_train_path, "lme_train", args.export_top_k, external_export_dir)
+        if nq_train_path is not None:
+            export_top_k_from_ranking(nq_train_path, "nq_train", args.export_top_k, external_export_dir)
 
     # 3) Optional cross-task transfer methods.
     transfer_rankings = {}
@@ -487,6 +581,40 @@ def validate_ranking_compatibility(method_name, ranking, model_spec, num_layers,
             f"Example invalid entries: {sample}. You likely need same-model rankings."
         )
     return True, None
+
+
+def add_extra_transfer_sources(
+    transfer_rankings,
+    method_rankings,
+    extra_sources,
+    model_spec,
+    num_layers,
+    num_heads,
+):
+    if not extra_sources:
+        return
+
+    for source in extra_sources:
+        if source not in method_rankings:
+            available = ", ".join(sorted(method_rankings.keys()))
+            raise ValueError(
+                f"Requested transfer source `{source}` is not available. "
+                f"Available method rankings: {available}"
+            )
+
+        ranking = method_rankings[source]
+        is_compatible, reason = validate_ranking_compatibility(
+            source, ranking, model_spec, num_layers, num_heads
+        )
+        if not is_compatible:
+            raise ValueError(reason)
+
+        if source in transfer_rankings:
+            print(f"  Extra transfer source `{source}` already present; skipping duplicate.")
+            continue
+
+        transfer_rankings[source] = ranking
+        print(f"  Extra transfer source `{source}`: added to transfer matrix")
 
 
 def run_single_sweep(model, tokenizer, test_instances, head_ranking,
@@ -679,6 +807,14 @@ def main():
             "(list of [\"layer-head\", score] rows)."
         ),
     )
+    parser.add_argument(
+        "--train_ranking_dir",
+        default=None,
+        help=(
+            "Optional directory containing same-model LME/NQ ranking JSON files, "
+            "such as lme_TRAIN_qwen.json and nq_TRAIN_qwen.json."
+        ),
+    )
     parser.add_argument("--trust_remote_code", action="store_true")
     parser.add_argument(
         "--device",
@@ -698,6 +834,15 @@ def main():
     parser.add_argument("--methods", nargs="+", default=None,
                         help="Specific methods to run (default: all available)")
     parser.add_argument("--enable_cross_task_transfer", action="store_true")
+    parser.add_argument(
+        "--transfer_extra_sources",
+        nargs="+",
+        default=[],
+        help=(
+            "Additional loaded method rankings to include as source rows in "
+            "cross-task transfer, e.g. QRScore-8B-LME-TRAIN."
+        ),
+    )
     parser.add_argument("--include_random_baselines", action="store_true")
     parser.add_argument("--transfer_summary_k", type=int, default=16)
     parser.add_argument("--export_top_k", nargs="+", type=int, default=DEFAULT_EXPORT_TOP_K)
@@ -713,6 +858,8 @@ def main():
         help="Write per-method JSONL token logs (idx, K, token_ids, raw_text) for analysis.",
     )
     args = parser.parse_args()
+    if args.transfer_extra_sources and not args.enable_cross_task_transfer:
+        parser.error("--transfer_extra_sources requires --enable_cross_task_transfer")
 
     model_spec = resolve_model_spec(
         model_name=args.model_name,
@@ -770,9 +917,28 @@ def main():
     # Load method rankings.
     print("\nLoading method rankings...")
     all_methods, transfer_rankings = load_method_rankings(args, model_spec, num_layers, num_heads)
+    available_methods = dict(all_methods)
 
     if args.methods:
+        missing_requested = [method for method in args.methods if method not in all_methods]
+        if missing_requested:
+            print(
+                "ERROR: Requested method ranking(s) are unavailable for this model: "
+                + ", ".join(missing_requested)
+            )
+            print("Generate the same-model ranking files first, or remove the missing methods from --methods.")
+            sys.exit(1)
         all_methods = {k: v for k, v in all_methods.items() if k in args.methods}
+
+    if args.enable_cross_task_transfer:
+        add_extra_transfer_sources(
+            transfer_rankings,
+            available_methods,
+            args.transfer_extra_sources,
+            model_spec,
+            num_layers,
+            num_heads,
+        )
 
     if not all_methods:
         print("ERROR: No methods available. Run detection first.")

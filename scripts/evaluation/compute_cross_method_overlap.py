@@ -121,6 +121,7 @@ def resolve_manifest_export(manifest_path: Path, max_k: int) -> Tuple[Optional[P
 
 def ranking_candidates(label: str, detection_dir: Path, max_k: int) -> List[Path]:
     label = label.upper()
+    is_qwen = "Qwen" in str(detection_dir) or "qwen" in str(detection_dir)
     if label == "SEC":
         return [
             detection_dir / "long_context_combined_heads.json",
@@ -129,17 +130,49 @@ def ranking_candidates(label: str, detection_dir: Path, max_k: int) -> List[Path
             detection_dir / "topk" / f"long_context_combined_top{max_k}.json",
         ]
     if label == "NQ":
-        return [
-            detection_dir / "nq_train_heads.json",
-            detection_dir / "NQ_train_heads.json",
-            detection_dir / "long_context_nq_train_heads.json",
-        ]
+        candidates = []
+        if is_qwen:
+            for directory in ["Qwen-2.5-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen__Qwen2.5-7B-Instruct"]:
+                candidates.extend(
+                    [
+                        PROJECT_DIR / directory / "nq_TRAIN_qwen.json",
+                        PROJECT_DIR / directory / "NQ_TRAIN_qwen.json",
+                        PROJECT_DIR / directory / "nq_train_qwen.json",
+                        Path("/") / directory / "nq_TRAIN_qwen.json",
+                        Path("/") / directory / "NQ_TRAIN_qwen.json",
+                        Path("/") / directory / "nq_train_qwen.json",
+                    ]
+                )
+        candidates.extend(
+            [
+                detection_dir / "nq_train_heads.json",
+                detection_dir / "NQ_train_heads.json",
+                detection_dir / "long_context_nq_train_heads.json",
+            ]
+        )
+        return candidates
     if label == "LME":
-        return [
-            detection_dir / "lme_train_heads.json",
-            detection_dir / "LME_train_heads.json",
-            detection_dir / "long_context_lme_train_heads.json",
-        ]
+        candidates = []
+        if is_qwen:
+            for directory in ["Qwen-2.5-7B-Instruct", "Qwen2.5-7B-Instruct", "Qwen__Qwen2.5-7B-Instruct"]:
+                candidates.extend(
+                    [
+                        PROJECT_DIR / directory / "lme_TRAIN_qwen.json",
+                        PROJECT_DIR / directory / "LME_TRAIN_qwen.json",
+                        PROJECT_DIR / directory / "lme_train_qwen.json",
+                        Path("/") / directory / "lme_TRAIN_qwen.json",
+                        Path("/") / directory / "LME_TRAIN_qwen.json",
+                        Path("/") / directory / "lme_train_qwen.json",
+                    ]
+                )
+        candidates.extend(
+            [
+                detection_dir / "lme_train_heads.json",
+                detection_dir / "LME_train_heads.json",
+                detection_dir / "long_context_lme_train_heads.json",
+            ]
+        )
+        return candidates
     raise ValueError(f"Unsupported ranking label `{label}`. Expected SEC, NQ, or LME.")
 
 

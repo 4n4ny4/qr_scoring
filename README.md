@@ -295,9 +295,17 @@ python scripts/evaluation/run_ablation.py \
   --methods QRScore-SEC QRScore-8B-LME-TRAIN QRScore-8B-NQ-TRAIN
 ```
 
-For non-Llama models, the external `LME` / `NQ` rankings come from the
-Llama-3.1-8B detector and are projected onto the target model shape by dropping
-out-of-range heads and deterministically filling the remainder of the ranking.
+For non-Llama models, `LME` / `NQ` comparisons should use same-model rankings.
+For Qwen, place native train rankings under the model-specific detection layout
+or a Qwen model folder, for example:
+
+- `results/detection/Qwen__Qwen2.5-7B-Instruct/lme_train_heads.json`
+- `results/detection/Qwen__Qwen2.5-7B-Instruct/nq_train_heads.json`
+- `Qwen-2.5-7B-Instruct/lme_TRAIN_qwen.json`
+- `Qwen-2.5-7B-Instruct/nq_TRAIN_qwen.json`
+
+The ablation script intentionally does not fall back to Llama train rankings
+for Qwen, because raw head indices are not comparable across model families.
 
 ### Step 7: Cross-Task Transfer Ablation
 
@@ -315,6 +323,16 @@ python scripts/evaluation/run_ablation.py \
   --enable_cross_task_transfer \
   --transfer_summary_k 16
 ```
+
+To add a same-model LME source row to the transfer matrix, include:
+
+```bash
+  --transfer_extra_sources QRScore-8B-LME-TRAIN
+```
+
+For Qwen, this resolves to `Qwen-2.5-7B-Instruct/lme_TRAIN_qwen.json` by
+default when that file is present. The resulting matrix has the usual SEC
+target-task columns plus an additional LME source row.
 
 **Output:**
 - `cross_task_transfer_matrix.json` — accuracy drop for each (source, target, K) triple
@@ -479,6 +497,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 | `--max_context_tokens` | `8192` | Max prompt tokens (left-truncation if exceeded) |
 | `--methods` | all detected | Which ranking methods to evaluate |
 | `--enable_cross_task_transfer` | off | Run the 8×8 transfer matrix |
+| `--transfer_extra_sources` | none | Add method rankings, e.g. `QRScore-8B-LME-TRAIN`, as extra transfer source rows |
 | `--transfer_summary_k` | `16` | K value for specificity metric computation |
 | `--include_random_baselines` | off | Include random head rankings as control |
 | `--log_tokens` | off | Write per-instance JSONL token logs |
@@ -494,7 +513,7 @@ The custom model in `src/qrretriever/custom_modeling_llama.py` is only used by t
 |------|----------|
 | `{method}_results.json` | Full accuracy curves, per-task breakdowns, per-instance details |
 | `comparison_summary.json` | Baseline accuracy, K=16 accuracy, and drop for each method |
-| `cross_task_transfer_matrix.json` | 8×8×8 matrix: (source task, target task, K) → accuracy + drop |
+| `cross_task_transfer_matrix.json` | Source × target × K matrix: (source ranking, target task, K) → accuracy + drop |
 | `cross_task_specificity_metrics.json` | Per-source: on-target drop, off-target mean, specificity index, surgicality ratio |
 | `cross_task_head_similarity_topk.json` | Jaccard similarity matrices at each top-K |
 | `accuracy_vs_knockout.png` | Overall accuracy curves (3 methods compared) |
