@@ -20,6 +20,11 @@ SUPPORTED_MODEL_NAMES = {
         "allow_external_rankings": True,
         "requires_trust_remote_code": False,
     },
+    "mistralai/Mistral-7B-Instruct-v0.3": {
+        "family": "mistral",
+        "allow_external_rankings": True,
+        "requires_trust_remote_code": False,
+    },
     "google/gemma-7b": {
         "family": "gemma",
         "allow_external_rankings": False,
@@ -82,6 +87,8 @@ def infer_model_family(model_name: str) -> str:
         return "llama"
     if "qwen2.5-7b-instruct" in normalized:
         return "qwen"
+    if "mistral-7b-instruct-v0.3" in normalized:
+        return "mistral"
     if "gemma-7b" in normalized:
         return "gemma"
     if "olmo-2" in normalized or "olmo2" in normalized:
@@ -91,7 +98,7 @@ def infer_model_family(model_name: str) -> str:
     raise ValueError(
         "Unsupported model_name. Supported examples: "
         "`meta-llama/Llama-3.1-8B-Instruct`, `Qwen/Qwen2.5-7B-Instruct`, "
-        "`google/gemma-7b`, `allenai/OLMo-7B`, "
+        "`mistralai/Mistral-7B-Instruct-v0.3`, `google/gemma-7b`, `allenai/OLMo-7B`, "
         "`allenai/OLMo-7B-Instruct`, `allenai/OLMo-2-1124-7B-Instruct`."
     )
 
@@ -115,9 +122,9 @@ def resolve_model_spec(
         model_family=family,
         tokenizer_name=tokenizer_name or model_name,
         trust_remote_code=trust_remote_code,
-        supports_stock_head_masking=family in {"llama", "qwen", "gemma", "olmo", "olmo2"},
-        detection_backend_available=family in {"llama", "qwen", "gemma", "olmo", "olmo2"},
-        allow_external_rankings=defaults.get("allow_external_rankings", family in {"llama", "olmo", "olmo2"}),
+        supports_stock_head_masking=family in {"llama", "qwen", "mistral", "gemma", "olmo", "olmo2"},
+        detection_backend_available=family in {"llama", "qwen", "mistral", "gemma", "olmo", "olmo2"},
+        allow_external_rankings=defaults.get("allow_external_rankings", family in {"llama", "mistral", "olmo", "olmo2"}),
         requires_trust_remote_code=requires_trust_remote_code,
     )
 
