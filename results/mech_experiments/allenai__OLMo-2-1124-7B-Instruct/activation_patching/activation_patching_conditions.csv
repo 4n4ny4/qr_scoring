@@ -1,0 +1,175 @@
+condition,gold,idx,mean_logprob,num_answer_tokens,sum_logprob,task
+clean,Drew,812427_1993.txt_ceo_lastname_249,-9.55749225616455,2,-19.1149845123291,ceo_lastname
+qr_ablate,Drew,812427_1993.txt_ceo_lastname_249,-9.56399154663086,2,-19.12798309326172,ceo_lastname
+patch_qr,Drew,812427_1993.txt_ceo_lastname_249,-9.100240707397461,2,-18.200481414794922,ceo_lastname
+patch_random,Drew,812427_1993.txt_ceo_lastname_249,-9.727888107299805,2,-19.45577621459961,ceo_lastname
+patch_bottom,Drew,812427_1993.txt_ceo_lastname_249,-9.468660354614258,2,-18.937320709228516,ceo_lastname
+patch_same_layer,Drew,812427_1993.txt_ceo_lastname_249,-9.600828170776367,2,-19.201656341552734,ceo_lastname
+clean,Gressette,754737_1993.txt_ceo_lastname_200,-12.640609741210938,3,-37.92182922363281,ceo_lastname
+qr_ablate,Gressette,754737_1993.txt_ceo_lastname_200,-12.188441276550293,3,-36.56532287597656,ceo_lastname
+patch_qr,Gressette,754737_1993.txt_ceo_lastname_200,-12.416706085205078,3,-37.250118255615234,ceo_lastname
+patch_random,Gressette,754737_1993.txt_ceo_lastname_200,-12.319412231445312,3,-36.95823669433594,ceo_lastname
+patch_bottom,Gressette,754737_1993.txt_ceo_lastname_200,-12.025350570678711,3,-36.0760498046875,ceo_lastname
+patch_same_layer,Gressette,754737_1993.txt_ceo_lastname_200,-12.190450668334961,3,-36.57135009765625,ceo_lastname
+clean,Ross,277509_1993.txt_ceo_lastname_228,-10.317522048950195,1,-10.317522048950195,ceo_lastname
+qr_ablate,Ross,277509_1993.txt_ceo_lastname_228,-10.820388793945312,1,-10.820388793945312,ceo_lastname
+patch_qr,Ross,277509_1993.txt_ceo_lastname_228,-10.888547897338867,1,-10.888547897338867,ceo_lastname
+patch_random,Ross,277509_1993.txt_ceo_lastname_228,-10.734430313110352,1,-10.734430313110352,ceo_lastname
+patch_bottom,Ross,277509_1993.txt_ceo_lastname_228,-10.872334480285645,1,-10.872334480285645,ceo_lastname
+patch_same_layer,Ross,277509_1993.txt_ceo_lastname_228,-11.074834823608398,1,-11.074834823608398,ceo_lastname
+clean,Zandman,103730_1993.txt_ceo_lastname_6,-11.143594741821289,3,-33.430782318115234,ceo_lastname
+qr_ablate,Zandman,103730_1993.txt_ceo_lastname_6,-11.349380493164062,3,-34.04814147949219,ceo_lastname
+patch_qr,Zandman,103730_1993.txt_ceo_lastname_6,-10.903703689575195,3,-32.71110916137695,ceo_lastname
+patch_random,Zandman,103730_1993.txt_ceo_lastname_6,-11.252802848815918,3,-33.75840759277344,ceo_lastname
+patch_bottom,Zandman,103730_1993.txt_ceo_lastname_6,-11.190463066101074,3,-33.571388244628906,ceo_lastname
+patch_same_layer,Zandman,103730_1993.txt_ceo_lastname_6,-11.316097259521484,3,-33.94829177856445,ceo_lastname
+clean,Beard,764764_1993.txt_ceo_lastname_45,-11.693646430969238,2,-23.387292861938477,ceo_lastname
+qr_ablate,Beard,764764_1993.txt_ceo_lastname_45,-10.099798202514648,2,-20.199596405029297,ceo_lastname
+patch_qr,Beard,764764_1993.txt_ceo_lastname_45,-10.951803207397461,2,-21.903606414794922,ceo_lastname
+patch_random,Beard,764764_1993.txt_ceo_lastname_45,-10.04830551147461,2,-20.09661102294922,ceo_lastname
+patch_bottom,Beard,764764_1993.txt_ceo_lastname_45,-10.257719039916992,2,-20.515438079833984,ceo_lastname
+patch_same_layer,Beard,764764_1993.txt_ceo_lastname_45,-10.257817268371582,2,-20.515634536743164,ceo_lastname
+clean,Peterson,859257_1993.txt_ceo_lastname_146,-8.998147964477539,2,-17.996295928955078,ceo_lastname
+qr_ablate,Peterson,859257_1993.txt_ceo_lastname_146,-9.58749771118164,2,-19.17499542236328,ceo_lastname
+patch_qr,Peterson,859257_1993.txt_ceo_lastname_146,-9.434206008911133,2,-18.868412017822266,ceo_lastname
+patch_random,Peterson,859257_1993.txt_ceo_lastname_146,-9.196781158447266,2,-18.39356231689453,ceo_lastname
+patch_bottom,Peterson,859257_1993.txt_ceo_lastname_146,-9.434614181518555,2,-18.86922836303711,ceo_lastname
+patch_same_layer,Peterson,859257_1993.txt_ceo_lastname_146,-9.345544815063477,2,-18.691089630126953,ceo_lastname
+clean,Newton,55387_1993.txt_ceo_lastname_11,-13.87230396270752,1,-13.87230396270752,ceo_lastname
+qr_ablate,Newton,55387_1993.txt_ceo_lastname_11,-13.030780792236328,1,-13.030780792236328,ceo_lastname
+patch_qr,Newton,55387_1993.txt_ceo_lastname_11,-12.934823989868164,1,-12.934823989868164,ceo_lastname
+patch_random,Newton,55387_1993.txt_ceo_lastname_11,-13.016643524169922,1,-13.016643524169922,ceo_lastname
+patch_bottom,Newton,55387_1993.txt_ceo_lastname_11,-13.036664962768555,1,-13.036664962768555,ceo_lastname
+patch_same_layer,Newton,55387_1993.txt_ceo_lastname_11,-13.05625057220459,1,-13.05625057220459,ceo_lastname
+clean,Popham,828530_1993.txt_ceo_lastname_113,-9.653488159179688,3,-28.960464477539062,ceo_lastname
+qr_ablate,Popham,828530_1993.txt_ceo_lastname_113,-11.208292961120605,3,-33.6248779296875,ceo_lastname
+patch_qr,Popham,828530_1993.txt_ceo_lastname_113,-10.652746200561523,3,-31.958236694335938,ceo_lastname
+patch_random,Popham,828530_1993.txt_ceo_lastname_113,-11.114497184753418,3,-33.34349060058594,ceo_lastname
+patch_bottom,Popham,828530_1993.txt_ceo_lastname_113,-11.171683311462402,3,-33.51504898071289,ceo_lastname
+patch_same_layer,Popham,828530_1993.txt_ceo_lastname_113,-11.293521881103516,3,-33.88056564331055,ceo_lastname
+clean,Craig,40454_1993.txt_ceo_lastname_90,-11.348711013793945,1,-11.348711013793945,ceo_lastname
+qr_ablate,Craig,40454_1993.txt_ceo_lastname_90,-12.813736915588379,1,-12.813736915588379,ceo_lastname
+patch_qr,Craig,40454_1993.txt_ceo_lastname_90,-12.757535934448242,1,-12.757535934448242,ceo_lastname
+patch_random,Craig,40454_1993.txt_ceo_lastname_90,-12.87793254852295,1,-12.87793254852295,ceo_lastname
+patch_bottom,Craig,40454_1993.txt_ceo_lastname_90,-13.030913352966309,1,-13.030913352966309,ceo_lastname
+patch_same_layer,Craig,40454_1993.txt_ceo_lastname_90,-12.958718299865723,1,-12.958718299865723,ceo_lastname
+clean,Allender,34501_1993.txt_ceo_lastname_220,-10.562188148498535,2,-21.12437629699707,ceo_lastname
+qr_ablate,Allender,34501_1993.txt_ceo_lastname_220,-10.533504486083984,2,-21.06700897216797,ceo_lastname
+patch_qr,Allender,34501_1993.txt_ceo_lastname_220,-10.722198486328125,2,-21.44439697265625,ceo_lastname
+patch_random,Allender,34501_1993.txt_ceo_lastname_220,-10.448091506958008,2,-20.896183013916016,ceo_lastname
+patch_bottom,Allender,34501_1993.txt_ceo_lastname_220,-10.524121284484863,2,-21.048242568969727,ceo_lastname
+patch_same_layer,Allender,34501_1993.txt_ceo_lastname_220,-10.619173049926758,2,-21.238346099853516,ceo_lastname
+clean,Cwiertnia,277821_1993.txt_ceo_lastname_157,-12.694623947143555,4,-50.77849578857422,ceo_lastname
+qr_ablate,Cwiertnia,277821_1993.txt_ceo_lastname_157,-14.386175155639648,4,-57.544700622558594,ceo_lastname
+patch_qr,Cwiertnia,277821_1993.txt_ceo_lastname_157,-13.989384651184082,4,-55.95753860473633,ceo_lastname
+patch_random,Cwiertnia,277821_1993.txt_ceo_lastname_157,-14.330365180969238,4,-57.32146072387695,ceo_lastname
+patch_bottom,Cwiertnia,277821_1993.txt_ceo_lastname_157,-14.36905574798584,4,-57.47622299194336,ceo_lastname
+patch_same_layer,Cwiertnia,277821_1993.txt_ceo_lastname_157,-14.320233345031738,4,-57.28093338012695,ceo_lastname
+clean,14400,29989_1993.txt_employees_count_total_56,-13.545160293579102,2,-27.090320587158203,employees_count_total
+qr_ablate,14400,29989_1993.txt_employees_count_total_56,-13.038597106933594,2,-26.077194213867188,employees_count_total
+patch_qr,14400,29989_1993.txt_employees_count_total_56,-12.582725524902344,2,-25.165451049804688,employees_count_total
+patch_random,14400,29989_1993.txt_employees_count_total_56,-12.830063819885254,2,-25.660127639770508,employees_count_total
+patch_bottom,14400,29989_1993.txt_employees_count_total_56,-13.078744888305664,2,-26.157489776611328,employees_count_total
+patch_same_layer,14400,29989_1993.txt_employees_count_total_56,-13.038362503051758,2,-26.076725006103516,employees_count_total
+clean,86168,66740_1993.txt_employees_count_total_197,-12.536205291748047,2,-25.072410583496094,employees_count_total
+qr_ablate,86168,66740_1993.txt_employees_count_total_197,-13.067825317382812,2,-26.135650634765625,employees_count_total
+patch_qr,86168,66740_1993.txt_employees_count_total_197,-13.265617370605469,2,-26.531234741210938,employees_count_total
+patch_random,86168,66740_1993.txt_employees_count_total_197,-13.144132614135742,2,-26.288265228271484,employees_count_total
+patch_bottom,86168,66740_1993.txt_employees_count_total_197,-13.129008293151855,2,-26.25801658630371,employees_count_total
+patch_same_layer,86168,66740_1993.txt_employees_count_total_197,-13.01059341430664,2,-26.02118682861328,employees_count_total
+clean,2260,55387_1993.txt_employees_count_total_10,-12.962053298950195,2,-25.92410659790039,employees_count_total
+qr_ablate,2260,55387_1993.txt_employees_count_total_10,-12.756669998168945,2,-25.51333999633789,employees_count_total
+patch_qr,2260,55387_1993.txt_employees_count_total_10,-12.544034004211426,2,-25.08806800842285,employees_count_total
+patch_random,2260,55387_1993.txt_employees_count_total_10,-12.80588150024414,2,-25.61176300048828,employees_count_total
+patch_bottom,2260,55387_1993.txt_employees_count_total_10,-12.932573318481445,2,-25.86514663696289,employees_count_total
+patch_same_layer,2260,55387_1993.txt_employees_count_total_10,-12.767187118530273,2,-25.534374237060547,employees_count_total
+clean,29900,812427_1993.txt_employees_count_total_248,-13.48098373413086,2,-26.96196746826172,employees_count_total
+qr_ablate,29900,812427_1993.txt_employees_count_total_248,-13.820775985717773,2,-27.641551971435547,employees_count_total
+patch_qr,29900,812427_1993.txt_employees_count_total_248,-13.0846586227417,2,-26.1693172454834,employees_count_total
+patch_random,29900,812427_1993.txt_employees_count_total_248,-13.826345443725586,2,-27.652690887451172,employees_count_total
+patch_bottom,29900,812427_1993.txt_employees_count_total_248,-13.630640029907227,2,-27.261280059814453,employees_count_total
+patch_same_layer,29900,812427_1993.txt_employees_count_total_248,-13.787725448608398,2,-27.575450897216797,employees_count_total
+clean,60400,10456_1993.txt_employees_count_total_98,-14.536489486694336,2,-29.072978973388672,employees_count_total
+qr_ablate,60400,10456_1993.txt_employees_count_total_98,-14.311906814575195,2,-28.62381362915039,employees_count_total
+patch_qr,60400,10456_1993.txt_employees_count_total_98,-14.240448951721191,2,-28.480897903442383,employees_count_total
+patch_random,60400,10456_1993.txt_employees_count_total_98,-14.452167510986328,2,-28.904335021972656,employees_count_total
+patch_bottom,60400,10456_1993.txt_employees_count_total_98,-14.418182373046875,2,-28.83636474609375,employees_count_total
+patch_same_layer,60400,10456_1993.txt_employees_count_total_98,-14.287078857421875,2,-28.57415771484375,employees_count_total
+clean,3570,100923_1993.txt_employees_count_total_189,-12.927166938781738,2,-25.854333877563477,employees_count_total
+qr_ablate,3570,100923_1993.txt_employees_count_total_189,-13.22467041015625,2,-26.4493408203125,employees_count_total
+patch_qr,3570,100923_1993.txt_employees_count_total_189,-12.8690185546875,2,-25.738037109375,employees_count_total
+patch_random,3570,100923_1993.txt_employees_count_total_189,-13.107501029968262,2,-26.215002059936523,employees_count_total
+patch_bottom,3570,100923_1993.txt_employees_count_total_189,-13.461002349853516,2,-26.92200469970703,employees_count_total
+patch_same_layer,3570,100923_1993.txt_employees_count_total_189,-13.297396659851074,2,-26.59479331970215,employees_count_total
+clean,5300,34501_1993.txt_employees_count_total_219,-13.361778259277344,2,-26.723556518554688,employees_count_total
+qr_ablate,5300,34501_1993.txt_employees_count_total_219,-13.165298461914062,2,-26.330596923828125,employees_count_total
+patch_qr,5300,34501_1993.txt_employees_count_total_219,-13.558778762817383,2,-27.117557525634766,employees_count_total
+patch_random,5300,34501_1993.txt_employees_count_total_219,-13.199458122253418,2,-26.398916244506836,employees_count_total
+patch_bottom,5300,34501_1993.txt_employees_count_total_219,-13.2146635055542,2,-26.4293270111084,employees_count_total
+patch_same_layer,5300,34501_1993.txt_employees_count_total_219,-12.98675537109375,2,-25.9735107421875,employees_count_total
+clean,California,37748_1993.txt_headquarters_state_60,-11.073657989501953,1,-11.073657989501953,headquarters_state
+qr_ablate,California,37748_1993.txt_headquarters_state_60,-10.684181213378906,1,-10.684181213378906,headquarters_state
+patch_qr,California,37748_1993.txt_headquarters_state_60,-10.52125072479248,1,-10.52125072479248,headquarters_state
+patch_random,California,37748_1993.txt_headquarters_state_60,-10.601767539978027,1,-10.601767539978027,headquarters_state
+patch_bottom,California,37748_1993.txt_headquarters_state_60,-10.943096160888672,1,-10.943096160888672,headquarters_state
+patch_same_layer,California,37748_1993.txt_headquarters_state_60,-10.576940536499023,1,-10.576940536499023,headquarters_state
+clean,Illinois,310431_1993.txt_headquarters_state_67,-6.1657819747924805,2,-12.331563949584961,headquarters_state
+qr_ablate,Illinois,310431_1993.txt_headquarters_state_67,-5.920199394226074,2,-11.840398788452148,headquarters_state
+patch_qr,Illinois,310431_1993.txt_headquarters_state_67,-5.6082611083984375,2,-11.216522216796875,headquarters_state
+patch_random,Illinois,310431_1993.txt_headquarters_state_67,-5.763999938964844,2,-11.527999877929688,headquarters_state
+patch_bottom,Illinois,310431_1993.txt_headquarters_state_67,-5.8424506187438965,2,-11.684901237487793,headquarters_state
+patch_same_layer,Illinois,310431_1993.txt_headquarters_state_67,-5.739175796508789,2,-11.478351593017578,headquarters_state
+clean,Pennsylvania,103730_1993.txt_headquarters_state_2,-4.522400856018066,2,-9.044801712036133,headquarters_state
+qr_ablate,Pennsylvania,103730_1993.txt_headquarters_state_2,-4.191674709320068,2,-8.383349418640137,headquarters_state
+patch_qr,Pennsylvania,103730_1993.txt_headquarters_state_2,-3.8263750076293945,2,-7.652750015258789,headquarters_state
+patch_random,Pennsylvania,103730_1993.txt_headquarters_state_2,-4.175402641296387,2,-8.350805282592773,headquarters_state
+patch_bottom,Pennsylvania,103730_1993.txt_headquarters_state_2,-4.214391231536865,2,-8.42878246307373,headquarters_state
+patch_same_layer,Pennsylvania,103730_1993.txt_headquarters_state_2,-4.062845706939697,2,-8.125691413879395,headquarters_state
+clean,New Jersey,812427_1993.txt_headquarters_state_247,-7.154789924621582,2,-14.309579849243164,headquarters_state
+qr_ablate,New Jersey,812427_1993.txt_headquarters_state_247,-7.067893981933594,2,-14.135787963867188,headquarters_state
+patch_qr,New Jersey,812427_1993.txt_headquarters_state_247,-6.9692301750183105,2,-13.938460350036621,headquarters_state
+patch_random,New Jersey,812427_1993.txt_headquarters_state_247,-7.1590399742126465,2,-14.318079948425293,headquarters_state
+patch_bottom,New Jersey,812427_1993.txt_headquarters_state_247,-7.159097671508789,2,-14.318195343017578,headquarters_state
+patch_same_layer,New Jersey,812427_1993.txt_headquarters_state_247,-7.028627395629883,2,-14.057254791259766,headquarters_state
+clean,National Education Corporation,277821_1993.txt_registrant_name_151,-10.66423511505127,3,-31.992704391479492,registrant_name
+qr_ablate,National Education Corporation,277821_1993.txt_registrant_name_151,-10.579188346862793,3,-31.737564086914062,registrant_name
+patch_qr,National Education Corporation,277821_1993.txt_registrant_name_151,-10.498207092285156,3,-31.49462127685547,registrant_name
+patch_random,National Education Corporation,277821_1993.txt_registrant_name_151,-10.371036529541016,3,-31.113107681274414,registrant_name
+patch_bottom,National Education Corporation,277821_1993.txt_registrant_name_151,-10.600057601928711,3,-31.8001708984375,registrant_name
+patch_same_layer,National Education Corporation,277821_1993.txt_registrant_name_151,-10.803609848022461,3,-32.41082763671875,registrant_name
+clean,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-8.540128707885742,9,-76.86116027832031,registrant_name
+qr_ablate,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-8.055023193359375,9,-72.49520874023438,registrant_name
+patch_qr,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-7.176756858825684,9,-64.59081268310547,registrant_name
+patch_random,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-8.029203414916992,9,-72.26283264160156,registrant_name
+patch_bottom,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-7.978475093841553,9,-71.8062744140625,registrant_name
+patch_same_layer,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-8.024307250976562,9,-72.21876525878906,registrant_name
+clean,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.739311218261719,4,-34.957244873046875,registrant_name
+qr_ablate,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.632152557373047,4,-34.52861022949219,registrant_name
+patch_qr,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.40222454071045,4,-33.6088981628418,registrant_name
+patch_random,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.663042068481445,4,-34.65216827392578,registrant_name
+patch_bottom,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.509209632873535,4,-34.03683853149414,registrant_name
+patch_same_layer,First Financial Management Corporation,36326_1993.txt_registrant_name_136,-8.684951782226562,4,-34.73980712890625,registrant_name
+clean,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-7.997330665588379,9,-71.9759750366211,registrant_name
+qr_ablate,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-8.167343139648438,9,-73.50608825683594,registrant_name
+patch_qr,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-8.030787467956543,9,-72.27708435058594,registrant_name
+patch_random,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-8.145237922668457,9,-73.30714416503906,registrant_name
+patch_bottom,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-7.948986530303955,9,-71.54087829589844,registrant_name
+patch_same_layer,"JMB Income Properties, Ltd. - XII",765813_1993.txt_registrant_name_231,-8.095962524414062,9,-72.86366271972656,registrant_name
+clean,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-7.469162940979004,9,-67.22246551513672,registrant_name
+qr_ablate,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-6.999746799468994,9,-62.997718811035156,registrant_name
+patch_qr,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-6.370819091796875,9,-57.337371826171875,registrant_name
+patch_random,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-6.965602397918701,9,-62.69042205810547,registrant_name
+patch_bottom,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-6.882477760314941,9,-61.942298889160156,registrant_name
+patch_same_layer,ADMIRAL FINANCIAL CORP.,828530_1993.txt_registrant_name_107,-7.148509502410889,9,-64.33658599853516,registrant_name
+clean,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.539533615112305,9,-76.85580444335938,registrant_name
+qr_ablate,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.493739128112793,9,-76.44364929199219,registrant_name
+patch_qr,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.17258071899414,9,-73.55322265625,registrant_name
+patch_random,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.544365882873535,9,-76.8992919921875,registrant_name
+patch_bottom,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.428892135620117,9,-75.86003112792969,registrant_name
+patch_same_layer,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-8.398502349853516,9,-75.58651733398438,registrant_name
+clean,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-8.553348541259766,9,-76.98013305664062,registrant_name
+qr_ablate,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-7.128429889678955,9,-64.15586853027344,registrant_name
+patch_qr,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-7.019351482391357,9,-63.174163818359375,registrant_name
+patch_random,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-7.2391510009765625,9,-65.15235900878906,registrant_name
+patch_bottom,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-7.07399845123291,9,-63.665985107421875,registrant_name
+patch_same_layer,Sears Credit Account Trust 1990 A,859257_1993.txt_registrant_name_144,-7.148736953735352,9,-64.33863067626953,registrant_name
