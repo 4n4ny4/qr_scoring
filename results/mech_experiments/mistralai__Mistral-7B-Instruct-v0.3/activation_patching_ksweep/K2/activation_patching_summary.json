@@ -1,0 +1,344 @@
+{
+  "condition_mean_logprob": [
+    {
+      "task": "ceo_lastname",
+      "condition": "clean",
+      "n": 16,
+      "mean_mean_logprob": -0.47572887188289315
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob": -0.44771622825646773
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob": -0.4546762251993641
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob": -0.44771622825646773
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob": -0.44771622825646773
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "qr_ablate",
+      "n": 16,
+      "mean_mean_logprob": -0.44771622825646773
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "clean",
+      "n": 16,
+      "mean_mean_logprob": -0.6668816385790706
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob": -0.7141868928447366
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob": -0.671144038438797
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob": -0.7141868928447366
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob": -0.7141868928447366
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "qr_ablate",
+      "n": 16,
+      "mean_mean_logprob": -0.7141868928447366
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "clean",
+      "n": 16,
+      "mean_mean_logprob": -0.7801927593536675
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob": -0.6567235656548291
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob": -0.7529477144125849
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob": -0.6567235656548291
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob": -0.6567235656548291
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "qr_ablate",
+      "n": 16,
+      "mean_mean_logprob": -0.6567235656548291
+    },
+    {
+      "task": "registrant_name",
+      "condition": "clean",
+      "n": 16,
+      "mean_mean_logprob": -0.10519059648504481
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob": -0.16859416459919885
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob": -0.09982222715916578
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob": -0.16859416459919885
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob": -0.16859416459919885
+    },
+    {
+      "task": "registrant_name",
+      "condition": "qr_ablate",
+      "n": 16,
+      "mean_mean_logprob": -0.16859416459919885
+    }
+  ],
+  "rescue_sum_logprob": [
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.9814213680811846
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.9699715669507093
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.6844593676951651
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.9883635331346105
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_sum_logprob_rescue": 0.0
+    }
+  ],
+  "rescue_mean_logprob": [
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.9814214797109247
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.96997166541815
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.6844593711118974
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_bottom",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_qr",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.9883634990316104
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_random",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    },
+    {
+      "task": "registrant_name",
+      "condition": "patch_same_layer",
+      "n": 16,
+      "mean_mean_logprob_rescue": 0.0
+    }
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "model": {
+    "model_name": "Qwen/Qwen2.5-7B-Instruct",
+    "model_slug": "Qwen__Qwen2.5-7B-Instruct",
+    "model_family": "qwen",
+    "tokenizer_name": "Qwen/Qwen2.5-7B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname",
+    "registrant_name",
+    "headquarters_state"
+  ],
+  "k": 2,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/Qwen__Qwen2.5-7B-Instruct/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/Qwen__Qwen2.5-7B-Instruct/QRScore-SEC_results.json",
+  "num_selected_examples": 64,
+  "filtered_to_clean_correct_ablated_wrong": false,
+  "controls": {
+    "patch_qr": [
+      "19-17",
+      "20-17"
+    ],
+    "patch_bottom": [
+      "11-8",
+      "11-11"
+    ],
+    "patch_same_layer": [
+      "19-18",
+      "20-18"
+    ],
+    "patch_random": [
+      "1-25",
+      "9-22"
+    ]
+  }
+}

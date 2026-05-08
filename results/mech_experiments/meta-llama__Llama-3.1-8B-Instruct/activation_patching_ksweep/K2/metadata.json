@@ -1,0 +1,42 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname",
+    "registrant_name",
+    "headquarters_state"
+  ],
+  "k": 2,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/QRScore-SEC_results.json",
+  "num_selected_examples": 64,
+  "filtered_to_clean_correct_ablated_wrong": false,
+  "controls": {
+    "patch_qr": [
+      "14-31",
+      "13-18"
+    ],
+    "patch_bottom": [
+      "1-12",
+      "0-27"
+    ],
+    "patch_same_layer": [
+      "14-0",
+      "13-19"
+    ],
+    "patch_random": [
+      "1-21",
+      "8-18"
+    ]
+  }
+}

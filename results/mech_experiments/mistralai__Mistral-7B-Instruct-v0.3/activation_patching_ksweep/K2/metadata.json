@@ -1,0 +1,42 @@
+{
+  "model": {
+    "model_name": "mistralai/Mistral-7B-Instruct-v0.3",
+    "model_slug": "mistralai__Mistral-7B-Instruct-v0.3",
+    "model_family": "mistral",
+    "tokenizer_name": "mistralai/Mistral-7B-Instruct-v0.3",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname",
+    "registrant_name",
+    "headquarters_state"
+  ],
+  "k": 2,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/mistralai__Mistral-7B-Instruct-v0.3/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/mistralai__Mistral-7B-Instruct-v0.3/QRScore-SEC_results.json",
+  "num_selected_examples": 64,
+  "filtered_to_clean_correct_ablated_wrong": false,
+  "controls": {
+    "patch_qr": [
+      "16-12",
+      "16-29"
+    ],
+    "patch_bottom": [
+      "11-2",
+      "11-8"
+    ],
+    "patch_same_layer": [
+      "16-13",
+      "16-30"
+    ],
+    "patch_random": [
+      "1-21",
+      "8-18"
+    ]
+  }
+}

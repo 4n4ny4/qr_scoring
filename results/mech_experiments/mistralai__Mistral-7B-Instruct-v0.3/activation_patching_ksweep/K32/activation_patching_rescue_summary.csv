@@ -1,0 +1,17 @@
+condition,mean_sum_logprob_rescue,n,task
+patch_bottom,-0.004834445162145765,16,ceo_lastname
+patch_qr,0.9422946962443635,16,ceo_lastname
+patch_random,-0.1303078627972961,16,ceo_lastname
+patch_same_layer,-0.8464905669844923,16,ceo_lastname
+patch_bottom,-0.025243895669454914,16,employees_count_total
+patch_qr,0.6866445319432819,16,employees_count_total
+patch_random,-0.1733205585273705,16,employees_count_total
+patch_same_layer,-0.06694167526353723,16,employees_count_total
+patch_bottom,-0.011481285890827168,16,headquarters_state
+patch_qr,1.0334780023274552,16,headquarters_state
+patch_random,-0.1764005514337375,16,headquarters_state
+patch_same_layer,-0.3541288875755864,16,headquarters_state
+patch_bottom,0.03188052282079982,16,registrant_name
+patch_qr,0.8758809425362745,16,registrant_name
+patch_random,-0.0378783381002923,16,registrant_name
+patch_same_layer,-1.0205843084107475,16,registrant_name
