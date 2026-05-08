@@ -1,0 +1,253 @@
+condition,gold,idx,mean_logprob,num_answer_tokens,sum_logprob,task
+clean,Popham,828530_1993.txt_ceo_lastname_113,-0.00048118349513970315,3,-0.001443550456315279,ceo_lastname
+qr_ablate,Popham,828530_1993.txt_ceo_lastname_113,-1.8895440101623535,3,-5.6686320304870605,ceo_lastname
+patch_qr,Popham,828530_1993.txt_ceo_lastname_113,-0.49813175201416016,3,-1.4943952560424805,ceo_lastname
+patch_random,Popham,828530_1993.txt_ceo_lastname_113,-1.8500306606292725,3,-5.550091743469238,ceo_lastname
+patch_bottom,Popham,828530_1993.txt_ceo_lastname_113,-1.8798426389694214,3,-5.639527797698975,ceo_lastname
+patch_same_layer,Popham,828530_1993.txt_ceo_lastname_113,-1.6502854824066162,3,-4.9508562088012695,ceo_lastname
+clean,Goldsmith,201461_1993.txt_ceo_lastname_77,-0.044459979981184006,2,-0.08891995996236801,ceo_lastname
+qr_ablate,Goldsmith,201461_1993.txt_ceo_lastname_77,-4.422463417053223,2,-8.844926834106445,ceo_lastname
+patch_qr,Goldsmith,201461_1993.txt_ceo_lastname_77,-3.0013673305511475,2,-6.002734661102295,ceo_lastname
+patch_random,Goldsmith,201461_1993.txt_ceo_lastname_77,-4.87396240234375,2,-9.7479248046875,ceo_lastname
+patch_bottom,Goldsmith,201461_1993.txt_ceo_lastname_77,-4.418347358703613,2,-8.836694717407227,ceo_lastname
+patch_same_layer,Goldsmith,201461_1993.txt_ceo_lastname_77,-4.31961727142334,2,-8.63923454284668,ceo_lastname
+clean,Loucks,10456_1993.txt_ceo_lastname_99,-0.011746656149625778,2,-0.023493312299251556,ceo_lastname
+qr_ablate,Loucks,10456_1993.txt_ceo_lastname_99,-3.307898759841919,2,-6.615797519683838,ceo_lastname
+patch_qr,Loucks,10456_1993.txt_ceo_lastname_99,-0.8415992259979248,2,-1.6831984519958496,ceo_lastname
+patch_random,Loucks,10456_1993.txt_ceo_lastname_99,-5.272611618041992,2,-10.545223236083984,ceo_lastname
+patch_bottom,Loucks,10456_1993.txt_ceo_lastname_99,-3.3155596256256104,2,-6.631119251251221,ceo_lastname
+patch_same_layer,Loucks,10456_1993.txt_ceo_lastname_99,-3.117341995239258,2,-6.234683990478516,ceo_lastname
+clean,Leva,77227_1993.txt_ceo_lastname_91,-0.00017514861247036606,2,-0.0003502972249407321,ceo_lastname
+qr_ablate,Leva,77227_1993.txt_ceo_lastname_91,-1.4229563474655151,2,-2.8459126949310303,ceo_lastname
+patch_qr,Leva,77227_1993.txt_ceo_lastname_91,-0.24180813133716583,2,-0.48361626267433167,ceo_lastname
+patch_random,Leva,77227_1993.txt_ceo_lastname_91,-1.7320725917816162,2,-3.4641451835632324,ceo_lastname
+patch_bottom,Leva,77227_1993.txt_ceo_lastname_91,-1.4422935247421265,2,-2.884587049484253,ceo_lastname
+patch_same_layer,Leva,77227_1993.txt_ceo_lastname_91,-1.2048933506011963,2,-2.4097867012023926,ceo_lastname
+clean,Beard,764764_1993.txt_ceo_lastname_45,-0.00011061407712986693,2,-0.00022122815425973386,ceo_lastname
+qr_ablate,Beard,764764_1993.txt_ceo_lastname_45,-4.5728864669799805,2,-9.145772933959961,ceo_lastname
+patch_qr,Beard,764764_1993.txt_ceo_lastname_45,-1.3934062719345093,2,-2.7868125438690186,ceo_lastname
+patch_random,Beard,764764_1993.txt_ceo_lastname_45,-4.953275680541992,2,-9.906551361083984,ceo_lastname
+patch_bottom,Beard,764764_1993.txt_ceo_lastname_45,-4.600811004638672,2,-9.201622009277344,ceo_lastname
+patch_same_layer,Beard,764764_1993.txt_ceo_lastname_45,-4.1761860847473145,2,-8.352372169494629,ceo_lastname
+clean,Newton,55387_1993.txt_ceo_lastname_11,-0.0023761154152452946,1,-0.0023761154152452946,ceo_lastname
+qr_ablate,Newton,55387_1993.txt_ceo_lastname_11,-9.367043495178223,1,-9.367043495178223,ceo_lastname
+patch_qr,Newton,55387_1993.txt_ceo_lastname_11,-2.251549243927002,1,-2.251549243927002,ceo_lastname
+patch_random,Newton,55387_1993.txt_ceo_lastname_11,-12.511968612670898,1,-12.511968612670898,ceo_lastname
+patch_bottom,Newton,55387_1993.txt_ceo_lastname_11,-9.21524429321289,1,-9.21524429321289,ceo_lastname
+patch_same_layer,Newton,55387_1993.txt_ceo_lastname_11,-8.87597942352295,1,-8.87597942352295,ceo_lastname
+clean,Peterson,865227_1993.txt_ceo_lastname_51,-0.013604321517050266,2,-0.027208643034100533,ceo_lastname
+qr_ablate,Peterson,865227_1993.txt_ceo_lastname_51,-4.059054374694824,2,-8.118108749389648,ceo_lastname
+patch_qr,Peterson,865227_1993.txt_ceo_lastname_51,-2.1081573963165283,2,-4.216314792633057,ceo_lastname
+patch_random,Peterson,865227_1993.txt_ceo_lastname_51,-4.652987957000732,2,-9.305975914001465,ceo_lastname
+patch_bottom,Peterson,865227_1993.txt_ceo_lastname_51,-4.043673515319824,2,-8.087347030639648,ceo_lastname
+patch_same_layer,Peterson,865227_1993.txt_ceo_lastname_51,-4.030367851257324,2,-8.060735702514648,ceo_lastname
+clean,Goodes,104669_1993.txt_ceo_lastname_84,-0.12039069831371307,2,-0.24078139662742615,ceo_lastname
+qr_ablate,Goodes,104669_1993.txt_ceo_lastname_84,-7.332618236541748,2,-14.665236473083496,ceo_lastname
+patch_qr,Goodes,104669_1993.txt_ceo_lastname_84,-3.667253255844116,2,-7.334506511688232,ceo_lastname
+patch_random,Goodes,104669_1993.txt_ceo_lastname_84,-7.380318641662598,2,-14.760637283325195,ceo_lastname
+patch_bottom,Goodes,104669_1993.txt_ceo_lastname_84,-7.320413112640381,2,-14.640826225280762,ceo_lastname
+patch_same_layer,Goodes,104669_1993.txt_ceo_lastname_84,-7.619472980499268,2,-15.238945960998535,ceo_lastname
+clean,Gressette,754737_1993.txt_ceo_lastname_200,-0.0010020488407462835,3,-0.003006146289408207,ceo_lastname
+qr_ablate,Gressette,754737_1993.txt_ceo_lastname_200,-2.44705867767334,3,-7.3411760330200195,ceo_lastname
+patch_qr,Gressette,754737_1993.txt_ceo_lastname_200,-1.3044378757476807,3,-3.913313627243042,ceo_lastname
+patch_random,Gressette,754737_1993.txt_ceo_lastname_200,-2.8151960372924805,3,-8.445588111877441,ceo_lastname
+patch_bottom,Gressette,754737_1993.txt_ceo_lastname_200,-2.4486255645751953,3,-7.345876693725586,ceo_lastname
+patch_same_layer,Gressette,754737_1993.txt_ceo_lastname_200,-2.255401134490967,3,-6.766202926635742,ceo_lastname
+clean,Lenzie,71180_1993.txt_ceo_lastname_215,-0.00037376716500148177,2,-0.0007475343300029635,ceo_lastname
+qr_ablate,Lenzie,71180_1993.txt_ceo_lastname_215,-5.110004901885986,2,-10.220009803771973,ceo_lastname
+patch_qr,Lenzie,71180_1993.txt_ceo_lastname_215,-1.0782719850540161,2,-2.1565439701080322,ceo_lastname
+patch_random,Lenzie,71180_1993.txt_ceo_lastname_215,-5.683568954467773,2,-11.367137908935547,ceo_lastname
+patch_bottom,Lenzie,71180_1993.txt_ceo_lastname_215,-4.9966325759887695,2,-9.993265151977539,ceo_lastname
+patch_same_layer,Lenzie,71180_1993.txt_ceo_lastname_215,-4.8189287185668945,2,-9.637857437133789,ceo_lastname
+clean,Allender,34501_1993.txt_ceo_lastname_220,-0.00020542179117910564,2,-0.0004108435823582113,ceo_lastname
+qr_ablate,Allender,34501_1993.txt_ceo_lastname_220,-5.334306716918945,2,-10.66861343383789,ceo_lastname
+patch_qr,Allender,34501_1993.txt_ceo_lastname_220,-1.6337882280349731,2,-3.2675764560699463,ceo_lastname
+patch_random,Allender,34501_1993.txt_ceo_lastname_220,-5.312966346740723,2,-10.625932693481445,ceo_lastname
+patch_bottom,Allender,34501_1993.txt_ceo_lastname_220,-5.314524173736572,2,-10.629048347473145,ceo_lastname
+patch_same_layer,Allender,34501_1993.txt_ceo_lastname_220,-5.155946254730225,2,-10.31189250946045,ceo_lastname
+clean,Zandman,103730_1993.txt_ceo_lastname_6,-0.0004000574117526412,3,-0.0012001722352579236,ceo_lastname
+qr_ablate,Zandman,103730_1993.txt_ceo_lastname_6,-1.317103385925293,3,-3.951310157775879,ceo_lastname
+patch_qr,Zandman,103730_1993.txt_ceo_lastname_6,-0.3546653389930725,3,-1.0639959573745728,ceo_lastname
+patch_random,Zandman,103730_1993.txt_ceo_lastname_6,-1.3390367031097412,3,-4.0171098709106445,ceo_lastname
+patch_bottom,Zandman,103730_1993.txt_ceo_lastname_6,-1.333213448524475,3,-3.9996402263641357,ceo_lastname
+patch_same_layer,Zandman,103730_1993.txt_ceo_lastname_6,-1.3995555639266968,3,-4.198666572570801,ceo_lastname
+clean,Ross,277509_1993.txt_ceo_lastname_228,-0.001358658540993929,1,-0.001358658540993929,ceo_lastname
+qr_ablate,Ross,277509_1993.txt_ceo_lastname_228,-5.4960198402404785,1,-5.4960198402404785,ceo_lastname
+patch_qr,Ross,277509_1993.txt_ceo_lastname_228,-1.0933263301849365,1,-1.0933263301849365,ceo_lastname
+patch_random,Ross,277509_1993.txt_ceo_lastname_228,-9.11160659790039,1,-9.11160659790039,ceo_lastname
+patch_bottom,Ross,277509_1993.txt_ceo_lastname_228,-5.567226886749268,1,-5.567226886749268,ceo_lastname
+patch_same_layer,Ross,277509_1993.txt_ceo_lastname_228,-4.77845573425293,1,-4.77845573425293,ceo_lastname
+clean,McCraw,37748_1993.txt_ceo_lastname_63,-0.07395684719085693,2,-0.14791369438171387,ceo_lastname
+qr_ablate,McCraw,37748_1993.txt_ceo_lastname_63,-3.872650384902954,2,-7.745300769805908,ceo_lastname
+patch_qr,McCraw,37748_1993.txt_ceo_lastname_63,-2.101288080215454,2,-4.202576160430908,ceo_lastname
+patch_random,McCraw,37748_1993.txt_ceo_lastname_63,-5.049312591552734,2,-10.098625183105469,ceo_lastname
+patch_bottom,McCraw,37748_1993.txt_ceo_lastname_63,-3.855915069580078,2,-7.711830139160156,ceo_lastname
+patch_same_layer,McCraw,37748_1993.txt_ceo_lastname_63,-4.234527587890625,2,-8.46905517578125,ceo_lastname
+clean,Bogle,801124_1993.txt_ceo_lastname_134,-0.0008959175902418792,2,-0.0017918351804837584,ceo_lastname
+qr_ablate,Bogle,801124_1993.txt_ceo_lastname_134,-2.386334180831909,2,-4.772668361663818,ceo_lastname
+patch_qr,Bogle,801124_1993.txt_ceo_lastname_134,-0.7933132648468018,2,-1.5866265296936035,ceo_lastname
+patch_random,Bogle,801124_1993.txt_ceo_lastname_134,-2.7191412448883057,2,-5.438282489776611,ceo_lastname
+patch_bottom,Bogle,801124_1993.txt_ceo_lastname_134,-2.3748676776885986,2,-4.749735355377197,ceo_lastname
+patch_same_layer,Bogle,801124_1993.txt_ceo_lastname_134,-2.187748670578003,2,-4.375497341156006,ceo_lastname
+clean,Peterson,859257_1993.txt_ceo_lastname_146,-0.012589940801262856,2,-0.02517988160252571,ceo_lastname
+qr_ablate,Peterson,859257_1993.txt_ceo_lastname_146,-4.548727035522461,2,-9.097454071044922,ceo_lastname
+patch_qr,Peterson,859257_1993.txt_ceo_lastname_146,-2.3104209899902344,2,-4.620841979980469,ceo_lastname
+patch_random,Peterson,859257_1993.txt_ceo_lastname_146,-5.099428176879883,2,-10.198856353759766,ceo_lastname
+patch_bottom,Peterson,859257_1993.txt_ceo_lastname_146,-4.536107063293457,2,-9.072214126586914,ceo_lastname
+patch_same_layer,Peterson,859257_1993.txt_ceo_lastname_146,-4.461691379547119,2,-8.923382759094238,ceo_lastname
+clean,86168,66740_1993.txt_employees_count_total_197,-5.400080680847168,2,-10.800161361694336,employees_count_total
+qr_ablate,86168,66740_1993.txt_employees_count_total_197,-7.803508281707764,2,-15.607016563415527,employees_count_total
+patch_qr,86168,66740_1993.txt_employees_count_total_197,-3.6875641345977783,2,-7.375128269195557,employees_count_total
+patch_random,86168,66740_1993.txt_employees_count_total_197,-7.73269510269165,2,-15.4653902053833,employees_count_total
+patch_bottom,86168,66740_1993.txt_employees_count_total_197,-7.805521488189697,2,-15.611042976379395,employees_count_total
+patch_same_layer,86168,66740_1993.txt_employees_count_total_197,-8.851317405700684,2,-17.702634811401367,employees_count_total
+clean,60400,10456_1993.txt_employees_count_total_98,-5.765077114105225,2,-11.53015422821045,employees_count_total
+qr_ablate,60400,10456_1993.txt_employees_count_total_98,-6.48478364944458,2,-12.96956729888916,employees_count_total
+patch_qr,60400,10456_1993.txt_employees_count_total_98,-4.288246154785156,2,-8.576492309570312,employees_count_total
+patch_random,60400,10456_1993.txt_employees_count_total_98,-6.468147277832031,2,-12.936294555664062,employees_count_total
+patch_bottom,60400,10456_1993.txt_employees_count_total_98,-6.463885307312012,2,-12.927770614624023,employees_count_total
+patch_same_layer,60400,10456_1993.txt_employees_count_total_98,-6.3936991691589355,2,-12.787398338317871,employees_count_total
+clean,4151,745287_1993.txt_employees_count_total_38,-4.040112018585205,2,-8.08022403717041,employees_count_total
+qr_ablate,4151,745287_1993.txt_employees_count_total_38,-4.414342880249023,2,-8.828685760498047,employees_count_total
+patch_qr,4151,745287_1993.txt_employees_count_total_38,-4.462179660797119,2,-8.924359321594238,employees_count_total
+patch_random,4151,745287_1993.txt_employees_count_total_38,-4.509203910827637,2,-9.018407821655273,employees_count_total
+patch_bottom,4151,745287_1993.txt_employees_count_total_38,-4.377755641937256,2,-8.755511283874512,employees_count_total
+patch_same_layer,4151,745287_1993.txt_employees_count_total_38,-4.396761417388916,2,-8.793522834777832,employees_count_total
+clean,11500,36326_1993.txt_employees_count_total_141,-4.863256454467773,2,-9.726512908935547,employees_count_total
+qr_ablate,11500,36326_1993.txt_employees_count_total_141,-4.750899791717529,2,-9.501799583435059,employees_count_total
+patch_qr,11500,36326_1993.txt_employees_count_total_141,-3.755959987640381,2,-7.511919975280762,employees_count_total
+patch_random,11500,36326_1993.txt_employees_count_total_141,-4.729386329650879,2,-9.458772659301758,employees_count_total
+patch_bottom,11500,36326_1993.txt_employees_count_total_141,-4.71842098236084,2,-9.43684196472168,employees_count_total
+patch_same_layer,11500,36326_1993.txt_employees_count_total_141,-5.086358070373535,2,-10.17271614074707,employees_count_total
+clean,76200,732714_1993.txt_employees_count_total_169,-5.419198513031006,2,-10.838397026062012,employees_count_total
+qr_ablate,76200,732714_1993.txt_employees_count_total_169,-5.410017013549805,2,-10.82003402709961,employees_count_total
+patch_qr,76200,732714_1993.txt_employees_count_total_169,-4.558679580688477,2,-9.117359161376953,employees_count_total
+patch_random,76200,732714_1993.txt_employees_count_total_169,-5.734745502471924,2,-11.469491004943848,employees_count_total
+patch_bottom,76200,732714_1993.txt_employees_count_total_169,-5.410464286804199,2,-10.820928573608398,employees_count_total
+patch_same_layer,76200,732714_1993.txt_employees_count_total_169,-5.317416191101074,2,-10.634832382202148,employees_count_total
+clean,1741,71180_1993.txt_employees_count_total_214,-2.521683692932129,2,-5.043367385864258,employees_count_total
+qr_ablate,1741,71180_1993.txt_employees_count_total_214,-4.761582851409912,2,-9.523165702819824,employees_count_total
+patch_qr,1741,71180_1993.txt_employees_count_total_214,-4.644045352935791,2,-9.288090705871582,employees_count_total
+patch_random,1741,71180_1993.txt_employees_count_total_214,-4.777966499328613,2,-9.555932998657227,employees_count_total
+patch_bottom,1741,71180_1993.txt_employees_count_total_214,-4.688716411590576,2,-9.377432823181152,employees_count_total
+patch_same_layer,1741,71180_1993.txt_employees_count_total_214,-4.597381591796875,2,-9.19476318359375,employees_count_total
+clean,5300,34501_1993.txt_employees_count_total_219,-3.7876551151275635,2,-7.575310230255127,employees_count_total
+qr_ablate,5300,34501_1993.txt_employees_count_total_219,-4.152063369750977,2,-8.304126739501953,employees_count_total
+patch_qr,5300,34501_1993.txt_employees_count_total_219,-3.973619222640991,2,-7.947238445281982,employees_count_total
+patch_random,5300,34501_1993.txt_employees_count_total_219,-4.202978134155273,2,-8.405956268310547,employees_count_total
+patch_bottom,5300,34501_1993.txt_employees_count_total_219,-4.095133304595947,2,-8.190266609191895,employees_count_total
+patch_same_layer,5300,34501_1993.txt_employees_count_total_219,-4.03527307510376,2,-8.07054615020752,employees_count_total
+clean,4200,277821_1993.txt_employees_count_total_156,-3.3897738456726074,2,-6.779547691345215,employees_count_total
+qr_ablate,4200,277821_1993.txt_employees_count_total_156,-4.5562520027160645,2,-9.112504005432129,employees_count_total
+patch_qr,4200,277821_1993.txt_employees_count_total_156,-3.8224523067474365,2,-7.644904613494873,employees_count_total
+patch_random,4200,277821_1993.txt_employees_count_total_156,-4.572208881378174,2,-9.144417762756348,employees_count_total
+patch_bottom,4200,277821_1993.txt_employees_count_total_156,-4.517550945281982,2,-9.035101890563965,employees_count_total
+patch_same_layer,4200,277821_1993.txt_employees_count_total_156,-4.242656230926514,2,-8.485312461853027,employees_count_total
+clean,2260,55387_1993.txt_employees_count_total_10,-2.547231674194336,2,-5.094463348388672,employees_count_total
+qr_ablate,2260,55387_1993.txt_employees_count_total_10,-4.844907283782959,2,-9.689814567565918,employees_count_total
+patch_qr,2260,55387_1993.txt_employees_count_total_10,-3.561817169189453,2,-7.123634338378906,employees_count_total
+patch_random,2260,55387_1993.txt_employees_count_total_10,-4.46329402923584,2,-8.92658805847168,employees_count_total
+patch_bottom,2260,55387_1993.txt_employees_count_total_10,-4.838641166687012,2,-9.677282333374023,employees_count_total
+patch_same_layer,2260,55387_1993.txt_employees_count_total_10,-5.291377067565918,2,-10.582754135131836,employees_count_total
+clean,0,821480_1993.txt_employees_count_total_238,-1.3110733032226562,1,-1.3110733032226562,employees_count_total
+qr_ablate,0,821480_1993.txt_employees_count_total_238,-2.393688440322876,1,-2.393688440322876,employees_count_total
+patch_qr,0,821480_1993.txt_employees_count_total_238,-2.4570538997650146,1,-2.4570538997650146,employees_count_total
+patch_random,0,821480_1993.txt_employees_count_total_238,-2.3475122451782227,1,-2.3475122451782227,employees_count_total
+patch_bottom,0,821480_1993.txt_employees_count_total_238,-2.398151159286499,1,-2.398151159286499,employees_count_total
+patch_same_layer,0,821480_1993.txt_employees_count_total_238,-2.3888487815856934,1,-2.3888487815856934,employees_count_total
+clean,257,18497_1993.txt_employees_count_total_34,-0.004566716495901346,1,-0.004566716495901346,employees_count_total
+qr_ablate,257,18497_1993.txt_employees_count_total_34,-8.574373245239258,1,-8.574373245239258,employees_count_total
+patch_qr,257,18497_1993.txt_employees_count_total_34,-5.0231218338012695,1,-5.0231218338012695,employees_count_total
+patch_random,257,18497_1993.txt_employees_count_total_34,-9.316638946533203,1,-9.316638946533203,employees_count_total
+patch_bottom,257,18497_1993.txt_employees_count_total_34,-8.473278045654297,1,-8.473278045654297,employees_count_total
+patch_same_layer,257,18497_1993.txt_employees_count_total_34,-8.171385765075684,1,-8.171385765075684,employees_count_total
+clean,35000,104669_1993.txt_employees_count_total_83,-5.410964012145996,2,-10.821928024291992,employees_count_total
+qr_ablate,35000,104669_1993.txt_employees_count_total_83,-4.801063060760498,2,-9.602126121520996,employees_count_total
+patch_qr,35000,104669_1993.txt_employees_count_total_83,-3.8262102603912354,2,-7.652420520782471,employees_count_total
+patch_random,35000,104669_1993.txt_employees_count_total_83,-4.858171463012695,2,-9.71634292602539,employees_count_total
+patch_bottom,35000,104669_1993.txt_employees_count_total_83,-4.784383773803711,2,-9.568767547607422,employees_count_total
+patch_same_layer,35000,104669_1993.txt_employees_count_total_83,-4.657660484313965,2,-9.31532096862793,employees_count_total
+clean,4426,277509_1993.txt_employees_count_total_227,-3.3918206691741943,2,-6.783641338348389,employees_count_total
+qr_ablate,4426,277509_1993.txt_employees_count_total_227,-4.3924384117126465,2,-8.784876823425293,employees_count_total
+patch_qr,4426,277509_1993.txt_employees_count_total_227,-4.356602668762207,2,-8.713205337524414,employees_count_total
+patch_random,4426,277509_1993.txt_employees_count_total_227,-4.5897417068481445,2,-9.179483413696289,employees_count_total
+patch_bottom,4426,277509_1993.txt_employees_count_total_227,-4.335910320281982,2,-8.671820640563965,employees_count_total
+patch_same_layer,4426,277509_1993.txt_employees_count_total_227,-4.2983551025390625,2,-8.596710205078125,employees_count_total
+clean,51250,18230_1993.txt_employees_count_total_244,-6.69541597366333,2,-13.39083194732666,employees_count_total
+qr_ablate,51250,18230_1993.txt_employees_count_total_244,-4.7747697830200195,2,-9.549539566040039,employees_count_total
+patch_qr,51250,18230_1993.txt_employees_count_total_244,-4.040102481842041,2,-8.080204963684082,employees_count_total
+patch_random,51250,18230_1993.txt_employees_count_total_244,-4.82182502746582,2,-9.64365005493164,employees_count_total
+patch_bottom,51250,18230_1993.txt_employees_count_total_244,-4.732172012329102,2,-9.464344024658203,employees_count_total
+patch_same_layer,51250,18230_1993.txt_employees_count_total_244,-6.623877048492432,2,-13.247754096984863,employees_count_total
+clean,35000,716006_1993.txt_employees_count_total_118,-5.647589206695557,2,-11.295178413391113,employees_count_total
+qr_ablate,35000,716006_1993.txt_employees_count_total_118,-4.552150249481201,2,-9.104300498962402,employees_count_total
+patch_qr,35000,716006_1993.txt_employees_count_total_118,-3.69935941696167,2,-7.39871883392334,employees_count_total
+patch_random,35000,716006_1993.txt_employees_count_total_118,-4.599806785583496,2,-9.199613571166992,employees_count_total
+patch_bottom,35000,716006_1993.txt_employees_count_total_118,-4.549448013305664,2,-9.098896026611328,employees_count_total
+patch_same_layer,35000,716006_1993.txt_employees_count_total_118,-4.830429553985596,2,-9.660859107971191,employees_count_total
+clean,3712,103392_1993.txt_employees_count_total_176,-4.414548397064209,2,-8.829096794128418,employees_count_total
+qr_ablate,3712,103392_1993.txt_employees_count_total_176,-4.639427661895752,2,-9.278855323791504,employees_count_total
+patch_qr,3712,103392_1993.txt_employees_count_total_176,-4.585526943206787,2,-9.171053886413574,employees_count_total
+patch_random,3712,103392_1993.txt_employees_count_total_176,-4.716383934020996,2,-9.432767868041992,employees_count_total
+patch_bottom,3712,103392_1993.txt_employees_count_total_176,-4.607235431671143,2,-9.214470863342285,employees_count_total
+patch_same_layer,3712,103392_1993.txt_employees_count_total_176,-4.602418899536133,2,-9.204837799072266,employees_count_total
+clean,Nebraska,74783_1993.txt_headquarters_state_203,-0.015965832397341728,2,-0.031931664794683456,headquarters_state
+qr_ablate,Nebraska,74783_1993.txt_headquarters_state_203,-1.2839281558990479,2,-2.5678563117980957,headquarters_state
+patch_qr,Nebraska,74783_1993.txt_headquarters_state_203,-0.7987046241760254,2,-1.5974092483520508,headquarters_state
+patch_random,Nebraska,74783_1993.txt_headquarters_state_203,-1.4527755975723267,2,-2.9055511951446533,headquarters_state
+patch_bottom,Nebraska,74783_1993.txt_headquarters_state_203,-1.2785663604736328,2,-2.5571327209472656,headquarters_state
+patch_same_layer,Nebraska,74783_1993.txt_headquarters_state_203,-1.2665629386901855,2,-2.533125877380371,headquarters_state
+clean,California,201461_1993.txt_headquarters_state_74,-0.012107215821743011,1,-0.012107215821743011,headquarters_state
+qr_ablate,California,201461_1993.txt_headquarters_state_74,-1.887980580329895,1,-1.887980580329895,headquarters_state
+patch_qr,California,201461_1993.txt_headquarters_state_74,-0.834483802318573,1,-0.834483802318573,headquarters_state
+patch_random,California,201461_1993.txt_headquarters_state_74,-1.8614555597305298,1,-1.8614555597305298,headquarters_state
+patch_bottom,California,201461_1993.txt_headquarters_state_74,-1.9405632019042969,1,-1.9405632019042969,headquarters_state
+patch_same_layer,California,201461_1993.txt_headquarters_state_74,-1.602027416229248,1,-1.602027416229248,headquarters_state
+clean,Tennessee,764764_1993.txt_headquarters_state_43,-0.009232440032064915,2,-0.01846488006412983,headquarters_state
+qr_ablate,Tennessee,764764_1993.txt_headquarters_state_43,-3.174882173538208,2,-6.349764347076416,headquarters_state
+patch_qr,Tennessee,764764_1993.txt_headquarters_state_43,-2.533764600753784,2,-5.067529201507568,headquarters_state
+patch_random,Tennessee,764764_1993.txt_headquarters_state_43,-3.34171199798584,2,-6.68342399597168,headquarters_state
+patch_bottom,Tennessee,764764_1993.txt_headquarters_state_43,-3.1337037086486816,2,-6.267407417297363,headquarters_state
+patch_same_layer,Tennessee,764764_1993.txt_headquarters_state_43,-2.9938416481018066,2,-5.987683296203613,headquarters_state
+clean,Pennsylvania,103730_1993.txt_headquarters_state_2,-0.02915802225470543,2,-0.05831604450941086,headquarters_state
+qr_ablate,Pennsylvania,103730_1993.txt_headquarters_state_2,-1.3459978103637695,2,-2.691995620727539,headquarters_state
+patch_qr,Pennsylvania,103730_1993.txt_headquarters_state_2,-1.020047664642334,2,-2.040095329284668,headquarters_state
+patch_random,Pennsylvania,103730_1993.txt_headquarters_state_2,-1.4850889444351196,2,-2.9701778888702393,headquarters_state
+patch_bottom,Pennsylvania,103730_1993.txt_headquarters_state_2,-1.2598533630371094,2,-2.5197067260742188,headquarters_state
+patch_same_layer,Pennsylvania,103730_1993.txt_headquarters_state_2,-1.2369956970214844,2,-2.4739913940429688,headquarters_state
+clean,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.002569901989772916,9,-0.023129116743803024,registrant_name
+qr_ablate,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.43942946195602417,9,-3.9548652172088623,registrant_name
+patch_qr,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.06703715026378632,9,-0.603334367275238,registrant_name
+patch_random,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.4947068393230438,9,-4.452361583709717,registrant_name
+patch_bottom,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.4429355561733246,9,-3.986419916152954,registrant_name
+patch_same_layer,"JILCO INDUSTRIES, INC.",53540_1993.txt_registrant_name_21,-0.37886038422584534,9,-3.409743309020996,registrant_name
+clean,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.000819179811514914,5,-0.004095898941159248,registrant_name
+qr_ablate,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.15595410764217377,5,-0.77977055311203,registrant_name
+patch_qr,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.08536120504140854,5,-0.4268060028553009,registrant_name
+patch_random,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.16375461220741272,5,-0.8187730312347412,registrant_name
+patch_bottom,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.13973331451416016,5,-0.6986665725708008,registrant_name
+patch_same_layer,Minnesota Mining and Manufacturing Company,66740_1993.txt_registrant_name_192,-0.13750207424163818,5,-0.6875103712081909,registrant_name
+clean,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.0848076194524765,3,-0.2544228434562683,registrant_name
+qr_ablate,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.8225180506706238,3,-2.4675540924072266,registrant_name
+patch_qr,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.40872687101364136,3,-1.2261805534362793,registrant_name
+patch_random,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.8674861192703247,3,-2.6024582386016846,registrant_name
+patch_bottom,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.8032640218734741,3,-2.409791946411133,registrant_name
+patch_same_layer,SCANA Corporation,754737_1993.txt_registrant_name_199,-0.8114113807678223,3,-2.434234142303467,registrant_name
+clean,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.2079755812883377,9,-1.871780276298523,registrant_name
+qr_ablate,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.2832167446613312,9,-2.548950672149658,registrant_name
+patch_qr,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.0741298720240593,9,-0.6671688556671143,registrant_name
+patch_random,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.30609795451164246,9,-2.7548816204071045,registrant_name
+patch_bottom,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.27886417508125305,9,-2.509777545928955,registrant_name
+patch_same_layer,Sears Credit Account Trust 1991 C,876858_1993.txt_registrant_name_64,-0.2407551109790802,9,-2.1667959690093994,registrant_name
+clean,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.03399015963077545,6,-0.20394094288349152,registrant_name
+qr_ablate,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.5160369873046875,6,-3.096221923828125,registrant_name
+patch_qr,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.2825610637664795,6,-1.695366382598877,registrant_name
+patch_random,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.5332015156745911,6,-3.199208974838257,registrant_name
+patch_bottom,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.5334842205047607,6,-3.2009050846099854,registrant_name
+patch_same_layer,"CBI Industries, Inc.",310431_1993.txt_registrant_name_65,-0.5099130868911743,6,-3.059478282928467,registrant_name
+clean,City National Corporation,201461_1993.txt_registrant_name_72,-4.903352964902297e-05,3,-0.00014710058167111129,registrant_name
+qr_ablate,City National Corporation,201461_1993.txt_registrant_name_72,-0.567111611366272,3,-1.701334834098816,registrant_name
+patch_qr,City National Corporation,201461_1993.txt_registrant_name_72,-0.017124580219388008,3,-0.051373738795518875,registrant_name
+patch_random,City National Corporation,201461_1993.txt_registrant_name_72,-0.5936151146888733,3,-1.780845284461975,registrant_name
+patch_bottom,City National Corporation,201461_1993.txt_registrant_name_72,-0.5738328099250793,3,-1.7214983701705933,registrant_name
+patch_same_layer,City National Corporation,201461_1993.txt_registrant_name_72,-0.61586993932724,3,-1.8476097583770752,registrant_name

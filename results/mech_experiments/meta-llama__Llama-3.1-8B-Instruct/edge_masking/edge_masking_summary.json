@@ -1,0 +1,294 @@
+{
+  "mean_logprob": [
+    {
+      "task": "ceo_lastname",
+      "condition": "clean",
+      "n": 12,
+      "mean_mean_logprob": -0.016277167730853154
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_bottom_gold",
+      "n": 12,
+      "mean_mean_logprob": -0.016380500215745997
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_distractor",
+      "n": 12,
+      "mean_mean_logprob": -0.016413390205343603
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_gold",
+      "n": 12,
+      "mean_mean_logprob": -0.047886209313825624
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_nonqr_gold",
+      "n": 12,
+      "mean_mean_logprob": -0.016251885737801786
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_random",
+      "n": 12,
+      "mean_mean_logprob": -0.016357815927525127
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "full_qr_ablation",
+      "n": 12,
+      "mean_mean_logprob": -4.215244899193446
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "clean",
+      "n": 12,
+      "mean_mean_logprob": -3.7050560950689637
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_bottom_gold",
+      "n": 12,
+      "mean_mean_logprob": -3.705059696532165
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_distractor",
+      "n": 11,
+      "mean_mean_logprob": -3.9223123496313663
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_gold",
+      "n": 12,
+      "mean_mean_logprob": -3.8991844676202163
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_nonqr_gold",
+      "n": 12,
+      "mean_mean_logprob": -3.70673605268045
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_random",
+      "n": 12,
+      "mean_mean_logprob": -3.7043782631711415
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "full_qr_ablation",
+      "n": 12,
+      "mean_mean_logprob": -5.245623489220937
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "clean",
+      "n": 4,
+      "mean_mean_logprob": -0.01661587762646377
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_bottom_gold",
+      "n": 4,
+      "mean_mean_logprob": -0.016500238562002778
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_distractor",
+      "n": 4,
+      "mean_mean_logprob": -0.01673577050678432
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_gold",
+      "n": 4,
+      "mean_mean_logprob": -0.021366318920627236
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_nonqr_gold",
+      "n": 4,
+      "mean_mean_logprob": -0.016102700727060437
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_random",
+      "n": 4,
+      "mean_mean_logprob": -0.0165969452355057
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "full_qr_ablation",
+      "n": 4,
+      "mean_mean_logprob": -1.92319718003273
+    },
+    {
+      "task": "registrant_name",
+      "condition": "clean",
+      "n": 6,
+      "mean_mean_logprob": -0.055035245950421086
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_bottom_gold",
+      "n": 6,
+      "mean_mean_logprob": -0.054866745796365045
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_distractor",
+      "n": 5,
+      "mean_mean_logprob": -0.02458593170158565
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_gold",
+      "n": 6,
+      "mean_mean_logprob": -0.06380210741554038
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_nonqr_gold",
+      "n": 6,
+      "mean_mean_logprob": -0.055130428961395715
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_random",
+      "n": 6,
+      "mean_mean_logprob": -0.05505460703170684
+    },
+    {
+      "task": "registrant_name",
+      "condition": "full_qr_ablation",
+      "n": 6,
+      "mean_mean_logprob": -0.4640444939335187
+    }
+  ],
+  "fraction_damage": [
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_bottom_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 1.4982594187341258e-05
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_distractor",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 2.2352165226204228e-05
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 0.00442470757175741
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_nonqr_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": -9.26496127783188e-06
+    },
+    {
+      "task": "ceo_lastname",
+      "condition": "edge_random",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 1.7925204516631263e-05
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_bottom_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 0.02449754633685146
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_distractor",
+      "n": 11,
+      "mean_fraction_of_full_ablation_damage": 0.1048408538227735
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 1.101345496658878
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_nonqr_gold",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 0.31449325508951925
+    },
+    {
+      "task": "employees_count_total",
+      "condition": "edge_random",
+      "n": 12,
+      "mean_fraction_of_full_ablation_damage": 0.08506862314133629
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_bottom_gold",
+      "n": 4,
+      "mean_fraction_of_full_ablation_damage": -8.848594472573693e-05
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_distractor",
+      "n": 4,
+      "mean_fraction_of_full_ablation_damage": 9.547736574365386e-05
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_gold",
+      "n": 4,
+      "mean_fraction_of_full_ablation_damage": 0.0031426142720971007
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_nonqr_gold",
+      "n": 4,
+      "mean_fraction_of_full_ablation_damage": -0.0002720609977008526
+    },
+    {
+      "task": "headquarters_state",
+      "condition": "edge_random",
+      "n": 4,
+      "mean_fraction_of_full_ablation_damage": 3.3483363745279508e-06
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_bottom_gold",
+      "n": 6,
+      "mean_fraction_of_full_ablation_damage": -0.0001761737562439906
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_distractor",
+      "n": 5,
+      "mean_fraction_of_full_ablation_damage": 0.0002578948048283493
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_gold",
+      "n": 6,
+      "mean_fraction_of_full_ablation_damage": 0.10302510366455053
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_nonqr_gold",
+      "n": 6,
+      "mean_fraction_of_full_ablation_damage": -1.5571433395657846e-05
+    },
+    {
+      "task": "registrant_name",
+      "condition": "edge_random",
+      "n": 6,
+      "mean_fraction_of_full_ablation_damage": 1.4424391602304792e-05
+    }
+  ]
+}
