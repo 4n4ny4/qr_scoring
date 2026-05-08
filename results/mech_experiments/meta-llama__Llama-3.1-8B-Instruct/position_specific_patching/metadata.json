@@ -1,0 +1,51 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname",
+    "registrant_name",
+    "headquarters_state"
+  ],
+  "k": 16,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/QRScore-SEC_results.json",
+  "num_selected_examples": 42,
+  "filtered_to_clean_correct_ablated_wrong": true,
+  "num_random_position_controls": 5,
+  "position_policy": {
+    "answer": "gold-answer prediction positions",
+    "query": "last N question-token positions, where N is answer-token count",
+    "early_prompt": "first N non-special prompt-token positions",
+    "random_prompt": "N random non-special prompt-token positions excluding answer-prediction prompt token"
+  },
+  "qr_heads": [
+    "14-31",
+    "13-18",
+    "8-11",
+    "8-8",
+    "14-29",
+    "14-13",
+    "10-31",
+    "14-22",
+    "13-13",
+    "9-27",
+    "13-6",
+    "14-20",
+    "13-8",
+    "10-18",
+    "17-24",
+    "17-29"
+  ],
+  "num_layers": 32,
+  "num_heads": 32
+}

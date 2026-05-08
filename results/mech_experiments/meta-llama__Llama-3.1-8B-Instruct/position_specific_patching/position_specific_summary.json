@@ -1,0 +1,258 @@
+[
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_answer",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.6371779425637383,
+    "median_sum_logprob_rescue": 0.6945268477534484,
+    "positive_fraction": 1.0
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_early_prompt",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.0006661880576364881,
+    "median_sum_logprob_rescue": 0.00032093738261167664,
+    "positive_fraction": 0.5625
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_query",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.7104417971112464,
+    "median_sum_logprob_rescue": 0.7832138557172243,
+    "positive_fraction": 1.0
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_random_prompt_00",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.00019524942282061873,
+    "median_sum_logprob_rescue": 2.1592961902514992e-05,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_random_prompt_01",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.0006055757633290197,
+    "median_sum_logprob_rescue": 7.884656877456747e-06,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_random_prompt_02",
+    "n": 16,
+    "mean_sum_logprob_rescue": -0.0013469681070730525,
+    "median_sum_logprob_rescue": -0.00025338736925394317,
+    "positive_fraction": 0.4375
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_random_prompt_03",
+    "n": 16,
+    "mean_sum_logprob_rescue": -2.0817370164810507e-05,
+    "median_sum_logprob_rescue": -0.00035746547966314634,
+    "positive_fraction": 0.4375
+  },
+  {
+    "task": "ceo_lastname",
+    "condition": "patch_random_prompt_04",
+    "n": 16,
+    "mean_sum_logprob_rescue": -0.0002829062767358061,
+    "median_sum_logprob_rescue": -0.0004947535883878871,
+    "positive_fraction": 0.375
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_answer",
+    "n": 16,
+    "mean_sum_logprob_rescue": -6.083749685704814,
+    "median_sum_logprob_rescue": 0.0441440396053976,
+    "positive_fraction": 0.5625
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_early_prompt",
+    "n": 16,
+    "mean_sum_logprob_rescue": -0.026507306608070123,
+    "median_sum_logprob_rescue": -0.003364724127864143,
+    "positive_fraction": 0.375
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_query",
+    "n": 16,
+    "mean_sum_logprob_rescue": -8.555329779461593,
+    "median_sum_logprob_rescue": 0.6384468134889842,
+    "positive_fraction": 0.6875
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_random_prompt_00",
+    "n": 16,
+    "mean_sum_logprob_rescue": -0.004900408239150117,
+    "median_sum_logprob_rescue": -0.001259760615172201,
+    "positive_fraction": 0.3125
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_random_prompt_01",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.007410720328196713,
+    "median_sum_logprob_rescue": 0.0018810781580294689,
+    "positive_fraction": 0.5625
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_random_prompt_02",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.005846311402192168,
+    "median_sum_logprob_rescue": 0.00014815768891672244,
+    "positive_fraction": 0.5625
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_random_prompt_03",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.01619598860383751,
+    "median_sum_logprob_rescue": 0.0009380696922656578,
+    "positive_fraction": 0.5625
+  },
+  {
+    "task": "employees_count_total",
+    "condition": "patch_random_prompt_04",
+    "n": 16,
+    "mean_sum_logprob_rescue": 0.02212416689641228,
+    "median_sum_logprob_rescue": -0.0014813402249183247,
+    "positive_fraction": 0.4375
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_answer",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.3485827183087355,
+    "median_sum_logprob_rescue": 0.31510214906404893,
+    "positive_fraction": 1.0
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_early_prompt",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.0025199649888237017,
+    "median_sum_logprob_rescue": 0.002513809377888504,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_query",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.8669023795821467,
+    "median_sum_logprob_rescue": 0.877215169323291,
+    "positive_fraction": 1.0
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_random_prompt_00",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.0015419763013376996,
+    "median_sum_logprob_rescue": 0.00024108008675600902,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_random_prompt_01",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.0020608062639653974,
+    "median_sum_logprob_rescue": 0.0009560955839823654,
+    "positive_fraction": 0.75
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_random_prompt_02",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.0014719041829964646,
+    "median_sum_logprob_rescue": 0.0003062248280381129,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_random_prompt_03",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.0032584103117987238,
+    "median_sum_logprob_rescue": 0.0033028234365940546,
+    "positive_fraction": 0.75
+  },
+  {
+    "task": "headquarters_state",
+    "condition": "patch_random_prompt_04",
+    "n": 4,
+    "mean_sum_logprob_rescue": 0.00044790003295127733,
+    "median_sum_logprob_rescue": -0.00042741078392903115,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_answer",
+    "n": 6,
+    "mean_sum_logprob_rescue": 1.0169175397015637,
+    "median_sum_logprob_rescue": 0.7066715089026554,
+    "positive_fraction": 1.0
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_early_prompt",
+    "n": 6,
+    "mean_sum_logprob_rescue": -0.011595688958777444,
+    "median_sum_logprob_rescue": -0.0010723823502350514,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_query",
+    "n": 6,
+    "mean_sum_logprob_rescue": 0.3000411995578221,
+    "median_sum_logprob_rescue": 0.5407717125948444,
+    "positive_fraction": 0.8333333333333334
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_random_prompt_00",
+    "n": 6,
+    "mean_sum_logprob_rescue": -0.0006118841049363271,
+    "median_sum_logprob_rescue": -0.0008728707016483785,
+    "positive_fraction": 0.5
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_random_prompt_01",
+    "n": 6,
+    "mean_sum_logprob_rescue": 0.005228548700007929,
+    "median_sum_logprob_rescue": 0.004850347017084963,
+    "positive_fraction": 0.8333333333333334
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_random_prompt_02",
+    "n": 6,
+    "mean_sum_logprob_rescue": -0.03585441403396326,
+    "median_sum_logprob_rescue": 0.0015228488572567602,
+    "positive_fraction": 0.6666666666666666
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_random_prompt_03",
+    "n": 6,
+    "mean_sum_logprob_rescue": -0.004133392533409413,
+    "median_sum_logprob_rescue": -0.0013352945996116116,
+    "positive_fraction": 0.16666666666666666
+  },
+  {
+    "task": "registrant_name",
+    "condition": "patch_random_prompt_04",
+    "n": 6,
+    "mean_sum_logprob_rescue": 0.008053540693392333,
+    "median_sum_logprob_rescue": 0.0031194998953095387,
+    "positive_fraction": 1.0
+  }
+]
