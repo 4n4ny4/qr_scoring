@@ -1,0 +1,35 @@
+{
+  "model": "allenai/OLMo-2-1124-7B-Instruct",
+  "model_name": "allenai/OLMo-2-1124-7B-Instruct",
+  "model_slug": "allenai__OLMo-2-1124-7B-Instruct",
+  "model_family": "olmo2",
+  "ranking_dir": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-2-1124-7B-Instruct",
+  "num_instances": 192,
+  "knockout_sizes": [
+    0,
+    8,
+    16,
+    32,
+    48,
+    64,
+    96,
+    128
+  ],
+  "methods": {
+    "QRScore-SEC": {
+      "accuracy_curve": {
+        "0": 0.640625,
+        "8": 0.4635416666666667,
+        "16": 0.3697916666666667,
+        "32": 0.2604166666666667,
+        "48": 0.21875,
+        "64": 0.17708333333333334,
+        "96": 0.13541666666666666,
+        "128": 0.109375
+      },
+      "baseline_accuracy": 0.640625,
+      "accuracy_at_k16": 0.3697916666666667,
+      "drop_at_k16": 0.2708333333333333
+    }
+  }
+}

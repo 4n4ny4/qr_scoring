@@ -1,0 +1,14 @@
+{
+  "source_file": "/home/ubuntu/qr_scoring/data/long_context_detection_optionA/incorporation_year_detection.json",
+  "output_file": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-2-1124-7B-Instruct_smoke/long_context_incorporation_year_heads.json",
+  "export_prefix": "long_context_incorporation_year",
+  "top_k_values": [
+    8
+  ],
+  "model_name": "allenai/OLMo-2-1124-7B-Instruct",
+  "model_slug": "allenai__OLMo-2-1124-7B-Instruct_smoke",
+  "model_family": "olmo2",
+  "exports": {
+    "8": "/home/ubuntu/qr_scoring/results/detection/allenai__OLMo-2-1124-7B-Instruct_smoke/topk/long_context_incorporation_year_top8.json"
+  }
+}
