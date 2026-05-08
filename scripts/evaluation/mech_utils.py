@@ -398,6 +398,79 @@ def score_gold_answer(model, encoded: EncodedExample) -> Tuple[float, float, Lis
     return answer_logprobs(outputs.logits, encoded)
 
 
+def with_answer(inst: dict, answer: str) -> dict:
+    row = dict(inst)
+    row["needle_value"] = str(answer)
+    return row
+
+
+def score_answer_text(
+    model,
+    tokenizer,
+    inst: dict,
+    answer: str,
+    *,
+    max_context_tokens: int,
+    answer_prefix: str = "",
+) -> Tuple[EncodedExample, float, float, List[float]]:
+    encoded = encode_prompt_and_answer(
+        tokenizer,
+        with_answer(inst, answer),
+        max_context_tokens=max_context_tokens,
+        answer_prefix=answer_prefix,
+    )
+    sum_lp, mean_lp, token_lps = score_gold_answer(model, encoded)
+    return encoded, sum_lp, mean_lp, token_lps
+
+
+def score_contrastive_margin(
+    model,
+    tokenizer,
+    inst: dict,
+    positive_answer: str,
+    negative_answer: str,
+    *,
+    max_context_tokens: int,
+    answer_prefix: str = "",
+) -> dict:
+    pos_encoded, pos_sum, pos_mean, pos_toks = score_answer_text(
+        model,
+        tokenizer,
+        inst,
+        positive_answer,
+        max_context_tokens=max_context_tokens,
+        answer_prefix=answer_prefix,
+    )
+    neg_encoded, neg_sum, neg_mean, neg_toks = score_answer_text(
+        model,
+        tokenizer,
+        inst,
+        negative_answer,
+        max_context_tokens=max_context_tokens,
+        answer_prefix=answer_prefix,
+    )
+    return {
+        "positive_encoded": pos_encoded,
+        "negative_encoded": neg_encoded,
+        "positive_sum_logprob": pos_sum,
+        "negative_sum_logprob": neg_sum,
+        "positive_mean_logprob": pos_mean,
+        "negative_mean_logprob": neg_mean,
+        "positive_token_logprobs": pos_toks,
+        "negative_token_logprobs": neg_toks,
+        "margin": pos_sum - neg_sum,
+    }
+
+
+def answer_token_len(tokenizer, answer: str, answer_prefix: str = "") -> int:
+    ids = tokenizer(
+        f"{answer_prefix}{answer}",
+        add_special_tokens=False,
+        return_tensors="pt",
+    )["input_ids"][0].tolist()
+    return len(ids)
+
+
 def load_task_instances(project_dir: Path, tasks: Sequence[str]) -> List[dict]:
     instances = []
     for task in tasks:
@@ -409,6 +482,16 @@ def load_task_instances(project_dir: Path, tasks: Sequence[str]) -> List[dict]:
             row.setdefault("task", task)
             instances.append(row)
     return instances
+
+
+def read_jsonl(path: Path) -> List[dict]:
+    rows = []
+    with open(path, encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if line:
+                rows.append(json.loads(line))
+    return rows
 
 
 def load_clean_to_ablated_failure_ids(results_path: Path, k: int) -> Optional[set]:
@@ -520,6 +603,100 @@ def normalize_for_filename(value: str) -> str:
     return re.sub(r"[^A-Za-z0-9._-]+", "_", value).strip("_")
 
 
+def re_digits(value: str) -> Optional[str]:
+    stripped = str(value).replace(",", "").strip()
+    return stripped if stripped.isdigit() else None
+
+
+def answer_surfaces(value: str) -> List[str]:
+    value = str(value)
+    surfaces = [value]
+    digits = re_digits(value)
+    if digits and digits == value:
+        try:
+            surfaces.append(f"{int(value):,}")
+        except ValueError:
+            pass
+    seen = set()
+    out = []
+    for surface in surfaces:
+        if surface and surface not in seen:
+            out.append(surface)
+            seen.add(surface)
+    return out
+
+
+def find_answer_surface(inst: dict) -> Optional[str]:
+    sentence = inst.get("needle_sentence") or ""
+    context = inst.get("context") or ""
+    for surface in answer_surfaces(str(inst.get("needle_value", ""))):
+        if surface in sentence or surface in context:
+            return surface
+    return None
+
+
+def surface_for_alt(base_surface: str, alt_value: str) -> Optional[str]:
+    alt_value = str(alt_value)
+    if "," in base_surface:
+        digits = re_digits(alt_value)
+        if digits is None:
+            return None
+        return f"{int(digits):,}"
+    return alt_value
+
+
+def replace_first(value: str, old: str, new: str) -> Tuple[str, bool]:
+    if old not in value:
+        return value, False
+    return value.replace(old, new, 1), True
+
+
+def make_counterfactual_instance(base: dict, alt: dict) -> Optional[dict]:
+    source_value = str(base.get("needle_value", ""))
+    alt_value = str(alt.get("needle_value", ""))
+    if not source_value or not alt_value or source_value == alt_value:
+        return None
+
+    source_surface = find_answer_surface(base)
+    if source_surface is None:
+        return None
+    alt_surface = surface_for_alt(source_surface, alt_value)
+    if alt_surface is None or alt_surface == source_surface:
+        return None
+
+    row = json.loads(json.dumps(base))
+    sentence = row.get("needle_sentence") or ""
+    context = row.get("context") or ""
+    new_sentence, sentence_changed = replace_first(sentence, source_surface, alt_surface)
+    if not sentence_changed:
+        return None
+
+    if sentence in context:
+        new_context, context_changed = replace_first(context, sentence, new_sentence)
+    else:
+        new_context, context_changed = replace_first(context, source_surface, alt_surface)
+    if not context_changed:
+        return None
+
+    row["context"] = new_context
+    row["needle_sentence"] = new_sentence
+    row["needle_value"] = alt_value
+    row["counterfactual_from_idx"] = base.get("idx")
+    row["counterfactual_alt_idx"] = alt.get("idx")
+    row["counterfactual_source_value"] = source_value
+    row["counterfactual_alt_value"] = alt_value
+    row["counterfactual_source_surface"] = source_surface
+    row["counterfactual_alt_surface"] = alt_surface
+
+    for para in row.get("paragraphs", []):
+        text = para.get("paragraph_text") or ""
+        if sentence in text:
+            para["paragraph_text"], _ = replace_first(text, sentence, new_sentence)
+        elif para.get("idx") == "needle_chunk" and source_surface in text:
+            para["paragraph_text"], _ = replace_first(text, source_surface, alt_surface)
+    return row
+
+
 def char_span_to_token_span(
     offsets: Sequence[Tuple[int, int]],
     char_start: int,
@@ -613,6 +790,40 @@ def intervention_positions_for_mode(
         )
         return sorted(dict.fromkeys(positions))
     raise ValueError(f"Unsupported intervention position mode: {mode}")
+
+
+def position_group_positions(
+    encoded: EncodedExample,
+    inst: dict,
+    group: str,
+    *,
+    seed: int = 0,
+    length: Optional[int] = None,
+) -> List[int]:
+    if group in {"answer", "answer_prediction"}:
+        return list(encoded.prediction_positions)
+    if group == "query":
+        return query_positions_for_example(
+            encoded,
+            inst,
+            n_positions=length or len(encoded.prediction_positions),
+        )
+    if group == "gold_value":
+        span = find_gold_span(encoded, inst, mode="value_in_sentence")
+        return [] if span is None else list(range(span[0], span[1]))
+    if group == "gold_sentence":
+        span = find_gold_span(encoded, inst, mode="sentence")
+        return [] if span is None else list(range(span[0], span[1]))
+    if group == "random_prompt":
+        span_len = length or len(encoded.prediction_positions)
+        span = find_random_span(encoded, length=span_len, exclude=None, seed=seed)
+        return [] if span is None else list(range(span[0], span[1]))
+    raise ValueError(f"Unsupported position group: {group}")
+
+
+def parse_head_name(value: str) -> Tuple[int, int]:
+    layer, head = value.split("-")
+    return int(layer), int(head)
 
 
 def find_gold_span(encoded: EncodedExample, inst: dict, *, mode: str) -> Optional[Tuple[int, int]]:
