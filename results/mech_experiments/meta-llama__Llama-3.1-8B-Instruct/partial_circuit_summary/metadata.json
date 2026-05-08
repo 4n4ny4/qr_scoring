@@ -1,0 +1,12 @@
+{
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "damage_threshold": 0.5,
+  "edge_dir": "/home/ubuntu/qr_scoring/results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/query_edge_masking",
+  "head_subset_dir": "/home/ubuntu/qr_scoring/results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/query_head_subset_patching",
+  "counterfactual_dir": "/home/ubuntu/qr_scoring/results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/query_counterfactual_patching",
+  "n_edge_rows_raw": 159,
+  "n_edge_rows_filtered": 129,
+  "n_head_subset_rows_raw": 1792,
+  "n_head_subset_rows_filtered": 1456,
+  "n_counterfactual_rows": 204
+}

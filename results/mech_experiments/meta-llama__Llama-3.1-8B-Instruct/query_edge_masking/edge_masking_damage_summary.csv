@@ -1,0 +1,11 @@
+condition,mean_fraction_of_full_ablation_damage,n,task
+edge_bottom_gold,2.7385450003369996e-05,16,ceo_lastname
+edge_distractor,1.8498739418903074e-05,16,ceo_lastname
+edge_gold,0.003360169355380647,16,ceo_lastname
+edge_nonqr_gold,0.00024167363929412542,16,ceo_lastname
+edge_random,7.298534453553753e-06,16,ceo_lastname
+edge_bottom_gold,0.05505004584314914,16,employees_count_total
+edge_distractor,0.081303862111753,15,employees_count_total
+edge_gold,2.3951544504638553,16,employees_count_total
+edge_nonqr_gold,-0.3482483760620955,16,employees_count_total
+edge_random,0.05016500454620364,16,employees_count_total

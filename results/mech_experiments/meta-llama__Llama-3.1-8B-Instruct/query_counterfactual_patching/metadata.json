@@ -1,0 +1,441 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname",
+    "registrant_name"
+  ],
+  "k": 16,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/QRScore-SEC_results.json",
+  "num_selected_pairs": 34,
+  "filtered_to_clean_correct_ablated_wrong": true,
+  "allow_prompt_len_change": false,
+  "patch_position_mode": "query",
+  "controls": {
+    "patch_qr": [
+      "14-31",
+      "13-18",
+      "8-11",
+      "8-8",
+      "14-29",
+      "14-13",
+      "10-31",
+      "14-22",
+      "13-13",
+      "9-27",
+      "13-6",
+      "14-20",
+      "13-8",
+      "10-18",
+      "17-24",
+      "17-29"
+    ],
+    "patch_random": [
+      "1-21",
+      "8-20",
+      "2-25",
+      "25-3",
+      "13-7",
+      "8-18",
+      "3-14",
+      "27-10",
+      "29-10",
+      "28-15",
+      "1-7",
+      "12-9",
+      "17-19",
+      "18-15",
+      "10-24",
+      "11-1"
+    ],
+    "patch_bottom": [
+      "1-12",
+      "0-27",
+      "0-25",
+      "30-17",
+      "0-26",
+      "0-11",
+      "0-8",
+      "0-18",
+      "0-24",
+      "0-16",
+      "0-10",
+      "1-3",
+      "0-7",
+      "0-14",
+      "0-9",
+      "31-7"
+    ],
+    "patch_same_layer": [
+      "14-0",
+      "13-19",
+      "8-12",
+      "8-9",
+      "14-30",
+      "14-14",
+      "10-0",
+      "14-23",
+      "13-14",
+      "9-28",
+      "13-7",
+      "14-21",
+      "13-9",
+      "10-19",
+      "17-25",
+      "17-30"
+    ]
+  },
+  "pairs": [
+    {
+      "task": "employees_count_total",
+      "source_idx": "104669_1993.txt_employees_count_total_83",
+      "alt_idx": "29989_1993.txt_employees_count_total_56",
+      "source_answer": "35000",
+      "alt_answer": "14400",
+      "answer_tokens": 2,
+      "prompt_len": 7060,
+      "counterfactual_prompt_len": 7060
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "103392_1993.txt_employees_count_total_176",
+      "alt_idx": "71180_1993.txt_employees_count_total_214",
+      "source_answer": "3712",
+      "alt_answer": "1741",
+      "answer_tokens": 2,
+      "prompt_len": 7054,
+      "counterfactual_prompt_len": 7054
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "55387_1993.txt_employees_count_total_10",
+      "alt_idx": "104669_1993.txt_employees_count_total_83",
+      "source_answer": "2260",
+      "alt_answer": "35000",
+      "answer_tokens": 2,
+      "prompt_len": 7084,
+      "counterfactual_prompt_len": 7084
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "745287_1993.txt_employees_count_total_38",
+      "alt_idx": "812427_1993.txt_employees_count_total_248",
+      "source_answer": "4151",
+      "alt_answer": "29900",
+      "answer_tokens": 2,
+      "prompt_len": 7067,
+      "counterfactual_prompt_len": 7067
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "277821_1993.txt_employees_count_total_156",
+      "alt_idx": "716006_1993.txt_employees_count_total_118",
+      "source_answer": "4200",
+      "alt_answer": "35000",
+      "answer_tokens": 2,
+      "prompt_len": 7051,
+      "counterfactual_prompt_len": 7051
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "732714_1993.txt_employees_count_total_169",
+      "alt_idx": "71180_1993.txt_employees_count_total_214",
+      "source_answer": "76200",
+      "alt_answer": "1741",
+      "answer_tokens": 2,
+      "prompt_len": 7076,
+      "counterfactual_prompt_len": 7076
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "18230_1993.txt_employees_count_total_244",
+      "alt_idx": "100923_1993.txt_employees_count_total_189",
+      "source_answer": "51250",
+      "alt_answer": "3570",
+      "answer_tokens": 2,
+      "prompt_len": 7082,
+      "counterfactual_prompt_len": 7082
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "80661_1993.txt_employees_count_total_29",
+      "alt_idx": "732714_1993.txt_employees_count_total_169",
+      "source_answer": "6101",
+      "alt_answer": "76200",
+      "answer_tokens": 2,
+      "prompt_len": 7078,
+      "counterfactual_prompt_len": 7078
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "812427_1993.txt_employees_count_total_248",
+      "alt_idx": "66740_1993.txt_employees_count_total_197",
+      "source_answer": "29900",
+      "alt_answer": "86168",
+      "answer_tokens": 2,
+      "prompt_len": 7080,
+      "counterfactual_prompt_len": 7080
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "40878_1993.txt_employees_count_total_18",
+      "alt_idx": "277821_1993.txt_employees_count_total_156",
+      "source_answer": "4729",
+      "alt_answer": "4200",
+      "answer_tokens": 2,
+      "prompt_len": 7060,
+      "counterfactual_prompt_len": 7060
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "716006_1993.txt_employees_count_total_118",
+      "alt_idx": "40878_1993.txt_employees_count_total_18",
+      "source_answer": "35000",
+      "alt_answer": "4729",
+      "answer_tokens": 2,
+      "prompt_len": 7047,
+      "counterfactual_prompt_len": 7047
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "36326_1993.txt_employees_count_total_141",
+      "alt_idx": "71180_1993.txt_employees_count_total_214",
+      "source_answer": "11500",
+      "alt_answer": "1741",
+      "answer_tokens": 2,
+      "prompt_len": 7080,
+      "counterfactual_prompt_len": 7080
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "18497_1993.txt_employees_count_total_34",
+      "alt_idx": "821480_1993.txt_employees_count_total_238",
+      "source_answer": "257",
+      "alt_answer": "0",
+      "answer_tokens": 1,
+      "prompt_len": 7077,
+      "counterfactual_prompt_len": 7077
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "10456_1993.txt_employees_count_total_98",
+      "alt_idx": "732714_1993.txt_employees_count_total_169",
+      "source_answer": "60400",
+      "alt_answer": "76200",
+      "answer_tokens": 2,
+      "prompt_len": 7079,
+      "counterfactual_prompt_len": 7079
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "66740_1993.txt_employees_count_total_197",
+      "alt_idx": "18230_1993.txt_employees_count_total_244",
+      "source_answer": "86168",
+      "alt_answer": "51250",
+      "answer_tokens": 2,
+      "prompt_len": 7063,
+      "counterfactual_prompt_len": 7063
+    },
+    {
+      "task": "employees_count_total",
+      "source_idx": "71180_1993.txt_employees_count_total_214",
+      "alt_idx": "34501_1993.txt_employees_count_total_219",
+      "source_answer": "1741",
+      "alt_answer": "5300",
+      "answer_tokens": 2,
+      "prompt_len": 7068,
+      "counterfactual_prompt_len": 7068
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "36326_1993.txt_ceo_lastname_142",
+      "alt_idx": "277509_1993.txt_ceo_lastname_228",
+      "source_answer": "Thomas",
+      "alt_answer": "Ross",
+      "answer_tokens": 1,
+      "prompt_len": 7084,
+      "counterfactual_prompt_len": 7084
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "277509_1993.txt_ceo_lastname_228",
+      "alt_idx": "310431_1993.txt_ceo_lastname_70",
+      "source_answer": "Ross",
+      "alt_answer": "Jones",
+      "answer_tokens": 1,
+      "prompt_len": 7077,
+      "counterfactual_prompt_len": 7077
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "77227_1993.txt_ceo_lastname_91",
+      "alt_idx": "71180_1993.txt_ceo_lastname_215",
+      "source_answer": "Leva",
+      "alt_answer": "Lenzie",
+      "answer_tokens": 2,
+      "prompt_len": 7196,
+      "counterfactual_prompt_len": 7196
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "104669_1993.txt_ceo_lastname_84",
+      "alt_idx": "10456_1993.txt_ceo_lastname_99",
+      "source_answer": "Goodes",
+      "alt_answer": "Loucks",
+      "answer_tokens": 2,
+      "prompt_len": 7102,
+      "counterfactual_prompt_len": 7102
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "859257_1993.txt_ceo_lastname_146",
+      "alt_idx": "812427_1993.txt_ceo_lastname_249",
+      "source_answer": "Peterson",
+      "alt_answer": "Drew",
+      "answer_tokens": 2,
+      "prompt_len": 7014,
+      "counterfactual_prompt_len": 7014
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "40454_1993.txt_ceo_lastname_90",
+      "alt_idx": "310431_1993.txt_ceo_lastname_70",
+      "source_answer": "Craig",
+      "alt_answer": "Jones",
+      "answer_tokens": 1,
+      "prompt_len": 7068,
+      "counterfactual_prompt_len": 7068
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "37748_1993.txt_ceo_lastname_63",
+      "alt_idx": "71180_1993.txt_ceo_lastname_215",
+      "source_answer": "McCraw",
+      "alt_answer": "Lenzie",
+      "answer_tokens": 2,
+      "prompt_len": 7120,
+      "counterfactual_prompt_len": 7120
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "55387_1993.txt_ceo_lastname_11",
+      "alt_idx": "40454_1993.txt_ceo_lastname_90",
+      "source_answer": "Newton",
+      "alt_answer": "Craig",
+      "answer_tokens": 1,
+      "prompt_len": 7071,
+      "counterfactual_prompt_len": 7071
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "812427_1993.txt_ceo_lastname_249",
+      "alt_idx": "764764_1993.txt_ceo_lastname_45",
+      "source_answer": "Drew",
+      "alt_answer": "Beard",
+      "answer_tokens": 2,
+      "prompt_len": 7079,
+      "counterfactual_prompt_len": 7079
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "310431_1993.txt_ceo_lastname_70",
+      "alt_idx": "36326_1993.txt_ceo_lastname_142",
+      "source_answer": "Jones",
+      "alt_answer": "Thomas",
+      "answer_tokens": 1,
+      "prompt_len": 7070,
+      "counterfactual_prompt_len": 7070
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "801124_1993.txt_ceo_lastname_134",
+      "alt_idx": "34501_1993.txt_ceo_lastname_220",
+      "source_answer": "Bogle",
+      "alt_answer": "Allender",
+      "answer_tokens": 2,
+      "prompt_len": 6817,
+      "counterfactual_prompt_len": 6817
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "34501_1993.txt_ceo_lastname_220",
+      "alt_idx": "104669_1993.txt_ceo_lastname_84",
+      "source_answer": "Allender",
+      "alt_answer": "Goodes",
+      "answer_tokens": 2,
+      "prompt_len": 7048,
+      "counterfactual_prompt_len": 7048
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "103730_1993.txt_ceo_lastname_6",
+      "alt_idx": "828530_1993.txt_ceo_lastname_113",
+      "source_answer": "Zandman",
+      "alt_answer": "Popham",
+      "answer_tokens": 3,
+      "prompt_len": 7080,
+      "counterfactual_prompt_len": 7080
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "71180_1993.txt_ceo_lastname_215",
+      "alt_idx": "37748_1993.txt_ceo_lastname_63",
+      "source_answer": "Lenzie",
+      "alt_answer": "McCraw",
+      "answer_tokens": 2,
+      "prompt_len": 7070,
+      "counterfactual_prompt_len": 7070
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "10456_1993.txt_ceo_lastname_99",
+      "alt_idx": "34501_1993.txt_ceo_lastname_220",
+      "source_answer": "Loucks",
+      "alt_answer": "Allender",
+      "answer_tokens": 2,
+      "prompt_len": 7145,
+      "counterfactual_prompt_len": 7145
+    },
+    {
+      "task": "ceo_lastname",
+      "source_idx": "828530_1993.txt_ceo_lastname_113",
+      "alt_idx": "103730_1993.txt_ceo_lastname_6",
+      "source_answer": "Popham",
+      "alt_answer": "Zandman",
+      "answer_tokens": 3,
+      "prompt_len": 7071,
+      "counterfactual_prompt_len": 7071
+    },
+    {
+      "task": "registrant_name",
+      "source_idx": "201461_1993.txt_registrant_name_72",
+      "alt_idx": "754737_1993.txt_registrant_name_199",
+      "source_answer": "City National Corporation",
+      "alt_answer": "SCANA Corporation",
+      "answer_tokens": 3,
+      "prompt_len": 7059,
+      "counterfactual_prompt_len": 7059
+    },
+    {
+      "task": "registrant_name",
+      "source_idx": "754737_1993.txt_registrant_name_199",
+      "alt_idx": "201461_1993.txt_registrant_name_72",
+      "source_answer": "SCANA Corporation",
+      "alt_answer": "City National Corporation",
+      "answer_tokens": 3,
+      "prompt_len": 7098,
+      "counterfactual_prompt_len": 7098
+    }
+  ]
+}

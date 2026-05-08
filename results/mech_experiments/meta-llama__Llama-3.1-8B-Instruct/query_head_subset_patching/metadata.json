@@ -1,0 +1,51 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname"
+  ],
+  "k": 16,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+  "ablation_results_path": "/home/ubuntu/qr_scoring/results/comparison_ablation/meta-llama__Llama-3.1-8B-Instruct/QRScore-SEC_results.json",
+  "num_selected_examples": 32,
+  "filtered_to_clean_correct_ablated_wrong": true,
+  "patch_position_mode": "query",
+  "subset_mode": "both",
+  "cumulative_sizes": [
+    1,
+    2,
+    4,
+    8,
+    16
+  ],
+  "num_random_controls": 5,
+  "num_matched_layer_random_controls": 0,
+  "qr_heads": [
+    "14-31",
+    "13-18",
+    "8-11",
+    "8-8",
+    "14-29",
+    "14-13",
+    "10-31",
+    "14-22",
+    "13-13",
+    "9-27",
+    "13-6",
+    "14-20",
+    "13-8",
+    "10-18",
+    "17-24",
+    "17-29"
+  ]
+}
