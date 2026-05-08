@@ -1,0 +1,60 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "pairs_path": "results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/circuit_pairs/circuit_pairs.jsonl",
+  "tasks": [
+    "ceo_lastname"
+  ],
+  "layers": [
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "num_pairs_loaded": 29,
+  "num_valid_pairs": 29,
+  "min_margin_denom": 0.5,
+  "num_nodes_scanned": 264,
+  "top_n_nodes": 16,
+  "num_random_controls": 20,
+  "best_node": {
+    "rank": 1,
+    "task": "ceo_lastname",
+    "node_id": "mlp:31",
+    "node_type": "mlp",
+    "layer": 31,
+    "head": "",
+    "n": 29,
+    "mean_margin_recovery": 0.1664915211004642,
+    "median_margin_recovery": 0.1621373945974801,
+    "positive_fraction": 0.9310344827586207
+  },
+  "best_joint_set": {
+    "task": "ceo_lastname",
+    "condition": "top8",
+    "set_type": "discovered",
+    "set_size": 8,
+    "n": 29,
+    "mean_margin_recovery": 0.6344776136433665,
+    "median_margin_recovery": 0.5948551321283441,
+    "positive_fraction": 1.0
+  },
+  "success_thresholds": {
+    "strong_circuit_median_recovery": 0.6,
+    "useful_subcircuit_median_recovery": 0.2,
+    "random_control_max_preferred": 0.1
+  }
+}
