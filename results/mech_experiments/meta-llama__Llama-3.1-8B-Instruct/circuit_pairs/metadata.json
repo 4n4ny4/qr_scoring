@@ -1,0 +1,24 @@
+{
+  "model": {
+    "model_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+    "model_family": "llama",
+    "tokenizer_name": "meta-llama/Llama-3.1-8B-Instruct",
+    "trust_remote_code": false,
+    "supports_stock_head_masking": true,
+    "detection_backend_available": true,
+    "allow_external_rankings": true,
+    "requires_trust_remote_code": false
+  },
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname"
+  ],
+  "k": 16,
+  "ranking_path": "/home/ubuntu/qr_scoring/results/detection/meta-llama__Llama-3.1-8B-Instruct/long_context_combined_heads.json",
+  "num_pairs": 42,
+  "min_clean_margin": 0.0,
+  "min_corruption_effect": 0.5,
+  "min_ablation_damage": 0.5,
+  "allow_prompt_len_change": false
+}

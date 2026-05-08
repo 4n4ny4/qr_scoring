@@ -1,0 +1,20 @@
+{
+  "pairs_path": "results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/circuit_pairs/circuit_pairs.jsonl",
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname"
+  ],
+  "candidate_heads": [
+    "13-18",
+    "14-31"
+  ],
+  "source_position_groups": [
+    "gold_value",
+    "gold_sentence"
+  ],
+  "target_position_groups": [
+    "query",
+    "answer"
+  ],
+  "num_rows": 1344
+}

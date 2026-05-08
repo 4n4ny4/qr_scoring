@@ -1,0 +1,9 @@
+{
+  "model_slug": "meta-llama__Llama-3.1-8B-Instruct",
+  "root_dir": "/home/ubuntu/qr_scoring/results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct",
+  "residual_rows": 320,
+  "component_rows": 134,
+  "path_rows": 64,
+  "validation_rows": 168,
+  "summary_rows": 44
+}

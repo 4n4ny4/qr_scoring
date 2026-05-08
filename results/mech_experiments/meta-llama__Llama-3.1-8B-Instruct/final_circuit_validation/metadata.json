@@ -1,0 +1,49 @@
+{
+  "pairs_path": "results/mech_experiments/meta-llama__Llama-3.1-8B-Instruct/circuit_pairs/circuit_pairs.jsonl",
+  "tasks": [
+    "employees_count_total",
+    "ceo_lastname"
+  ],
+  "candidate_heads": [
+    "13-18",
+    "14-31"
+  ],
+  "include_top_qr": 4,
+  "position_group": "query",
+  "layers": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7,
+    8,
+    9,
+    10,
+    11,
+    12,
+    13,
+    14,
+    15,
+    16,
+    17,
+    18,
+    19,
+    20,
+    21,
+    22,
+    23,
+    24,
+    25,
+    26,
+    27,
+    28,
+    29,
+    30,
+    31
+  ],
+  "num_rows": 2814,
+  "num_validation_rows": 168
+}
