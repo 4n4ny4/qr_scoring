@@ -1,9 +1,9 @@
 """Gold-evidence edge masking for QRHeads.
 
-This script causally tests whether the answer-prediction damage from QRHead
-ablation is localized to attention edges from answer-prediction positions to
-the gold evidence span. It wraps PyTorch SDPA for teacher-forced scoring and
-renormalizes attention after masking the selected edges.
+This script causally tests whether the damage from QRHead ablation is localized
+to attention edges from selected query-side positions to the gold evidence span.
+It wraps PyTorch SDPA for teacher-forced scoring and renormalizes attention
+after masking the selected edges.
 """
 
 import argparse
@@ -42,6 +42,7 @@ from mech_utils import (  # noqa: E402
     find_random_span,
     get_decoder_layers,
     get_num_heads,
+    intervention_positions_for_mode,
     load_clean_to_ablated_failure_ids,
     load_ranked_heads_json,
     load_task_instances,
@@ -239,6 +240,16 @@ def parse_args():
     parser.add_argument("--max_examples_per_task", type=int, default=12)
     parser.add_argument("--seed", type=int, default=123)
     parser.add_argument("--gold_span_mode", choices=["sentence", "value", "value_in_sentence"], default="sentence")
+    parser.add_argument(
+        "--edge_query_position_mode",
+        choices=["answer", "query", "answer_and_query"],
+        default="answer",
+        help=(
+            "Which positions issue the masked attention queries. 'answer' "
+            "preserves the original answer-prediction edge-masking behavior; "
+            "'query' uses the late question tokens matched to answer length."
+        ),
+    )
     parser.add_argument("--answer_prefix", default="")
     parser.add_argument("--use_all_examples", action="store_true")
     return parser.parse_args()
@@ -368,6 +379,7 @@ def main():
         "ablation_results_path": str(ablation_results_path),
         "num_selected_examples": len(selected),
         "gold_span_mode": args.gold_span_mode,
+        "edge_query_position_mode": args.edge_query_position_mode,
         "attn_implementation": args.attn_implementation,
         "qr_heads": [f"{layer}-{head}" for layer, head in qr_heads],
         "nonqr_gold_control_heads": [f"{layer}-{head}" for layer, head in nonqr_heads],
@@ -394,6 +406,14 @@ def main():
             gold_span = find_gold_span(encoded, inst, mode=args.gold_span_mode)
             if gold_span is None:
                 print(f"[skip] could not locate gold span for {inst['idx']}")
+                continue
+            edge_query_positions = intervention_positions_for_mode(
+                encoded,
+                inst,
+                args.edge_query_position_mode,
+            )
+            if not edge_query_positions:
+                print(f"[skip] could not locate {args.edge_query_position_mode} positions for {inst['idx']}")
                 continue
             span_len = max(1, gold_span[1] - gold_span[0])
             distractor_span = find_distractor_span(encoded, inst, span_len)
@@ -430,7 +450,7 @@ def main():
                 if span is None:
                     continue
                 head_controller.reset()
-                edge_controller.set_edge_mask(heads, encoded.prediction_positions, span)
+                edge_controller.set_edge_mask(heads, edge_query_positions, span)
                 edge_sum, edge_mean, edge_token = score_gold_answer(model, encoded)
                 condition_rows.append(
                     condition_record(inst, condition, span, edge_sum, edge_mean, edge_token)
@@ -449,6 +469,9 @@ def main():
                     "span_start": span[0],
                     "span_end": span[1],
                     "span_len": span[1] - span[0],
+                    "edge_query_position_mode": args.edge_query_position_mode,
+                    "edge_query_positions": edge_query_positions,
+                    "edge_query_position_count": len(edge_query_positions),
                 })
 
             head_controller.reset()

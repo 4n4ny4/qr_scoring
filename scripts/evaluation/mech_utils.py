@@ -536,6 +536,85 @@ def char_span_to_token_span(
     return min(hits), max(hits) + 1
 
 
+def nonempty_prompt_positions(encoded: EncodedExample) -> List[int]:
+    positions = []
+    for pos, (start, end) in enumerate(encoded.prompt_offsets):
+        if 0 <= pos < encoded.prompt_len and end > start:
+            positions.append(pos)
+    return positions
+
+
+def positions_for_substring(encoded: EncodedExample, text: str) -> List[int]:
+    if not text:
+        return []
+    char_start = encoded.rendered_prompt.find(text)
+    if char_start < 0:
+        return []
+    char_end = char_start + len(text)
+    out = []
+    for pos, (tok_start, tok_end) in enumerate(encoded.prompt_offsets):
+        if tok_end <= tok_start:
+            continue
+        if tok_start < char_end and tok_end > char_start:
+            out.append(pos)
+    return out
+
+
+def take_tail(positions: Sequence[int], n_positions: int) -> List[int]:
+    if n_positions <= 0:
+        return []
+    if len(positions) <= n_positions:
+        return list(positions)
+    return list(positions[-n_positions:])
+
+
+def query_positions_for_example(
+    encoded: EncodedExample,
+    inst: dict,
+    *,
+    n_positions: Optional[int] = None,
+) -> List[int]:
+    """Return the late question-token positions used by query-position patching."""
+
+    if n_positions is None:
+        n_positions = len(encoded.prediction_positions)
+    prompt_positions = nonempty_prompt_positions(encoded)
+    query_positions = positions_for_substring(encoded, inst.get("question", ""))
+    if not query_positions:
+        marker_positions = positions_for_substring(encoded, "Question:")
+        if marker_positions:
+            start = marker_positions[-1] + 1
+            query_positions = [
+                pos for pos in prompt_positions if start <= pos < encoded.prompt_len
+            ]
+    return take_tail(query_positions, n_positions)
+
+
+def intervention_positions_for_mode(
+    encoded: EncodedExample,
+    inst: dict,
+    mode: str,
+) -> List[int]:
+    """Resolve answer/query intervention positions with a shared convention."""
+
+    if mode == "answer":
+        return list(encoded.prediction_positions)
+    if mode == "query":
+        return query_positions_for_example(
+            encoded,
+            inst,
+            n_positions=len(encoded.prediction_positions),
+        )
+    if mode == "answer_and_query":
+        positions = list(encoded.prediction_positions) + query_positions_for_example(
+            encoded,
+            inst,
+            n_positions=len(encoded.prediction_positions),
+        )
+        return sorted(dict.fromkeys(positions))
+    raise ValueError(f"Unsupported intervention position mode: {mode}")
+
+
 def find_gold_span(encoded: EncodedExample, inst: dict, *, mode: str) -> Optional[Tuple[int, int]]:
     sentence = inst.get("needle_sentence") or ""
     value = str(inst.get("needle_value") or "")

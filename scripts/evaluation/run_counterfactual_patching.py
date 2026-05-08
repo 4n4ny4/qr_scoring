@@ -43,6 +43,7 @@ from mech_utils import (  # noqa: E402
     encode_prompt_and_answer,
     get_decoder_layers,
     get_num_heads,
+    intervention_positions_for_mode,
     load_clean_to_ablated_failure_ids,
     load_model_and_tokenizer,
     load_ranked_heads_json,
@@ -88,6 +89,15 @@ def parse_args():
         "--answer_prefix",
         default="",
         help="Optional prefix prepended to each answer before tokenization.",
+    )
+    parser.add_argument(
+        "--patch_position_mode",
+        choices=["answer", "query"],
+        default="answer",
+        help=(
+            "Positions where clean source QRHead activations are cached and "
+            "patched into the counterfactual prompt."
+        ),
     )
     return parser.parse_args()
 
@@ -438,6 +448,7 @@ def main():
         "num_selected_pairs": len(pairs),
         "filtered_to_clean_correct_ablated_wrong": failure_ids is not None,
         "allow_prompt_len_change": args.allow_prompt_len_change,
+        "patch_position_mode": args.patch_position_mode,
         "controls": {
             name: [f"{layer}-{head}" for layer, head in heads]
             for name, heads in controls.items()
@@ -480,7 +491,15 @@ def main():
                 max_context_tokens=args.max_context_tokens,
                 answer_prefix=args.answer_prefix,
             )
-            controller.set_cache_mode(orig_encoded.prediction_positions)
+            cache_positions = intervention_positions_for_mode(
+                orig_encoded,
+                base,
+                args.patch_position_mode,
+            )
+            if not cache_positions:
+                print(f"[skip] no {args.patch_position_mode} cache positions for {pair['source_idx']}")
+                continue
+            controller.set_cache_mode(cache_positions)
             orig_sum, orig_mean, orig_tok = score_gold_answer(model, orig_encoded)
             condition_rows.append(
                 condition_row(pair, "orig_clean", "original", source_answer, orig_sum, orig_mean, orig_tok)
@@ -493,6 +512,25 @@ def main():
                 cf_alt_mean,
                 cf_alt_tok,
             ) = score_two_answers(model, tokenizer, cf, source_answer, alt_answer, args)
+            cf_orig_patch_positions = intervention_positions_for_mode(
+                cf_orig_enc,
+                cf,
+                args.patch_position_mode,
+            )
+            cf_alt_patch_positions = intervention_positions_for_mode(
+                cf_alt_enc,
+                cf,
+                args.patch_position_mode,
+            )
+            if (
+                len(cf_orig_patch_positions) != len(cache_positions)
+                or len(cf_alt_patch_positions) != len(cache_positions)
+            ):
+                print(
+                    "[skip] patch-position length mismatch for "
+                    f"{pair['source_idx']} -> {pair['alt_idx']}"
+                )
+                continue
             condition_rows.append(
                 condition_row(pair, "cf_clean", "original", source_answer, cf_orig_sum, cf_orig_mean, cf_orig_tok)
             )
@@ -539,9 +577,9 @@ def main():
             })
 
             for condition, patch_heads in controls.items():
-                controller.set_patch_mode(qr_heads, patch_heads, cf_orig_enc.prediction_positions)
+                controller.set_patch_mode(qr_heads, patch_heads, cf_orig_patch_positions)
                 patch_orig_sum, patch_orig_mean, patch_orig_tok = score_gold_answer(model, cf_orig_enc)
-                controller.set_patch_mode(qr_heads, patch_heads, cf_alt_enc.prediction_positions)
+                controller.set_patch_mode(qr_heads, patch_heads, cf_alt_patch_positions)
                 patch_alt_sum, patch_alt_mean, patch_alt_tok = score_gold_answer(model, cf_alt_enc)
                 condition_rows.append(
                     condition_row(pair, condition, "original", source_answer, patch_orig_sum, patch_orig_mean, patch_orig_tok)
