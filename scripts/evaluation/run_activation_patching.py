@@ -37,6 +37,7 @@ from mech_utils import (
     load_model_and_tokenizer,
     load_ranked_heads_json,
     load_task_instances,
+    matched_layer_random_control_heads,
     random_control_heads,
     safe_div,
     same_layer_control_heads,
@@ -67,6 +68,18 @@ def parse_args():
     parser.add_argument("--max_context_tokens", type=int, default=8192)
     parser.add_argument("--max_examples_per_task", type=int, default=16)
     parser.add_argument("--seed", type=int, default=123)
+    parser.add_argument(
+        "--num_random_controls",
+        type=int,
+        default=1,
+        help="Number of full-population random non-QR head-set controls.",
+    )
+    parser.add_argument(
+        "--num_matched_layer_random_controls",
+        type=int,
+        default=0,
+        help="Number of random non-QR controls matched to QRHead layer counts.",
+    )
     parser.add_argument(
         "--use_all_examples",
         action="store_true",
@@ -147,12 +160,6 @@ def main():
     num_heads = get_num_heads(model)
     controls = {
         "patch_qr": qr_heads,
-        "patch_random": random_control_heads(
-            qr_heads=qr_heads,
-            num_layers=num_layers,
-            num_heads=num_heads,
-            seed=args.seed,
-        ),
         "patch_bottom": bottom_control_heads(
             ranking=ranking,
             qr_heads=qr_heads,
@@ -163,6 +170,27 @@ def main():
             num_heads=num_heads,
         ),
     }
+    if args.num_random_controls == 1:
+        controls["patch_random"] = random_control_heads(
+            qr_heads=qr_heads,
+            num_layers=num_layers,
+            num_heads=num_heads,
+            seed=args.seed,
+        )
+    else:
+        for i in range(args.num_random_controls):
+            controls[f"patch_random_{i:02d}"] = random_control_heads(
+                qr_heads=qr_heads,
+                num_layers=num_layers,
+                num_heads=num_heads,
+                seed=args.seed + i,
+            )
+    for i in range(args.num_matched_layer_random_controls):
+        controls[f"patch_matched_layer_random_{i:02d}"] = matched_layer_random_control_heads(
+            qr_heads=qr_heads,
+            num_heads=num_heads,
+            seed=args.seed + 10_000 + i,
+        )
 
     ablation_results_path = (
         Path(args.ablation_results_path)

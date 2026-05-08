@@ -235,6 +235,32 @@ def same_layer_control_heads(
     return controls
 
 
+def matched_layer_random_control_heads(
+    *,
+    qr_heads: Sequence[Tuple[int, int]],
+    num_heads: int,
+    seed: int,
+) -> List[Tuple[int, int]]:
+    """Sample non-QR controls with the same layer multiplicities as QR heads."""
+
+    qr_set = set(qr_heads)
+    used = set(qr_set)
+    rng = random.Random(seed)
+    controls = []
+    for layer, _head in qr_heads:
+        candidates = [
+            (layer, candidate_head)
+            for candidate_head in range(num_heads)
+            if (layer, candidate_head) not in used
+        ]
+        if not candidates:
+            raise ValueError(f"Could not sample matched-layer control for layer {layer}.")
+        chosen = rng.choice(candidates)
+        controls.append(chosen)
+        used.add(chosen)
+    return controls
+
+
 def group_heads_by_layer(heads: Optional[Sequence[Tuple[int, int]]]) -> Dict[int, List[int]]:
     grouped = defaultdict(list)
     if not heads:
